@@ -10,6 +10,8 @@
   **Email:** *ra2008444@qu.edu.qa*
 - **Name:** *Team Member Name*  
   **Email:** *email@example.com*
+- **Name:** *Team Member Name*  
+  **Email:** *email@example.com*
 
 ---
 
