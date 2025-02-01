@@ -41,10 +41,10 @@
 
 | Member       | Date       | Description                                      |
 | ------------ | ---------- | ------------------------------------------------ |
-| *Name*       | *YYYY-MM-DD* | *Description of the contribution*                |
-| *Name*       | *YYYY-MM-DD* | *Description of the contribution*                |
-| *Name*       | *YYYY-MM-DD* | *Description of the contribution*                |
-| *Name*       | *YYYY-MM-DD* | *Description of the contribution*                |
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
 | *...*        | *...*       | *...*                                            |
 
 ---
