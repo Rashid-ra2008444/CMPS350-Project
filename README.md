@@ -6,8 +6,8 @@
 
 ## Team
 
-- **Name:** *Team Member Name*  
-  **Email:** *email@example.com*
+- **Name:** *Rashid Al-Bader*  
+  **Email:** *ra2008444@qu.edu.qa*
 - **Name:** *Team Member Name*  
   **Email:** *email@example.com*
 
