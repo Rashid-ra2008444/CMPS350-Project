@@ -10,8 +10,8 @@
   **Email:** *ra2008444@qu.edu.qa*
 - **Name:** *Omer Adiil Khan*  
   **Email:** *ok2003047@qu.edu.qa*
-- **Name:** *Team Member Name*  
-  **Email:** *email@example.com*
+- **Name:** *Yousef Saeed*  
+  **Email:** *ys1908807@qu.edu.qa*
 
 ---
 
@@ -41,7 +41,7 @@
 
 | Member       | Date       | Description                                      |
 | ------------ | ---------- | ------------------------------------------------ |
-| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
+| *yousef*       | *01-02-2025* | *Crearting the simpel login html code*       |
 | *Omer*       | *03-02-2025* | *Creating the course html code*                |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
