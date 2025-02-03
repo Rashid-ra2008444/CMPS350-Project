@@ -42,7 +42,7 @@
 | Member       | Date       | Description                                      |
 | ------------ | ---------- | ------------------------------------------------ |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
-| *Omer*       | *03-02-2025 | *Creating the course html code*                |
+| *Omer*       | *03-02-2025* | *Creating the course html code*                |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
 | *...*        | *...*       | *...*                                            |
