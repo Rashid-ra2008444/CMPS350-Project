@@ -41,7 +41,7 @@
 
 | Member       | Date       | Description                                      |
 | ------------ | ---------- | ------------------------------------------------ |
-| *yousef*       | *01-02-2025* | *Crearting the simpel login html code*       |
+| *yousef*     | *01-02-2025* | *Crearting the simpel login html code*         |
 | *Omer*       | *03-02-2025* | *Creating the course html code*                |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
