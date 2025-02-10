@@ -1,6 +1,6 @@
 body{
-    margin:0;
-    padding:0;
+    /* margin:0; */
+    padding-left:1px;
     font-family: sans-serif;
 }
 html,body{height:100vh}
@@ -8,11 +8,25 @@ hr {
     border: none;
     border-top: 3px solid black;
 }
+#icon-button:hover {
+    /* background-color: whitesmoke; */
+    transform: scale(1.1); /* Slightly enlarges */
+}
+
+#icon-button:active {
+    transform: scale(0.95); /* Click effect */
+}
+h1 {
+    display: flex;
+    justify-content: space-between; /* Pushes elements to opposite sides */
+    align-items: center;
+    width: 100%;
+}
 .Container{
     position: relative;
-    width:100%;
+    width:99%;
     height:80vh;
-    border:solid red;
+    /* border:solid red; */
     display:grid;
     grid-template-columns: repeat(4, 1fr);
     align-items: center;
@@ -23,6 +37,7 @@ hr {
     height:200px;
     background-color:whitesmoke;
     margin:3px;
+    display:flex;
     border-radius: 10px; /* Optional: rounded corners */
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
