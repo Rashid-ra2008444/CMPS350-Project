@@ -45,7 +45,7 @@
 | *Omer*       | *03-02-2025* | *Creating the course html code*                |
 | *yousef*     | *05-02-2025* | *make some javaSecrebt and css login*          |
 | *yousef*     | *11-02-2025* | *Edit in Login *                               |
-| *...*        | *...*       | *...*                                           |
+| *Omer*       | *10-02-2025* | *Making the css file for course page*          |
 
 ---
 
