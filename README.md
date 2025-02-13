@@ -46,7 +46,7 @@
 | *yousef*     | *05-02-2025* | *make some javaSecrebt and css login*          |
 | *yousef*     | *11-02-2025* | *Edit in Login *                               |
 | *Omer*       | *10-02-2025* | *Making the css file for course page*          |
-| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
+| *Rashid*     | *13-02-2025* | *Creating HTML and CSS files for Use Case 5*                |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
