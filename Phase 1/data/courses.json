@@ -1,0 +1,50 @@
+[
+    {
+        "name": "Programming Concept",
+        "courseNum": 151,
+        "instructor": "Zeyad Ali",
+        "prerequisite": "none",
+        "enrolled": 50,
+        "category": "CMPS"
+    },
+    {
+        "name": "Object-Oriented Programming",
+        "courseNum": 251,
+        "instructor": "Mohammed Saleh",
+        "prerequisite": "Programming Concept",
+        "enrolled": 40 ,
+        "category": "CMPS"
+    },
+    {
+        "name": "Calculus I",
+        "courseNum": 101,
+        "instructor": "Sahbi Ayari",
+        "prerequisite": "none",
+        "enrolled": 60,
+        "category": "MATH"
+    },
+    {
+        "name": "Probability and Statistics for Engineers",
+        "courseNum": 200,
+        "instructor": "Nabeel Ahmed",
+        "prerequisite": "Calculus I",
+        "enrolled": 45,
+        "category": "GENG"
+    },
+    {
+        "name": "Data Structure",
+        "courseNum": 303,
+        "instructor": "Saleh Al-Hazbi",
+        "prerequisite": "Object-Oriented Programming",
+        "enrolled": 30,
+        "category": "CMPS"
+    },
+    {
+        "name": "Computer Architecture and Organization I",
+        "courseNum": 263,
+        "instructor": "Mohammed Azeem",
+        "prerequisite": "none",
+        "enrolled": 50,
+        "category": "CMPE"
+    }
+]

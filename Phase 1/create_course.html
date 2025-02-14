@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Creating & Validation Courses</title>
     <link rel="stylesheet" href="../Phase 1/css/Create_Course.css" />
-    <script src="../Phase 1/js/Create_Course.js"></script>
+    <script src="../Phase 1/js/Create_Course.js" defer></script>
   </head>
 
   <header>
@@ -14,9 +14,9 @@
   </header>
   <!-- Navigation Course-->
   <nav>
-    <input type="text" placeholder="Course Name" />
+    <input type="text" id="searchInput" placeholder="Course Name" />
     <select id="courseCategory">
-      <option value="none"></option>
+      <option value="all">All Category</option>
       <option value="CMPS">Computer Science</option>
       <option value="CMPE">Computer Engineering</option>
       <option value="MATH">Mathmatics</option>
