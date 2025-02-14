@@ -5,7 +5,8 @@
         "instructor": "Zeyad Ali",
         "prerequisite": "none",
         "enrolled": 50,
-        "category": "CMPS"
+        "category": "CMPS",
+        "status": "valid"
     },
     {
         "name": "Object-Oriented Programming",
@@ -13,7 +14,8 @@
         "instructor": "Mohammed Saleh",
         "prerequisite": "Programming Concept",
         "enrolled": 40 ,
-        "category": "CMPS"
+        "category": "CMPS",
+        "status": "pending"
     },
     {
         "name": "Calculus I",
@@ -21,7 +23,8 @@
         "instructor": "Sahbi Ayari",
         "prerequisite": "none",
         "enrolled": 60,
-        "category": "MATH"
+        "category": "MATH",
+        "status": "valid"
     },
     {
         "name": "Probability and Statistics for Engineers",
@@ -29,7 +32,8 @@
         "instructor": "Nabeel Ahmed",
         "prerequisite": "Calculus I",
         "enrolled": 45,
-        "category": "GENG"
+        "category": "GENG",
+        "status": "invalid"
     },
     {
         "name": "Data Structure",
@@ -37,7 +41,8 @@
         "instructor": "Saleh Al-Hazbi",
         "prerequisite": "Object-Oriented Programming",
         "enrolled": 30,
-        "category": "CMPS"
+        "category": "CMPS",
+        "status": "pending"
     },
     {
         "name": "Computer Architecture and Organization I",
@@ -45,6 +50,7 @@
         "instructor": "Mohammed Azeem",
         "prerequisite": "none",
         "enrolled": 50,
-        "category": "CMPE"
+        "category": "CMPE",
+        "status": "valid"
     }
 ]

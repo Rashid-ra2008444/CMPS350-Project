@@ -22,3 +22,10 @@
     gap: 0.5rem;
     justify-content: center; /* Center buttons horizontally */
 }
+
+.column {
+    flex: 1;
+    padding: 1rem;
+    border: 2px solid black;
+    background-color: white;
+}
