@@ -1,0 +1,24 @@
+.container {
+    display: flex;
+    flex-wrap: wrap; /* Ensures boxes wrap correctly */
+    gap: 1rem;
+    border: 10px solid red;
+}
+
+.box {
+    width: 15rem;
+    height: 15rem;
+    border: 1.5px solid black;
+    background-color: wheat;
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
+    justify-content: flex-start; /* Content stays at the top initially */
+    padding: 1rem;
+}
+
+.button-container {
+    margin-top: auto; /* Pushes buttons to the bottom */
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center; /* Center buttons horizontally */
+}
