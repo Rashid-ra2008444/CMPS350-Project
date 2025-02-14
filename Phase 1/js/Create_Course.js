@@ -82,6 +82,7 @@ document.addEventListener("DOMContentLoaded", function() {
         `;
     }
 
+    //Need to fix not returning to the original form after saving course
     function saveCourse(oldName,saveButton) {
         const box = saveButton.closet(".box");
 
