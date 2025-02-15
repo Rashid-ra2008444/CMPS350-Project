@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         displayCourses(filteredCourses);
     }
-    // validation functions need some work to work 
+    
     function validateCourse(courseName ,box) {
         let course = courseData.find(course => course.name === courseName);
 
@@ -156,12 +156,20 @@ document.addEventListener("DOMContentLoaded", function() {
         box.innerHTML =`
         <div class="course-content"> 
         <button class="valid-btn">Valid</button>
-        <button id="invalid-btn">Invalid</button>
+        <button class="invalid-btn">Invalid</button>
         </div>
         `;
 
-        box.querySelector(".valid-btn").addEventListener("click", updateCourseStatus(courseName,"valid"));
-        box.querySelector(".invalid-btn").addEventListener("click", updateCourseStatus(courseName,"invalid"));
+        box.querySelector(".valid-btn").addEventListener("click", () => {
+            updateCourseStatus(courseName,"valid");
+            console.log("Course status updated to valid");
+            displayCourses(courseData);
+        });
+        box.querySelector(".invalid-btn").addEventListener("click", () => {
+            updateCourseStatus(courseName,"invalid");
+            console.log("Course status updated to invalid");
+            displayCourses(courseData);
+        });
     }
     
     function updateCourseStatus(courseName, status) {
