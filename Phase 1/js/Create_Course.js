@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 let validateButton = document.createElement("button");
                 validateButton.textContent = "Validate";
-                validateButton.addEventListener("click", () => validateCourse(course, box));
+                validateButton.addEventListener("click", () => validateCourse(course.name, box));
                 buttonContainer.appendChild(validateButton);
             }
 
@@ -87,7 +87,6 @@ document.addEventListener("DOMContentLoaded", function() {
         })
     }
 
-    //Need to fix not returning to the original form after saving course
     function saveCourse(oldName,box) {
         let index = courseData.findIndex(course => course.name === oldName);
 
@@ -125,8 +124,8 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log("Box updated back to normal state")
 
     box.querySelector(".edit-btn").addEventListener("click",() => editCourse(updateCourse,box));
-    box.querySelector(".validate-btn").addEventListener("click",() => validateCourse(updateCourse.name));
-    box.querySelector(".delete-btn").addEventListener("click",() => deleteCourse(updateCourse.name));
+    box.querySelector(".validate-btn").addEventListener("click",() => validateCourse(updateCourse.name ,box));
+    box.querySelector(".delete-btn").addEventListener("click",() => deleteCourse(updateCourse.name ,box));
     }
 
     function deleteCourse(course) {
@@ -145,6 +144,34 @@ document.addEventListener("DOMContentLoaded", function() {
         );
 
         displayCourses(filteredCourses);
+    }
+    // validation functions need some work to work 
+    function validateCourse(courseName ,box) {
+        let course = courseData.find(course => course.name === courseName);
+
+        if(course === undefined) {
+            console.error("Course not found");
+            return;
+        }
+        box.innerHTML =`
+        <div class="course-content"> 
+        <button class="valid-btn">Valid</button>
+        <button id="invalid-btn">Invalid</button>
+        </div>
+        `;
+
+        box.querySelector(".valid-btn").addEventListener("click", updateCourseStatus(courseName,"valid"));
+        box.querySelector(".invalid-btn").addEventListener("click", updateCourseStatus(courseName,"invalid"));
+    }
+    
+    function updateCourseStatus(courseName, status) {
+        let course = courseData.find(course => course.name === courseName);
+        if(course === undefined) {
+            console.error("Course not found");
+            return;
+        }
+        course.status = status;
+        console.log("Course status updated");
     }
 
 
