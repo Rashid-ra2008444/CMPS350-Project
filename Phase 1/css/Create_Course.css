@@ -6,8 +6,8 @@
 }
 
 .box {
-    width: 15rem;
-    height: 15rem;
+    width: 20rem;
+    height: 20rem;
     border: 1.5px solid black;
     background-color: wheat;
     display: flex;
@@ -29,3 +29,5 @@
     border: 2px solid black;
     background-color: white;
 }
+
+

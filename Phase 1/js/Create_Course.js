@@ -74,10 +74,20 @@ document.addEventListener("DOMContentLoaded", function() {
     function editCourse(course, box) {
         let courseContent = box.querySelector(".course-content");
         courseContent.innerHTML = `
-            <input type="text" id="editName" value="${course.name}" />
-            <input type="text" id="editInstructor" value="${course.instructor}" />
-            <input type="text" id="editPrerequisite" value="${course.prerequisite}" />
-            <input type="number" id="editEnrolled" value="${course.enrolled}" />
+            <p>Name<input type="text" id="editName" value="${course.name}" /></p>
+            <p>Course Number<input type="number" id="editCourseNum" value="${course.courseNum}" /></p>
+            <p>Instructor<input type="text" id="editInstructor" value="${course.instructor}" /></p>
+            <p>Prerequisite<input type="text" id="editPrerequisite" value="${course.prerequisite}" /></p>
+            <p>Enrolled<input type="number" id="editEnrolled" value="${course.enrolled}" /></p>
+            <p>Category
+                <select id="editCategory">
+                    <option value="all" ${course.category === 'all' ? 'selected' : ''}>All Category</option>
+                    <option value="CMPS" ${course.category === 'CMPS' ? 'selected' : ''}>Computer Science</option>
+                    <option value="CMPE" ${course.category === 'CMPE' ? 'selected' : ''}>Computer Engineering</option>
+                    <option value="MATH" ${course.category === 'MATH' ? 'selected' : ''}>Mathematics</option>
+                    <option value="GENG" ${course.category === 'GENG' ? 'selected' : ''}>General Engineering</option>
+                </select>
+            </p>
             <button id="saveButton">Save</button>
         `;
 
@@ -97,10 +107,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
         let updateCourse = {
             name: box.querySelector("#editName").value,
+            courseNum: box.querySelector("#editCourseNum").value,
             instructor: box.querySelector("#editInstructor").value,
             prerequisite: box.querySelector("#editPrerequisite").value,
             enrolled: parseInt(box.querySelector("#editEnrolled").value),
-            category: courseData[index].category,
+            category: box.querySelector("#editCategory").value,
             status: courseData[index].status
         };
 
@@ -109,10 +120,11 @@ document.addEventListener("DOMContentLoaded", function() {
         
         box.innerHTML = `
         <div class="course-content">
-            <h3>${updateCourse.name} (${updateCourse.category})</h3>
+            <h3>${updateCourse.name} (${updateCourse.category} ${updateCourse.courseNum})</h3>
             <p><strong>Instructor:</strong> ${updateCourse.instructor}</p>
             <p><strong>Prerequisite:</strong> ${updateCourse.prerequisite}</p>
             <p><strong>Enrolled:</strong> ${updateCourse.enrolled} students</p>
+            <p><strong>Status:</strong> ${updateCourse.status}</p>
         </div>
         <div class="button-container">
             <button class="edit-btn">Edit</button>
@@ -181,6 +193,37 @@ document.addEventListener("DOMContentLoaded", function() {
         course.status = status;
         console.log("Course status updated");
     }
+
+    function addCourse() {
+        // Select the single element with the class 'add-course'
+        let addCourseButton = document.querySelector(".add-course");
+    
+        // Check if the button exists before adding the event listener
+        if (addCourseButton) {
+            addCourseButton.addEventListener("click", function() {
+                // Create a new course object when the button is clicked
+                let newCourse = {
+                    name: "",
+                    instructor: "",
+                    prerequisite: "",
+                    enrolled: 0,
+                    category: "",
+                    status: "pending"
+                };
+    
+                // Assuming courseData is an array where courses are stored
+                courseData.push(newCourse);
+    
+                // Call displayCourses function to show the updated course list
+                displayCourses(courseData);
+
+                console.log("add course button clicked");
+            });
+        }
+    }
+
+    addCourse()
+    
 
 
     document.getElementById("searchInput").addEventListener("input", filterCourses);
