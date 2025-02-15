@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     <option value="GENG" ${course.category === 'GENG' ? 'selected' : ''}>General Engineering</option>
                 </select>
             </p>
-            <button id="saveButton">Save</button>
+            <button class="pixel2" id="saveButton">Save</button>
         `;
 
         box.querySelector("#saveButton").addEventListener("click", function() {
@@ -127,9 +127,9 @@ document.addEventListener("DOMContentLoaded", function() {
             <p><strong>Status:</strong> ${updateCourse.status}</p>
         </div>
         <div class="button-container">
-            <button class="edit-btn">Edit</button>
-            ${updateCourse.status === "pending" ? `<button class="validate-btn">Validate</button>` : ""}
-            <button class="delete-btn">Delete</button>
+            <button class="edit-btn pixel2">Edit</button>
+            ${updateCourse.status === "pending" ? `<button class="validate-btn pixel2">Validate</button>` : ""}
+            <button class="delete-btn pixel2">Delete</button>
         </div>
     `;
 
@@ -195,32 +195,71 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function addCourse() {
-        // Select the single element with the class 'add-course'
         let addCourseButton = document.querySelector(".add-course");
     
-        // Check if the button exists before adding the event listener
         if (addCourseButton) {
             addCourseButton.addEventListener("click", function() {
-                // Create a new course object when the button is clicked
-                let newCourse = {
-                    name: "",
-                    instructor: "",
-                    prerequisite: "",
-                    enrolled: 0,
-                    category: "",
-                    status: "pending"
-                };
+                let formContainer = document.createElement("div");
+                formContainer.classList.add("form-container");
+                formContainer.innerHTML = `
+                    <div class="form-box" style="
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background-color: white;
+                        padding: 20px;
+                        border: 2px solid black;
+                        box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+                        border-radius: 10px;
+                        text-align: center;">
+                        <h3>Add New Course</h3>
+                        <div class="form-box-container">
+                        <label style="width:100%; float: left">Name: <input type="text" id="newName" required></label>
+                        <label style="width:100%">Course Number: <input type="number" id="newCourseNum" required></label>
+                        <label style="width:100%">Instructor: <input type="text" id="newInstructor" required></label>
+                        <label style="width:100%">Prerequisite: <input type="text" id="newPrerequisite"></label>
+                        <label style="width:100%">Enrolled: <input type="number" id="newEnrolled" value="0" required></label>
+                        <label style="width:100%">Category:
+                            <select id="newCategory">
+                                <option value="CMPS">Computer Science</option>
+                                <option value="CMPE">Computer Engineering</option>
+                                <option value="MATH">Mathematics</option>
+                                <option value="GENG">General Engineering</option>
+                            </select>
+                        </label>
+                        </div>
+                        <button class="pixel2" id="saveNewCourse">Save</button>
+                        <button class="pixel2" id="cancelNewCourse">Cancel</button>
+                    </div>
+                `;
+                
+                document.body.appendChild(formContainer);
     
-                // Assuming courseData is an array where courses are stored
-                courseData.push(newCourse);
-    
-                // Call displayCourses function to show the updated course list
-                displayCourses(courseData);
-
-                console.log("add course button clicked");
+                document.getElementById("saveNewCourse").addEventListener("click", function() {
+                    let newCourse = {
+                        name: document.getElementById("newName").value,
+                        courseNum: document.getElementById("newCourseNum").value,
+                        instructor: document.getElementById("newInstructor").value,
+                        prerequisite: document.getElementById("newPrerequisite").value,
+                        enrolled: parseInt(document.getElementById("newEnrolled").value),
+                        category: document.getElementById("newCategory").value,
+                        status: "pending"
+                    };
+                    
+                    courseData.push(newCourse);
+                    displayCourses(courseData);
+                    document.body.removeChild(formContainer);
+                });
+                
+                document.getElementById("cancelNewCourse").addEventListener("click", function() {
+                    document.body.removeChild(formContainer);
+                });
             });
         }
     }
+    
+    
 
     addCourse()
     
