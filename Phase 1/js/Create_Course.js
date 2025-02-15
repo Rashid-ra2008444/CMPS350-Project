@@ -71,35 +71,62 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    function editCourse(course , box) {
+    function editCourse(course, box) {
         let courseContent = box.querySelector(".course-content");
-        courseContent.innerHTML=`
-         <input type="text" id="editName" value="${course.name}" />
-        <input type="text" id="editInstructor" value="${course.instructor}" />
-        <input type="text" id="editPrerequisite" value="${course.prerequisite}" />
-        <input type="number" id="editEnrolled" value="${course.enrolled}" />
-        <button onclick="saveCourse('${course.name}', this)">Save</button>
+        courseContent.innerHTML = `
+            <input type="text" id="editName" value="${course.name}" />
+            <input type="text" id="editInstructor" value="${course.instructor}" />
+            <input type="text" id="editPrerequisite" value="${course.prerequisite}" />
+            <input type="number" id="editEnrolled" value="${course.enrolled}" />
+            <button id="saveButton">Save</button>
         `;
+
+        box.querySelector("#saveButton").addEventListener("click", function() {
+            console.log("save button clicked");
+            saveCourse(course.name, box);
+        })
     }
 
     //Need to fix not returning to the original form after saving course
-    function saveCourse(oldName,saveButton) {
-        const box = saveButton.closet(".box");
+    function saveCourse(oldName,box) {
+        let index = courseData.findIndex(course => course.name === oldName);
+
+        if (index === -1) {
+            console.error("Course not found");
+            return;
+        }
 
         let updateCourse = {
             name: box.querySelector("#editName").value,
             instructor: box.querySelector("#editInstructor").value,
             prerequisite: box.querySelector("#editPrerequisite").value,
             enrolled: parseInt(box.querySelector("#editEnrolled").value),
-            status: "pending"
+            category: courseData[index].category,
+            status: courseData[index].status
         };
 
-        let index = courseData.findIndex(course => course.name === oldName);
-        if(index!== -1) {
-            courseData[index] = updateCourse;
-            displayCourses(courseData);
-        }
-        displayCourses(courseData);
+    
+        courseData[index] = updateCourse;
+        
+        box.innerHTML = `
+        <div class="course-content">
+            <h3>${updateCourse.name} (${updateCourse.category})</h3>
+            <p><strong>Instructor:</strong> ${updateCourse.instructor}</p>
+            <p><strong>Prerequisite:</strong> ${updateCourse.prerequisite}</p>
+            <p><strong>Enrolled:</strong> ${updateCourse.enrolled} students</p>
+        </div>
+        <div class="button-container">
+            <button class="edit-btn">Edit</button>
+            ${updateCourse.status === "pending" ? `<button class="validate-btn">Validate</button>` : ""}
+            <button class="delete-btn">Delete</button>
+        </div>
+    `;
+
+    console.log("Box updated back to normal state")
+
+    box.querySelector(".edit-btn").addEventListener("click",() => editCourse(updateCourse,box));
+    box.querySelector(".validate-btn").addEventListener("click",() => validateCourse(updateCourse.name));
+    box.querySelector(".delete-btn").addEventListener("click",() => deleteCourse(updateCourse.name));
     }
 
     function deleteCourse(course) {
