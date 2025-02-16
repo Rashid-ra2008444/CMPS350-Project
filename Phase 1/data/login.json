@@ -1,0 +1,33 @@
+[
+    {
+        "username": "admin",
+        "password": 123,
+        "status": "admin"
+    },
+    {
+        "username": "admin2",
+        "password": 456,
+        "status": "admin"
+    },
+    {
+        "username": "admin3",
+        "password": 789,
+        "status": "admin"
+    },
+    {
+        "username": "Rashid",
+        "password": 2008444,
+        "status": "student"
+    },
+    {
+        "username": "Omer",
+        "password": 2003047,
+        "status": "student"
+    },
+    {
+        "username": "Yousef",
+        "password": 1908807,
+        "status": "student"
+    }
+
+]

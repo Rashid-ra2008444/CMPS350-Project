@@ -49,7 +49,7 @@
 | *Rashid*     | *13-02-2025* | *Creating HTML and CSS files for Use Case 5*                |
 | *Rashid*     | *14-02-2025* | *Many adjusting regarding Use Case 5 also added json file including Courses*                |
 | *Rashid*     | *15-02-2025* | *Almost done with use case 5 the only remaining thing is the Node.js*                |
-| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
+| *yousef*     | *16-2-2025*  | create Javascript in login and data json file  |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
