@@ -268,8 +268,3 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("searchInput").addEventListener("input", filterCourses);
     document.getElementById("courseCategory").addEventListener("change", filterCourses);
 });
-
-
-
-
-   
