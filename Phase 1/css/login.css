@@ -2,18 +2,18 @@
   --base-color: #F2EFE7;
   --base-variant: #c8cddf;
   --text-color: #111528;
-  --secondary-text: #232738;
+  --secondary-text: #dadde5;
   --primary-color: #48A6A7;
   --accent-color: #2973B2;
 }
 
 .darkmode {
-  --base-color: #441752;
-  --base-variant: #8174A0;
+  --base-color: #082032;
+  --base-variant: #2C394B;
   --text-color: #ffffff;
   --secondary-text: #9da0e2;
-  --primary-color: #A888B5;
-  --accent-color: #EFB6C8;
+  --primary-color: #334756;
+  --accent-color: #FF4C29;
 }
 
 * {
@@ -71,7 +71,7 @@ button {
 }
 
 #theme-switch svg {
-  fill: var(--primary-color);
+  fill: var(--accent-color);
 }
 
 #theme-switch svg:last-child {
@@ -142,7 +142,7 @@ h2 {
   margin: 15px;
   border: 1px solid snow;
   border-radius: 8px;
-  background-color: var(--base-variant);
+  background-color: var(--secondary-text);
 
 
 
