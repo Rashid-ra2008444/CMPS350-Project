@@ -46,12 +46,12 @@
 | *yousef*     | *05-02-2025* | *make some javaSecrebt and css login*          |
 | *yousef*     | *11-02-2025* | *Edit in Login *                               |
 | *Omer*       | *10-02-2025* | *Making the css file for course page*          |
-| *Rashid*     | *13-02-2025* | *Creating HTML and CSS files for Use Case 5*                |
-| *Rashid*     | *14-02-2025* | *Many adjusting regarding Use Case 5 also added json file including Courses*                |
-| *Rashid*     | *15-02-2025* | *Almost done with use case 5 the only remaining thing is the Node.js*                |
+| *Rashid*     | *13-02-2025* | *Creating HTML and CSS files for Use Case 5*   |
+| *Rashid*     | *14-02-2025* | *Many adjusting regarding Use Case 5 also added json file including Courses*|
+| *Rashid*     | *15-02-2025* | *Almost done with use case 5 the only remaining thing is the Node.js*|
 | *yousef*     | *16-02-2025*  | create Javascript in login and data json file   |
-| *yousef*     | *09-03-2025* | *updat log in front and elc*                     |
-| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
+| *yousef*     | *09-03-2025* | *update log in front and etc*                     |
+| *Rashid*     | *14-03-2025* | *Update Courses.Json and Create_course now can handle local Storage*|
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
