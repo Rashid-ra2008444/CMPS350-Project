@@ -4,7 +4,8 @@
         "courseNum": 151,
         "instructor": "Zeyad Ali",
         "prerequisite": "none",
-        "enrolled": 50,
+        "enrollment_maximum": 50,
+        "enrollment_actual": 15,
         "category": "CMPS",
         "status": "valid"
     },
@@ -13,7 +14,8 @@
         "courseNum": 251,
         "instructor": "Mohammed Saleh",
         "prerequisite": "Programming Concept",
-        "enrolled": 40 ,
+        "enrollment_maximum": 40 ,
+        "enrollment_actual": 39,
         "category": "CMPS",
         "status": "pending"
     },
@@ -22,7 +24,8 @@
         "courseNum": 101,
         "instructor": "Sahbi Ayari",
         "prerequisite": "none",
-        "enrolled": 60,
+        "enrollment_maximum": 60,
+        "enrollment_actual": 55,
         "category": "MATH",
         "status": "valid"
     },
@@ -31,7 +34,8 @@
         "courseNum": 200,
         "instructor": "Nabeel Ahmed",
         "prerequisite": "Calculus I",
-        "enrolled": 45,
+        "enrollment_maximum": 45,
+        "enrollment_actual": 45,
         "category": "GENG",
         "status": "invalid"
     },
@@ -40,7 +44,8 @@
         "courseNum": 303,
         "instructor": "Saleh Al-Hazbi",
         "prerequisite": "Object-Oriented Programming",
-        "enrolled": 30,
+        "enrollment_maximum": 30,
+        "enrollment_actual": 16,
         "category": "CMPS",
         "status": "pending"
     },
@@ -49,7 +54,8 @@
         "courseNum": 263,
         "instructor": "Mohammed Azeem",
         "prerequisite": "none",
-        "enrolled": 50,
+        "enrollment_maximum": 50,
+        "enrollment_actual": 3,
         "category": "CMPE",
         "status": "valid"
     }

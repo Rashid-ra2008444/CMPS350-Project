@@ -1,17 +1,51 @@
 document.addEventListener("DOMContentLoaded", function() {
     let courseData = [];
+    let resetButtonAdded = false; // Flag to track if reset button has been added
 
-    // reading the json file 
-    fetch("../Phase 1/data/courses.json")
-        .then(response => response.json())
-        .then(courses => {
-            courseData = courses;
+    
+    function loadCourseData() {
+        const storedData = localStorage.getItem('courseData');
+        if (storedData) {
+            return JSON.parse(storedData);
+        } else {
+            
+            return fetch("../Phase 1/data/courses.json")
+                .then(response => response.json())
+                .then(courses => {
+                    
+                    saveCourseData(courses);
+                    return courses;
+                })
+                .catch(error => {
+                    console.error("Error fetching courses data:", error);
+                    return [];
+                });
+        }
+    }
+
+    
+    function saveCourseData(courses) {
+        localStorage.setItem('courseData', JSON.stringify(courses));
+    }
+
+    
+    async function initializeApp() {
+        try {
+            courseData = await loadCourseData();
             displayCourses(courseData);
-        })
-        .catch(error => console.error("Error fetching courses data:", error));
-        // Content of the box
-    function displayCourses(courses) {
+            
+            
+            if (!resetButtonAdded) {
+                addResetButton();
+                resetButtonAdded = true;
+            }
+        } catch (error) {
+            console.error("Error initializing app:", error);
+        }
+    }
 
+    
+    function displayCourses(courses) {
         const pendingCourses = document.getElementById("pendingCourses");
         const validCourses = document.getElementById("validCourses");
         const invalidCourses = document.getElementById("invalidCourses");
@@ -30,7 +64,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 <h3>${course.name} (${course.category} ${course.courseNum})</h3>
                 <p><strong>Instructor:</strong> ${course.instructor}</p>
                 <p><strong>Prerequisite:</strong> ${course.prerequisite}</p>
-                <p><strong>Enrolled:</strong> ${course.enrolled} students</p>
+                <p><strong>Enrollment Maximum:</strong> ${course.enrollment_maximum}</p>
+                <p><strong>Enrollment Actual:</strong> ${course.enrollment_actual}</p>
                 <p><strong>Status:</strong> ${course.status}</p>
             `;
 
@@ -40,21 +75,22 @@ document.addEventListener("DOMContentLoaded", function() {
             if(course.status === "pending") {
                 let editButton = document.createElement("button");
                 editButton.textContent = "Edit";
-                editButton.addEventListener("click", () => editCourse(course , box));
+                editButton.classList.add("pixel2");
+                editButton.addEventListener("click", () => editCourse(course, box));
                 buttonContainer.appendChild(editButton);
 
                 let validateButton = document.createElement("button");
                 validateButton.textContent = "Validate";
+                validateButton.classList.add("pixel2");
                 validateButton.addEventListener("click", () => validateCourse(course.name, box));
                 buttonContainer.appendChild(validateButton);
             }
 
             let deleteButton = document.createElement("button");
             deleteButton.textContent = "Delete";
+            deleteButton.classList.add("pixel2");
             deleteButton.addEventListener("click", () => deleteCourse(course, box));
             buttonContainer.appendChild(deleteButton);
-
-            
 
             box.appendChild(courseContent);
             box.appendChild(buttonContainer);
@@ -78,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <p>Course Number<input type="number" id="editCourseNum" value="${course.courseNum}" /></p>
             <p>Instructor<input type="text" id="editInstructor" value="${course.instructor}" /></p>
             <p>Prerequisite<input type="text" id="editPrerequisite" value="${course.prerequisite}" /></p>
-            <p>Enrolled<input type="number" id="editEnrolled" value="${course.enrolled}" /></p>
+            <p>Enrolled<input type="number" id="editEnrolled" value="${course.enrollment_maximum}" /></p>
             <p>Category
                 <select id="editCategory">
                     <option value="all" ${course.category === 'all' ? 'selected' : ''}>All Category</option>
@@ -94,10 +130,10 @@ document.addEventListener("DOMContentLoaded", function() {
         box.querySelector("#saveButton").addEventListener("click", function() {
             console.log("save button clicked");
             saveCourse(course.name, box);
-        })
+        });
     }
 
-    function saveCourse(oldName,box) {
+    function saveCourse(oldName, box) {
         let index = courseData.findIndex(course => course.name === oldName);
 
         if (index === -1) {
@@ -110,20 +146,24 @@ document.addEventListener("DOMContentLoaded", function() {
             courseNum: box.querySelector("#editCourseNum").value,
             instructor: box.querySelector("#editInstructor").value,
             prerequisite: box.querySelector("#editPrerequisite").value,
-            enrolled: parseInt(box.querySelector("#editEnrolled").value),
+            enrollment_maximum: parseInt(box.querySelector("#editEnrolled").value),
+            enrollment_actual: courseData[index].enrollment_actual,
             category: box.querySelector("#editCategory").value,
             status: courseData[index].status
         };
 
-    
         courseData[index] = updateCourse;
+        
+        
+        saveCourseData(courseData);
         
         box.innerHTML = `
         <div class="course-content">
             <h3>${updateCourse.name} (${updateCourse.category} ${updateCourse.courseNum})</h3>
             <p><strong>Instructor:</strong> ${updateCourse.instructor}</p>
             <p><strong>Prerequisite:</strong> ${updateCourse.prerequisite}</p>
-            <p><strong>Enrolled:</strong> ${updateCourse.enrolled} students</p>
+            <p><strong>Enrollment Maximum:</strong> ${updateCourse.enrollment_maximum}</p>
+            <p><strong>Enrollment Actual:</strong> ${updateCourse.enrollment_actual}</p>
             <p><strong>Status:</strong> ${updateCourse.status}</p>
         </div>
         <div class="button-container">
@@ -131,21 +171,25 @@ document.addEventListener("DOMContentLoaded", function() {
             ${updateCourse.status === "pending" ? `<button class="validate-btn pixel2">Validate</button>` : ""}
             <button class="delete-btn pixel2">Delete</button>
         </div>
-    `;
+        `;
 
-    console.log("Box updated back to normal state")
+        console.log("Box updated back to normal state");
 
-    box.querySelector(".edit-btn").addEventListener("click",() => editCourse(updateCourse,box));
-    box.querySelector(".validate-btn").addEventListener("click",() => validateCourse(updateCourse.name ,box));
-    box.querySelector(".delete-btn").addEventListener("click",() => deleteCourse(updateCourse.name ,box));
+        box.querySelector(".edit-btn").addEventListener("click", () => editCourse(updateCourse, box));
+        if (updateCourse.status === "pending") {
+            box.querySelector(".validate-btn").addEventListener("click", () => validateCourse(updateCourse.name, box));
+        }
+        box.querySelector(".delete-btn").addEventListener("click", () => deleteCourse(updateCourse, box));
     }
 
     function deleteCourse(course) {
         courseData = courseData.filter(c => c.name !== course.name);
+        
+        saveCourseData(courseData);
         displayCourses(courseData);
     }
 
-   //filter function
+    // Filter function
     function filterCourses() {
         const searchValue = document.getElementById("searchInput").value.toLowerCase();
         const categoryValue = document.getElementById("courseCategory").value;
@@ -158,27 +202,27 @@ document.addEventListener("DOMContentLoaded", function() {
         displayCourses(filteredCourses);
     }
     
-    function validateCourse(courseName ,box) {
+    function validateCourse(courseName, box) {
         let course = courseData.find(course => course.name === courseName);
 
         if(course === undefined) {
             console.error("Course not found");
             return;
         }
-        box.innerHTML =`
+        box.innerHTML = `
         <div class="course-content"> 
-        <button class="valid-btn">Valid</button>
-        <button class="invalid-btn">Invalid</button>
+            <button class="valid-btn pixel2">Valid</button>
+            <button class="invalid-btn pixel2">Invalid</button>
         </div>
         `;
 
         box.querySelector(".valid-btn").addEventListener("click", () => {
-            updateCourseStatus(courseName,"valid");
+            updateCourseStatus(courseName, "valid");
             console.log("Course status updated to valid");
             displayCourses(courseData);
         });
         box.querySelector(".invalid-btn").addEventListener("click", () => {
-            updateCourseStatus(courseName,"invalid");
+            updateCourseStatus(courseName, "invalid");
             console.log("Course status updated to invalid");
             displayCourses(courseData);
         });
@@ -191,6 +235,8 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
         course.status = status;
+        
+        saveCourseData(courseData);
         console.log("Course status updated");
     }
 
@@ -241,13 +287,16 @@ document.addEventListener("DOMContentLoaded", function() {
                         name: document.getElementById("newName").value,
                         courseNum: document.getElementById("newCourseNum").value,
                         instructor: document.getElementById("newInstructor").value,
-                        prerequisite: document.getElementById("newPrerequisite").value,
-                        enrolled: parseInt(document.getElementById("newEnrolled").value),
+                        prerequisite: document.getElementById("newPrerequisite").value || "None",
+                        enrollment_maximum: parseInt(document.getElementById("newEnrolled").value),
+                        enrollment_actual: 0,
                         category: document.getElementById("newCategory").value,
                         status: "pending"
                     };
                     
                     courseData.push(newCourse);
+                    
+                    saveCourseData(courseData);
                     displayCourses(courseData);
                     document.body.removeChild(formContainer);
                 });
@@ -258,12 +307,49 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         }
     }
-    
-    
 
-    addCourse()
     
-
+    function addResetButton() {
+        const sidebar = document.querySelector(".sidebar nav");
+        
+        if (sidebar) {
+           
+            const resetButton = document.createElement("button");
+            resetButton.textContent = "Reset Data";
+            resetButton.classList.add("pixel2");
+            resetButton.id = "resetDataButton";
+            resetButton.style.marginTop = "10px";
+            
+            resetButton.addEventListener("click", function() {
+                if (confirm("Are you sure you want to reset all course data? This will reload data from the original JSON file.")) {
+                    localStorage.removeItem('courseData');
+                    
+                    loadFreshData();
+                }
+            });
+            
+            sidebar.appendChild(resetButton);
+        }
+    }
+    
+    
+    async function loadFreshData() {
+        try {
+            courseData = await fetch("../Phase 1/data/courses.json")
+                .then(response => response.json())
+                .then(courses => {
+                    saveCourseData(courses);
+                    return courses;
+                });
+            displayCourses(courseData);
+        } catch (error) {
+            console.error("Error loading fresh data:", error);
+        }
+    }
+    
+    
+    initializeApp();
+    addCourse();
 
     document.getElementById("searchInput").addEventListener("input", filterCourses);
     document.getElementById("courseCategory").addEventListener("change", filterCourses);
