@@ -52,7 +52,7 @@
 | *yousef*     | *16-02-2025*  | create Javascript in login and data json file   |
 | *yousef*     | *09-03-2025* | *update log in front and etc*                     |
 | *Rashid*     | *14-03-2025* | *Update Courses.Json and Create_course now can handle local Storage*|
-| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
+| *Rashid*     | *16-3-2025* | *Added Use Case 6 and adjusting codes and add new json file also adjusting login json file*|
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
 
