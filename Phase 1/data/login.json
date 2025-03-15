@@ -28,6 +28,22 @@
         "username": "Yousef",
         "password": 1908807,
         "status": "student"
+    },
+    {
+        "username": "Zeyad Ali",
+        "password": 111,
+        "status": "instructor"
+    },
+    {
+        "username": "Mohammed Saleh",
+        "password": 222,
+        "status": "instructor"
+    },
+    {
+        "username": "Saleh Al-Hazbi",
+        "password": 333,
+        "status": "instructor"
     }
+
 
 ]

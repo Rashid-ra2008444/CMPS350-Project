@@ -1,0 +1,42 @@
+[
+    {
+      "studentId": "2008444",
+      "studentName": "Rashid",
+      "courseNum": 151,
+      "instructor": "Zeyad Ali",
+      "enrollmentDate": "2024-01-15",
+      "grade": null
+    },
+    {
+      "studentId": "2003047",
+      "studentName": "Omer",
+      "courseNum": 151,
+      "instructor": "Zeyad Ali",
+      "enrollmentDate": "2024-01-15",
+      "grade": null
+    },
+    {
+      "studentId": "1908807",
+      "studentName": "Yousef",
+      "courseNum": 151,
+      "instructor": "Zeyad Ali",
+      "enrollmentDate": "2024-01-16",
+      "grade": null
+    },
+    {
+      "studentId": "2008444",
+      "studentName": "Rashid",
+      "courseNum": 263,
+      "instructor": "Mohammed Azeem",
+      "enrollmentDate": "2024-01-17",
+      "grade": null
+    },
+    {
+      "studentId": "2003047",
+      "studentName": "Omer",
+      "courseNum": 263,
+      "instructor": "Mohammed Azeem",
+      "enrollmentDate": "2024-01-17",
+      "grade": null
+    }
+  ]
