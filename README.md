@@ -48,14 +48,21 @@
 | *Omer*       | *10-02-2025* | *Making the css file for course page*          |
 | *Rashid*     | *13-02-2025* | *Creating HTML and CSS files for Use Case 5*   |
 | *Rashid*     | *14-02-2025* | *Many adjusting regarding Use Case 5 also added json file including Courses*|
-| *Rashid*     | *15-02-2025* | *Almost done with use case 5 the only remaining thing is the Node.js*|
+| *Rashid*     | *15-02-2025* | *Almost done with use case 5 *|
 | *yousef*     | *16-02-2025*  | create Javascript in login and data json file   |
 | *yousef*     | *09-03-2025* | *update log in front and etc*                     |
 | *Rashid*     | *14-03-2025* | *Update Courses.Json and Create_course now can handle local Storage*|
-| *Rashid*     | *16-3-2025* | *Added Use Case 6 and adjusting codes and add new json file also adjusting login json file*|
+| *Rashid*     | *16-03-2025* | *Added Use Case 6 and adjusting codes and add new json file also adjusting login json file*|
+| *yousef*       | *18-03-2025* | *add the Use Case 4  html and css for learning path*                |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
-
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
 ---
 
 ## References
