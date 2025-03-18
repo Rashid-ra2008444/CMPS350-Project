@@ -53,8 +53,8 @@
 | *yousef*     | *09-03-2025* | *update log in front and etc*                     |
 | *Rashid*     | *14-03-2025* | *Update Courses.Json and Create_course now can handle local Storage*|
 | *Rashid*     | *16-03-2025* | *Added Use Case 6 and adjusting codes and add new json file also adjusting login json file*|
-| *yousef*       | *18-03-2025* | *add the Use Case 4  html and css for learning path*                |
-| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
+| *yousef*     | *18-03-2025* | *add the Use Case 4  html and css for learning path*|
+| *Rashid*     | *18-03-2025* | *Done with Use Case 6 , modified the design , changed the coloring in the login*|
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
