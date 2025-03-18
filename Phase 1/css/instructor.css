@@ -1,63 +1,260 @@
-.class-card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px;
+/* General styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 1.1rem;
+}
+
+body {
+    display: flex;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+/* Sidebar styles */
+.sidebar {
+    width: 250px;
+    background-color: #fff;
+    border: 6px double black; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    min-height: 100vh;
+}
+
+.sidebar img {
+    width: 150px; 
     margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.sidebar button, .sidebar input, .sidebar select {
+    background-color: white;
+    border: 4px double black;
+    font-weight: bold;
+    padding: 10px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.sidebar button:hover {
+    background-color: black;
+    color: white;
+}
+
+/* Main content styles */
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    width: 98%;
+    padding: 2px 28px;
+    justify-self: center;
+}
+
+.banner {
+    width: 100%;
+    padding: 1.3rem;
+    border: 4px double black;
+    background: white;
+    font-weight: bold;
+}
+
+.course-box {
+    width: 100%;
+    background: white;
+    border: 4px double black; 
+    padding: 20px;
+    text-align: left;
+}
+
+.container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border: 4px double black;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.title {
+    font-family: 'Press Start 2P', cursive;
+}
+
+/* Classes page specific styles */
+.class-card {
+    border: 3px solid black;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    background-color: wheat;
+    transition: all 0.3s ease-in-out;
+    margin-bottom: 20px;
+}
+
+.class-card:nth-child(odd) {
+    background-color: wheat;
+}
+
+.class-card:nth-child(even) {
+    background-color: lightgray;
+}
+
+.class-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.view-grades-btn {
+    background-color: white;
+    border: 3px solid black;
+    font-weight: bold;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.view-grades-btn:hover {
+    background-color: black;
+    color: white;
+}
+
+.view-grades-btn:active {
+    transform: translateY(2px);
+}
+
+/* Grading page specific styles */
+.page-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.back-btn {
+    background-color: white;
+    border: 3px solid black;
+    font-weight: bold;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-right: 20px;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background-color: black;
+    color: white;
+}
+
+.back-btn:active {
+    transform: translateY(2px);
+}
+
+.course-details {
+    background-color: white;
+    padding: 15px;
+    border: 3px solid black;
+    margin-bottom: 20px;
 }
 
 .student-list {
     margin-top: 15px;
 }
-
+#classes-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(550px, 1fr));
+    gap: 10px;
+}
 .student-item {
     display: flex;
     align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #eee;
+    justify-content: space-between;
+    padding: 12px;
+    border-bottom: 3px solid black;
 }
 
 .grade-input {
-    width: 60px;
-    margin-left: 10px;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    width: 70px;
+    padding: 8px;
+    border: 3px solid black;
+    text-align: center;
 }
 
 .submit-btn {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 4px;
+    background-color: white;
+    border: 3px solid black;
+    font-weight: bold;
+    padding: 10px 20px;
     cursor: pointer;
-    margin-top: 15px;
+    margin-top: 20px;
+    transition: all 0.3s ease;
 }
 
 .submit-btn:hover {
-    background-color: #45a049;
+    background-color: black;
+    color: white;
+}
+
+.submit-btn:active {
+    transform: translateY(2px);
 }
 
 .success-message {
     color: green;
+    font-weight: bold;
     margin-top: 10px;
     display: none;
 }
 
 .status-valid {
     color: green;
+    font-weight: bold;
 }
 
 .status-pending {
     color: orange;
+    font-weight: bold;
 }
 
 .status-invalid {
     color: red;
+    font-weight: bold;
 }
 
+footer {
+    text-align: center;
+    width: 100%;
+    padding: 1.3rem;
+    border: 4px double black;
+    background: white;
+    font-weight: bold;
+}
+
+/* Responsive design */
 @media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        min-height: auto;
+        padding-bottom: 0;
+    }
+    
     .class-card {
         padding: 10px;
     }
@@ -68,7 +265,16 @@
     }
     
     .grade-input {
-        margin-left: 0;
-        margin-top: 5px;
+        margin-top: 8px;
+        width: 100%;
+    }
+    
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .back-btn {
+        margin-bottom: 10px;
     }
 }

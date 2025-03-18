@@ -14,7 +14,7 @@
         "courseNum": 251,
         "instructor": "Mohammed Saleh",
         "prerequisite": "Programming Concept",
-        "enrollment_maximum": 40 ,
+        "enrollment_maximum": 40,
         "enrollment_actual": 39,
         "category": "CMPS",
         "status": "pending"
@@ -57,6 +57,36 @@
         "enrollment_maximum": 50,
         "enrollment_actual": 3,
         "category": "CMPE",
+        "status": "valid"
+    },
+    {
+        "name": "Web Development Fundamentals",
+        "courseNum": 350,
+        "instructor": "Zeyad Ali",
+        "prerequisite": "Programming Concept",
+        "enrollment_maximum": 40,
+        "enrollment_actual": 25,
+        "category": "CMPS",
+        "status": "valid"
+    },
+    {
+        "name": "Data Communication and Computer Networks I",
+        "courseNum": 355,
+        "instructor": "Zeyad Ali",
+        "prerequisite": "Object-Oriented Programming",
+        "enrollment_maximum": 35,
+        "enrollment_actual": 18,
+        "category": "CMPE",
+        "status": "pending"
+    },
+    {
+        "name": "Fundamentals of Database Systems",
+        "courseNum": 351,
+        "instructor": "Zeyad Ali",
+        "prerequisite": "Data Structure",
+        "enrollment_maximum": 45,
+        "enrollment_actual": 30,
+        "category": "CMPS",
         "status": "valid"
     }
 ]

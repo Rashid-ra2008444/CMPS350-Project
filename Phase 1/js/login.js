@@ -56,7 +56,7 @@ async function login(event) {
             } else if (user.status === "student") {
                 window.location.href = "Coursepage.html";
             } else if (user.status === "instructor") {
-                window.location.href = "instructor.html";
+                window.location.href = "instructor_classes.html";
             } else {
                 errorMessageElement.textContent = "❌ Unknown user status";
                 errorMessageElement.style.color = "red";
