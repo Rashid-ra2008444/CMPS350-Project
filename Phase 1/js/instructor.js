@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     if (!currentUser || currentUser.status !== 'instructor') {
         // Redirect to login if not an instructor
-        window.location.href = '../Phase 1/login.html';
+        window.location.href = 'login.html';
         return;
     }
     
@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('logout').addEventListener('click', function(e) {
         e.preventDefault();
         localStorage.removeItem('currentUser');
-        window.location.href = '../Phase 1/login.html';
+        window.location.href = 'login.html';
     });
     
     // Load instructor's classes
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function() {
 async function loadInstructorClasses(instructorName) {
     try {
         // Fix paths - use relative paths
-        const coursesResponse = await fetch("../Phase 1/data/courses.json");
+        const coursesResponse = await fetch("data/courses.json");
         const coursesData = await coursesResponse.json();
         
         // Try to load enrollments from localStorage first, then from file if not available
@@ -36,7 +36,7 @@ async function loadInstructorClasses(instructorName) {
             enrollmentsData = JSON.parse(localEnrollments);
         } else {
             try {
-                const studentsResponse = await fetch("../Phase 1/data/enrollment.json");
+                const studentsResponse = await fetch("data/enrollment.json");
                 enrollmentsData = await studentsResponse.json();
                 // Store in localStorage for future use
                 localStorage.setItem('enrollment', JSON.stringify(enrollmentsData));

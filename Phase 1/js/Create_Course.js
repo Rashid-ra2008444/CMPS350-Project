@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return JSON.parse(storedData);
         } else {
             
-            return fetch("../Phase 1/data/courses.json")
+            return fetch("data/courses.json")
                 .then(response => response.json())
                 .then(courses => {
                     
