@@ -12,6 +12,14 @@
     <script src="js/Coursepage.js"></script>
   </head>
   <body>
+    <div class="sidebar">
+      <h2 class="title">Qatar University</h2>
+      <nav class="nav">
+        <button class="Coursepage">Courses</button>
+        <button class="plan">Study plan</button>
+        <button id="logout">Logout</button>
+      </nav>
+    </div>
     <main>
       <section class="banner">
         <h1 class="title">Welcome Student</h1>
@@ -19,6 +27,7 @@
       </section>
       <div class="course-box">
         <h2>Courses</h2>
+        <input type="text" id="searchInput" placeholder="Course Name" />
         <div id="validCourses"></div>
       </div>
       <footer class="banner">
@@ -26,24 +35,5 @@
         Work 2025. All rights reserved
       </footer>
     </main>
-
-    <!-- <h1>
-      Show courses for the student
-      <i class="fa-solid fa-right-from-bracket" id="icon-button"></i>
-    </h1> -->
-    <!-- <hr />
-    <div class="Container">
-      <div class="box"></div>
-      <div class="box"></div>
-      <div class="box"></div>
-      <div class="box"></div>
-      <div class="box"></div>
-      <div class="box"></div>
-      <div class="box"></div>
-      <div class="box"></div>
-    </div>
-    <button id="sub">Show Student Courses</button>
-    <button id="teacher">Show Teacher Courses</button>
-    <button id="testBtn">Test function</button> -->
   </body>
 </html>

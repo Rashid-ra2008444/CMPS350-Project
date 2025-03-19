@@ -1,12 +1,16 @@
-body{
-    /* margin:0; */
-    padding-left:1px;
-    font-family: sans-serif;
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    /* Stack elements vertically */
+    align-items: center;
+    /* Center align */
+    gap: 0.4rem;
+    width: 98%;
+    padding: 2px 28px;
+    justify-self: center;
 }
-html,body{height:100vh}
-.title {
-    font-family: 'Press Start 2P', cursive;
-}
+
 .banner {
 
     width: 100%;
@@ -16,6 +20,7 @@ html,body{height:100vh}
     font-weight: bold;
 
 }
+
 .course-box {
     width: 100%;
 
@@ -24,7 +29,22 @@ html,body{height:100vh}
     padding: 20px;
     text-align: left;
 }
-/* course boxes */
+
+/* Parent containers */
+#validCourses {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    /* Responsive grid */
+    gap: 1rem;
+    /* Spacing between boxes */
+    width: 100%;
+    margin: 0 auto;
+    /* Centers the grid */
+    padding: 0.5rem;
+    outline:2px solid black;
+}
+
+/* Course Boxes */
 .box {
     border: 3px solid black;
     padding: 1rem;
@@ -34,6 +54,7 @@ html,body{height:100vh}
     background-color: wheat;
     transition: all 0.3s ease-in-out;
 }
+
 /* Alternate colors for boxes */
 .box:nth-child(odd) {
     background-color: wheat;
@@ -43,49 +64,139 @@ html,body{height:100vh}
     background-color: lightgray;
 }
 
-/* hr {
-    border: none;
-    border-top: 3px solid black;
-}
-#icon-button:hover {
-    background-color: whitesmoke;
-    transform: scale(1.1); /* Slightly enlarges 
+/* Responsive behavior */
+@media (max-width: 768px) {
+
+    #invalidCourses,
+    #pendingCourses,
+    #validCourses {
+        grid-template-columns: repeat(auto-fill, minmax(15rem, 20fr));
+
+    }
+
+    .form-box-container {
+        grid-template-columns: 1fr;
+    }
 }
 
-#icon-button:active {
-    transform: scale(0.95); /* Click effect 
-}
-h1 {
+.button-container {
+    margin-top: auto;
     display: flex;
-    justify-content: space-between; /* Pushes elements to opposite sides 
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.column {
+    flex: 1;
+    padding: 1rem;
+    border: 2px solid black;
+    background-color: white;
+}
+
+.form-box-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+label {
+    display: flex;
     align-items: center;
     width: 100%;
-}
-.Container{
-    position: relative;
-    width:99%;
-    height:80vh;
-    border:solid red;
-    display:grid;
-    grid-template-columns: repeat(4, 1fr);
-    align-items: center;
-    flex-wrap:wrap;
-}
-.box{
-    width:250px;
-    height:200px;
-    background-color:whitesmoke;
-    margin:3px;
-    display:flex;
-    border-radius: 10px; /* Optional: rounded corners 
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    gap: 0.5rem;
 }
 
-.box:hover {
-    transform: scale(1.1); /* Makes it pop up 
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2); /* Adds depth 
-}  */
+input,
+select {
+    flex: 1;
+    min-width: 0;
+}
+
+.title {
+    font-family: 'Press Start 2P', cursive;
+}
+
+body {
+    display: flex;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+
+.sidebar {
+    width: 250px;
+    background-color: #fff;
+    border: 6px double black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    min-height: 100vh;
+    /* gap:1rem; */
+}
+
+.nav{
+    gap:1rem;
+}
+
+.sidebar img {
+    width: 150px;
+    margin-bottom: 20px;
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+}
+
+
+
+.sidebar button,
+.sidebar input,
+.sidebar select {
+    background-color: white;
+    border: 4px double black;
+    font-weight: bold;
+    padding: 10px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.sidebar button:hover {
+    background-color: black;
+    color: white;
+}
+
+
+* {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 1.1rem;
+}
+
+.add-course {
+    background-color: white;
+    border: 3px solid black;
+    font-weight: bold;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.add-course:active {
+    transform: translateY(2px);
+}
+
+
+.column {
+    border: 6px double black;
+    padding: 10px;
+    margin: 10px;
+    background: white;
+}
 
 footer {
     text-align: center;
