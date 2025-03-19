@@ -22,12 +22,18 @@
     </div>
     <main>
       <section class="banner">
-        <h1 class="title">Welcome Student</h1>
+        <h1 class="title">Welcome <span id="student-name"></span></h1>
         <!-- <h2>Creating & Validation Courses</h2> -->
       </section>
       <div class="course-box">
         <h2>Courses</h2>
         <input type="text" id="searchInput" placeholder="Course Name" />
+        <select id="subjectSelect">
+            <option value="All">All</option>
+            <option value="MATH">MATH</option>
+            <option value="CMPS">CMPS</option>
+            <option value="CMPE">CMPE</option>
+        </select>
         <div id="validCourses"></div>
       </div>
       <footer class="banner">
