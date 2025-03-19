@@ -11,6 +11,15 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
+    document.getElementById('student-name').textContent = currentUser.username;
+    document.getElementById("searchInput").addEventListener("input", filterCourses);
+    
+    document.getElementById('logout').addEventListener('click', function (e) {
+        e.preventDefault();
+        localStorage.removeItem('currentUser');
+        window.location.href = 'login.html';
+    });
+
     loadStudentClasses(currentUser);
 
 });
@@ -84,6 +93,10 @@ async function loadStudentClasses(currentUser) {
         //     '<p>Error loading courses. Please try again later.</p>';
     }
 };
+
+async function filterCourses(){
+    
+}
 // function showBoxes(userType) {
 //     let boxes = document.querySelectorAll('.box');
 //     boxes.forEach(box => box.style.display = 'none')
