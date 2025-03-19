@@ -23,6 +23,12 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
+    document.getElementById('logout').addEventListener('click', function(e) {
+        e.preventDefault();
+        localStorage.removeItem('currentUser');
+        window.location.href = 'login.html';
+    });
+
     
     function saveCourseData(courses) {
         localStorage.setItem('courseData', JSON.stringify(courses));
