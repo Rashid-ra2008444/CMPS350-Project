@@ -19,6 +19,15 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.removeItem('currentUser');
         window.location.href = 'login.html';
     });
+
+
+        // Add navigation to learning path when study plan button is clicked
+    document.querySelector('.plan').addEventListener('click', function(e) {
+        e.preventDefault();
+        window.location.href = 'LearningPath.html';
+    });
+
+
     loadStudentClasses(currentUser);
 
     document.querySelector('#searchInput').addEventListener("input",()=>{

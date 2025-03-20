@@ -1,72 +1,78 @@
 // Global variables to store data
 let coursesData = [];
 let enrollmentData = [];
-let loginData = [];
 let currentStudent = null;
 
 // On page load, fetch all necessary data
 document.addEventListener('DOMContentLoaded', async function() {
     try {
-        // Load all data
-        await loadAllData();
-        
         // Check for logged in user from localStorage
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         
-        if (currentUser && currentUser.status === 'student') {
-            // If a student is logged in, display their learning path
-            loadStudentLearningPath(currentUser.username, currentUser.password.toString());
-        } else {
-            // For development testing, load Rashid's learning path
-            // In production, you might want to redirect to login page
-            loadStudentLearningPath('Rashid', '2008444');
-            
-            // Redirect to login page if needed
-            // window.location.href = 'login.html';
+        if (!currentUser || currentUser.status !== 'student') {
+            // Redirect to login if not a student
+            window.location.href = 'login.html';
+            return;
         }
+        
+        // Load all data then initialize the student's learning path
+        await loadAllData();
+        
+        // Load the learning path for the current student
+        const studentId = currentUser.password.toString();
+        loadStudentLearningPath(currentUser.username, studentId);
+        
+        // Add navigation buttons
+        addNavigationToLearningPath();
+        
     } catch (error) {
         console.error('Error initializing application:', error);
+        alert('Error loading data. Please try again.');
     }
 });
 
-// Load all data from JSON files
+// Load all necessary data from JSON files or localStorage
 async function loadAllData() {
     try {
-        // Fetch courses data
+        // 1. Load courses data
         const coursesResponse = await fetch('data/courses.json');
         coursesData = await coursesResponse.json();
         
-        // Fetch enrollment data - check localStorage first (for instructor updates)
+        // 2. Load enrollment data - either from localStorage or from JSON file
         const localEnrollments = localStorage.getItem('enrollment');
+        
         if (localEnrollments) {
             enrollmentData = JSON.parse(localEnrollments);
         } else {
             const enrollmentResponse = await fetch('data/enrollment.json');
             enrollmentData = await enrollmentResponse.json();
-            
-            // Store in localStorage for later use
             localStorage.setItem('enrollment', JSON.stringify(enrollmentData));
         }
         
-        // Fetch login data
-        const loginResponse = await fetch('data/login.json');
-        loginData = await loginResponse.json();
-        
         console.log('All data loaded successfully');
+        return true;
     } catch (error) {
         console.error('Error loading data:', error);
-        throw error;
+        return false;
     }
 }
 
 // Load learning path for a specific student
 function loadStudentLearningPath(username, studentId) {
-    // Find student in enrollment data
+    console.log(`Loading learning path for: ${username} (ID: ${studentId})`);
+    
+    // Find student enrollments
     const studentEnrollments = enrollmentData.filter(enrollment => 
-        enrollment.studentName === username && enrollment.studentId === studentId.toString());
+        enrollment.studentName === username);
     
     if (studentEnrollments.length === 0) {
-        console.error('No enrollment data found for this student');
+        console.error('No enrollment data found for student:', username);
+        document.querySelector('#completed-courses tbody').innerHTML = 
+            '<tr><td colspan="4">No enrollment data found for this student</td></tr>';
+        document.querySelector('#in-progress-courses tbody').innerHTML = 
+            '<tr><td colspan="4">No enrollment data found for this student</td></tr>';
+        document.querySelector('#pending-courses tbody').innerHTML = 
+            '<tr><td colspan="4">No enrollment data found for this student</td></tr>';
         return;
     }
     
@@ -91,6 +97,8 @@ function processCourses(studentEnrollments) {
     document.querySelector('#in-progress-courses tbody').innerHTML = '';
     document.querySelector('#pending-courses tbody').innerHTML = '';
     
+    console.log(`Processing ${studentEnrollments.length} enrollments`);
+    
     // Track counts for each category
     let completedCount = 0;
     let inProgressCount = 0;
@@ -111,16 +119,20 @@ function processCourses(studentEnrollments) {
             // Completed course
             addCompletedCourse(course, enrollment);
             completedCount++;
+            console.log(`Added completed course: ${course.name} with grade ${enrollment.grade}`);
         } else {
             // Course is in-progress
             addInProgressCourse(course, enrollment);
             inProgressCount++;
+            console.log(`Added in-progress course: ${course.name}`);
         }
     });
     
     // Add pending courses (courses that have prerequisites satisfied but not enrolled)
     const pendingCoursesAdded = addPendingCourses(studentEnrollments);
     pendingCount = pendingCoursesAdded;
+    
+    console.log(`Learning path processed: ${completedCount} completed, ${inProgressCount} in-progress, ${pendingCount} pending`);
     
     // Handle empty tables
     if (completedCount === 0) {
@@ -203,7 +215,7 @@ function addPendingCourses(studentEnrollments) {
         
         // Check if prerequisites are met
         let prerequisitesMet = true;
-        if (course.prerequisite && course.prerequisite !== 'none') {
+        if (course.prerequisite && course.prerequisite !== 'none' && course.prerequisite !== 'None') {
             // Check if the student has completed the prerequisite course
             prerequisitesMet = completedCourses.includes(course.prerequisite);
         }
@@ -255,6 +267,8 @@ function addEmptyTableMessage(tableId) {
 
 // Helper function to get the appropriate CSS class for a grade
 function getGradeClass(grade) {
+    if (!grade) return '';
+    
     // Convert grade to uppercase to handle case differences
     const upperGrade = grade.toUpperCase();
     
@@ -323,8 +337,3 @@ function addNavigationToLearningPath() {
         header.appendChild(navContainer);
     }
 }
-
-// Call this function after DOM content is loaded to add navigation buttons
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(addNavigationToLearningPath, 100); // Add delay to ensure DOM is fully loaded
-});
