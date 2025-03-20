@@ -26,6 +26,11 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
         window.location.href = 'LearningPath.html';
     });
+        // Add navigation to Registration when Register courses button is cliked
+    document.querySelector('.Register').addEventListener('click',function(e){
+        e.preventDefault();
+        window.location.href = 'Registration.html';
+    })
 
 
     loadStudentClasses(currentUser);
