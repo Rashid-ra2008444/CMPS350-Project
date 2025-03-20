@@ -26,14 +26,16 @@
         <!-- <h2>Creating & Validation Courses</h2> -->
       </section>
       <div class="course-box">
-        <h2>Courses</h2>
-        <input type="text" id="searchInput" placeholder="Course Name" />
-        <select id="subjectSelect">
-            <option value="All">All</option>
-            <option value="MATH">MATH</option>
-            <option value="CMPS">CMPS</option>
-            <option value="CMPE">CMPE</option>
-        </select>
+        <div class="search-bar">
+            <h2>Courses</h2>
+            <input type="text" id="searchInput" placeholder="Course Name" />
+            <select id="subjectSelect">
+                <option value="All" selected>All</option>
+                <option value="MATH">MATH</option>
+                <option value="CMPS">CMPS</option>
+                <option value="CMPE">CMPE</option>
+            </select>
+        </div>
         <div id="validCourses"></div>
       </div>
       <footer class="banner">

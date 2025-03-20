@@ -23,12 +23,34 @@ main {
 
 .course-box {
     width: 100%;
-
     background: white;
     border: 4px double black;
     padding: 20px;
     text-align: left;
 }
+
+.course-box h2{
+    font-size: 1.4rem;
+}
+
+.search-bar{
+    display:flex;
+    align-items: center;
+    gap:1rem;
+}
+
+#searchInput,
+#subjectSelect {
+    /* Control overall width so it doesn't span full container */
+    width: 200px;
+    /* Increase padding for a bigger feel (height) */
+    padding: 0.5rem;
+    /* (Optional) Increase font size if you want them to appear larger */
+    font-size: 1rem;
+    /* Ensure box-sizing includes padding in total width/height calculation */
+    box-sizing: border-box;
+}
+
 
 /* Parent containers */
 #validCourses {
@@ -41,11 +63,11 @@ main {
     margin: 0 auto;
     /* Centers the grid */
     padding: 0.5rem;
-    outline:2px solid black;
+    /* outline:2px solid black; */
 }
 
 /* Course Boxes */
-.box {
+.class-card {
     border: 3px solid black;
     padding: 1rem;
     display: flex;
@@ -56,19 +78,22 @@ main {
 }
 
 /* Alternate colors for boxes */
-.box:nth-child(odd) {
+.class-card:nth-child(odd) {
     background-color: wheat;
 }
 
-.box:nth-child(even) {
+.class-card:nth-child(even) {
     background-color: lightgray;
+}
+
+.class-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Responsive behavior */
 @media (max-width: 768px) {
 
-    #invalidCourses,
-    #pendingCourses,
     #validCourses {
         grid-template-columns: repeat(auto-fill, minmax(15rem, 20fr));
 
