@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById('student-name').textContent = currentUser.username;
     
+    
     document.getElementById('logout').addEventListener('click', function (e) {
         e.preventDefault();
         localStorage.removeItem('currentUser');
@@ -20,9 +21,40 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     loadStudentClasses(currentUser);
 
+    document.querySelector('#searchInput').addEventListener("input",()=>{
+        const searchValue = document.querySelector('#searchInput').value;
+        const filteredCourses = matchedCourses.filter(course =>
+            course.name.toLowerCase().includes(searchValue) ||
+            course.category.toLowerCase().includes(searchValue));
+        const courseBox = document.querySelector('#validCourses');
+
+        courseBox.innerHTML = '';
+
+        if (matchedCourses.length === 0) {
+            courseBox.innerHTML = '<p>You currently have no assigned courses.</p>';
+            return;
+        }
+        filteredCourses.forEach(course => {
+            const classDiv = document.createElement('div');
+            classDiv.className = 'class-card';
+            classDiv.setAttribute('data-course-num', course.courseNum);
+
+            classDiv.innerHTML = `
+            <h1>Name: ${course.name}</h1>
+            <p>Category: ${course.category}</p>
+            <p>Course Number: ${course.courseNum}</p>
+            <p>Instructor: ${course.instructor}</p>
+            <p>Prerequisite: ${course.prerequisite}</p>
+            `;
+
+            courseBox.append(classDiv);
+        });
+    });
+
+    document.querySelector('#subjectSelect').addEventListener("change",filterCategory);
 });
-
-
+let matchedCourses = [];
+let enrollmentsData = [];
 async function loadStudentClasses(currentUser) {
     try{
         // const courseBox = document.querySelector('#validCourses');
@@ -40,7 +72,6 @@ async function loadStudentClasses(currentUser) {
         const coursesResponse = await fetch("data/courses.json");
         const coursesData = await coursesResponse.json();
 
-        let enrollmentsData = [];
         const localEnrollments = localStorage.getItem('enrollment');
 
         if (localEnrollments) {
@@ -56,18 +87,18 @@ async function loadStudentClasses(currentUser) {
             }
         }
 
-        const Studentcourses = enrollmentsData.filter(c => c.studentName === currentUser.username);
+        const studentCourses = enrollmentsData.filter(c => c.studentName === currentUser.username);
         const courseBox = document.querySelector('#validCourses');
 
         courseBox.innerHTML = '';
 
-        if (Studentcourses.length === 0) {
+        if (studentCourses.length === 0) {
             courseBox.innerHTML = '<p>You currently have no assigned courses.</p>';
             return;
         }
-        const enrollmentNums = Studentcourses.map(e=>e.courseNum);
-        const matchedCourses = coursesData.filter(course => enrollmentNums.includes(course.courseNum));
-        console.log(matchedCourses);
+        const enrollmentNums = studentCourses.map(e=>e.courseNum);
+        matchedCourses = coursesData.filter(course => enrollmentNums.includes(course.courseNum));
+        // console.log(matchedCourses);
         matchedCourses.forEach(course =>{
             const classDiv = document.createElement('div');
             classDiv.className = 'class-card';
@@ -87,11 +118,45 @@ async function loadStudentClasses(currentUser) {
 
     }catch(error){
         console.error("Error loading courses:", error);
-        // document.getElementById('classes-container').innerHTML =
-        //     '<p>Error loading courses. Please try again later.</p>';
+        document.querySelector('#validCourses').innerHTML =
+            '<p>Error loading courses. Please try again later.</p>';
     }
 };
 
+async function filterCategory(){
+    const select = document.querySelector('#subjectSelect').value;
+    let filteredCourses = [];
+    if(select !== 'All'){
+        filteredCourses = matchedCourses.filter(course =>
+            course.category === select);
+    }else{
+        filteredCourses = matchedCourses;
+    }
+
+    const courseBox = document.querySelector('#validCourses');
+
+    courseBox.innerHTML = '';
+
+    if (matchedCourses.length === 0) {
+        courseBox.innerHTML = '<p>You currently have no assigned courses.</p>';
+        return;
+    }
+    filteredCourses.forEach(course => {
+        const classDiv = document.createElement('div');
+        classDiv.className = 'class-card';
+        classDiv.setAttribute('data-course-num', course.courseNum);
+
+        classDiv.innerHTML = `
+            <h1>Name: ${course.name}</h1>
+            <p>Category: ${course.category}</p>
+            <p>Course Number: ${course.courseNum}</p>
+            <p>Instructor: ${course.instructor}</p>
+            <p>Prerequisite: ${course.prerequisite}</p>
+            `;
+
+        courseBox.append(classDiv);
+    });
+}
 // function showBoxes(userType) {
 //     let boxes = document.querySelectorAll('.box');
 //     boxes.forEach(box => box.style.display = 'none')
