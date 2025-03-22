@@ -49,20 +49,20 @@
 | *Rashid*     | *13-02-2025* | *Creating HTML and CSS files for Use Case 5*   |
 | *Rashid*     | *14-02-2025* | *Many adjusting regarding Use Case 5 also added json file including Courses*|
 | *Rashid*     | *15-02-2025* | *Almost done with use case 5 *|
-| *yousef*     | *16-02-2025*  | create Javascript in login and data json file   |
-| *yousef*     | *09-03-2025* | *update log in front and etc*                     |
+| *yousef*     | *16-02-2025* | create Javascript in login and data json file  |
+| *yousef*     | *09-03-2025* | *update log in front and etc*                  |
 | *Rashid*     | *14-03-2025* | *Update Courses.Json and Create_course now can handle local Storage*|
 | *Rashid*     | *16-03-2025* | *Added Use Case 6 and adjusting codes and add new json file also adjusting login json file*|
 | *yousef*     | *18-03-2025* | *add the Use Case 4  html and css for learning path*|
 | *Rashid*     | *18-03-2025* | *Done with Use Case 6 , modified the design , changed the coloring in the login*|
 | *Omer*       | *20-03-2025* | *Working on the students courses display, optimizing the display and javascript*|
-| *Yousef*      | *20-03-2025* | *done for learning path and test also i do one event in corses page all in java*|
-| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
-| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
-| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
-| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
-| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
-| *Name*       | *DD-MM-YYYY* | *Description of the contribution*                |
+| *Yousef*     | *20-03-2025* | *done for learning path and test also i do one event in corses page all in java*|
+| *yousef*     | *22-03-2025* | * only do the css for learning path*           |
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
 ---
 
 ## References
