@@ -120,9 +120,9 @@ async function loadStudentClasses(currentUser) {
 
             classDiv.innerHTML=`
             <h1>Name: ${course.name}</h1>
-            <p>Category: ${course.category}</p>
-            <p>Course Number: ${course.courseNum}</p>
             <p>Instructor: ${course.instructor}</p>
+            <p>Course Number: ${course.courseNum}</p>
+            <p>Category: ${course.category}</p>
             <p>Prerequisite: ${course.prerequisite}</p>
             `;
 
