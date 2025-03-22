@@ -57,6 +57,7 @@
 | *Rashid*     | *18-03-2025* | *Done with Use Case 6 , modified the design , changed the coloring in the login*|
 | *Omer*       | *20-03-2025* | *Working on the students courses display, optimizing the display and javascript*|
 | *Yousef*     | *20-03-2025* | *done for learning path and test also i do one event in corses page all in java*|
+| *Omer*       | *21-03-2025* | *Use case 3 being handled using registration html*              |
 | *yousef*     | *22-03-2025* | * only do the css for learning path*           |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
