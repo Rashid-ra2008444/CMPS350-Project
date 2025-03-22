@@ -161,7 +161,9 @@ body {
     padding-bottom: 1rem;
     min-height: 100vh;
     /* gap:1rem; */
+    text-align: center;
 }
+
 
 .sidebar .title{
     padding-bottom:10px;
