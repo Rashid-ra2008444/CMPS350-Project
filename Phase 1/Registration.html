@@ -3,9 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/Registration.css">
     <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="js/Registration.js"></script>
 </head>
 <body>
-    
+    <div class="sidebar">
+      <h2 class="title">Qatar University</h2>
+      <nav class="nav">
+        <button class="Coursepage">Courses</button>
+        <button class="plan">Study plan</button>
+        <button class="logout">Logout</button>
+      </nav>
+    </div>
+    <main>
+      <section class="banner">
+        <h1 class="title">Welcome <span id="student-name"></span></h1>
+        <!-- <h2>Creating & Validation Courses</h2> -->
+      </section>
+      <div class="course-box">
+        <div class="search-bar">
+          <h2>Courses</h2>
+          <input type="text" id="searchInput" placeholder="Course Name" />
+          <select id="subjectSelect">
+            <option value="All" selected>All</option>
+            <option value="MATH">MATH</option>
+            <option value="CMPS">CMPS</option>
+            <option value="CMPE">CMPE</option>
+            <option value="GENG">GENG</option>
+          </select>
+        </div>
+        <div id="validCourses"></div>
+      </div>
+      <footer class="banner">
+        &copy; Qatar University Group Project Collections of this magnificant
+        Work 2025. All rights reserved
+      </footer>
+    </main>
 </body>
 </html>
