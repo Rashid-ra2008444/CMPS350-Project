@@ -254,25 +254,15 @@ document.addEventListener("DOMContentLoaded", function() {
                 let formContainer = document.createElement("div");
                 formContainer.classList.add("form-container");
                 formContainer.innerHTML = `
-                    <div class="form-box" style="
-                        position: fixed;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        background-color: white;
-                        padding: 20px;
-                        border: 2px solid black;
-                        box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
-                        border-radius: 10px;
-                        text-align: center;">
+                    <div class="form-box">
                         <h3>Add New Course</h3>
                         <div class="form-box-container">
-                        <label style="width:100%; float: left">Name: <input type="text" id="newName" required></label>
-                        <label style="width:100%">Course Number: <input type="number" id="newCourseNum" required></label>
-                        <label style="width:100%">Instructor: <input type="text" id="newInstructor" required></label>
-                        <label style="width:100%">Prerequisite: <input type="text" id="newPrerequisite"></label>
-                        <label style="width:100%">Enrolled: <input type="number" id="newEnrolled" value="0" required></label>
-                        <label style="width:100%">Category:
+                        <label>Name: <input type="text" id="newName" required></label>
+                        <label>Course Number: <input type="number" id="newCourseNum" required></label>
+                        <label>Instructor: <input type="text" id="newInstructor" required></label>
+                        <label>Prerequisite: <input type="text" id="newPrerequisite"></label>
+                        <label>Enrolled: <input type="number" id="newEnrolled" value="0" required></label>
+                        <label>Category:
                             <select id="newCategory">
                                 <option value="CMPS">Computer Science</option>
                                 <option value="CMPE">Computer Engineering</option>
