@@ -53,21 +53,22 @@ document.addEventListener("DOMContentLoaded", function () {
             <p>Category: ${course.category}</p>
             <p>Prerequisite: ${course.prerequisite}</p>
             <p>Status: ${course.status}</p>
-            ${course.status === "valid" ? `<button class="Register pixel2">Register</button>` : ""}
-            ${course.status === "valid" ? `<button class="Remove pixel2">Remove</button>` : ""}
+            <div class="button-container">
+                ${course.status === "valid" ? `<button class="Register pixel2">Register</button>` : ""}
+                ${course.status === "valid" ? `<button class="Remove pixel2">Remove</button>` : ""}
+            </div>
             `;
 
             courseBox.append(classDiv);
         });
     });
-
     document.querySelector('#subjectSelect').addEventListener("change", filterCategory);
 });
 let allCourses = [];
 async function loadAllCourses(currentUser){
     const coursesResponse = await fetch("data/courses.json");
     const coursesData = await coursesResponse.json();
-    console.log(allCourses);
+    // console.log(allCourses);
     // console.log(coursesData);
     const courseBox = document.querySelector('#validCourses');
 
@@ -91,11 +92,20 @@ async function loadAllCourses(currentUser){
             <p>Category: ${course.category}</p>
             <p>Prerequisite: ${course.prerequisite}</p>
             <p>Status: ${course.status}</p>
-            ${course.status === "valid" ? `<button class="Register pixel2">Register</button>` : ""}
-            ${course.status === "valid" ? `<button class="Remove pixel2">Remove</button>` : ""}
+            <div class="button-container">
+                ${course.status === "valid" ? `<button class="Register pixel2">Register</button>` : ""}
+                ${course.status === "valid" ? `<button class="Remove pixel2">Remove</button>` : ""}
+            </div>
             `;
 
         courseBox.append(classDiv);
+        if(course.status === "valid"){
+            const registerCourse = classDiv.querySelector('.Register')
+            registerCourse.addEventListener('click', function () {
+                
+            });
+        }
+        
     });
 }
 
@@ -129,10 +139,16 @@ async function filterCategory() {
             <p>Category: ${course.category}</p>
             <p>Prerequisite: ${course.prerequisite}</p>
             <p>Status: ${course.status}</p>
-            ${course.status === "valid" ? `<button class="Register pixel2">Register</button>` : ""}
-            ${course.status === "valid" ? `<button class="Remove pixel2">Remove</button>` : ""}
-            `;
-
+            <div class="button-container">
+                ${course.status === "valid" ? `<button class="Register pixel2">Register</button>` : ""}
+                ${course.status === "valid" ? `<button class="Remove pixel2">Remove</button>` : ""}
+            </div>
+        `;
         courseBox.append(classDiv);
+
     });
+}
+
+async function addCourse(course){
+    console.log("work");
 }
