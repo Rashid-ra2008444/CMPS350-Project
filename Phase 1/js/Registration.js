@@ -102,7 +102,7 @@ async function loadAllCourses(currentUser){
         if(course.status === "valid"){
             const registerCourse = classDiv.querySelector('.Register')
             registerCourse.addEventListener('click', function () {
-                
+                addCourse(course,currentUser);
             });
         }
         
@@ -149,6 +149,15 @@ async function filterCategory() {
     });
 }
 
-async function addCourse(course){
-    console.log("work");
+async function addCourse(course,currentUser){
+    const enrollmentfile = await fetch('data/enrollment.json');
+    const enrollmentData = await enrollmentfile.json();
+    // console.log(course);
+    const Usercourses = enrollmentData.filter(c=>c.studentName == currentUser.username);
+    
+    if(Usercourses.find(c=>c.courseNum==course.courseNum)){
+        alert('Course has already been registered');
+    }else{
+        
+    }
 }
