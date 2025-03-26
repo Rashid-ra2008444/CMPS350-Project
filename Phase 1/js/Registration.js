@@ -157,36 +157,29 @@ async function addCourse(course,currentUser){
     let enrollmentData = await enrollmentfile.json();
     const coursesResponse = await fetch("data/courses.json");
     const coursesData = await coursesResponse.json();
-    // console.log(course);
     const userEnrollments = enrollmentData.filter(c=>c.studentName == currentUser.username);
     const userCourses = coursesData.filter(course=>
         userEnrollments.some(enrollment => enrollment.courseNum === course.courseNum)
         );
-    console.log(userCourses);
-    // const prerequisite = coursesData.filter();
-    console.log(userEnrollments);
+    let preCourse = userCourses.find(c => c.name===course.prerequisite);
+    let checkingCourse = enrollmentData.find(c=> c.courseNum == preCourse.courseNum); 
     if (userEnrollments.find(c=>c.courseNum==course.courseNum)){
         alert('Course has already been registered');
-    }else if(course.prerequisite === "none" || userCourses.find(c=>c.name == course.prerequisite)){
-            enrollment = {
-                studentId: currentUser.password.toString(),
-                studentName: currentUser.username,
-                courseNum: course.courseNum,
-                instructor: course.instructor,
-                enrollmentDate: today.toLocaleDateString(),
-                grade: null
-            };
-            enrollmentData.push(enrollment);
-            localStorage.enrollment = JSON.stringify(enrollmentData);
+    }else if(course.prerequisite === "none" || checkingCourse.grade != "F"){
+        enrollment = {
+            studentId: currentUser.password.toString(),
+            studentName: currentUser.username,
+            courseNum: course.courseNum,
+            instructor: course.instructor,
+            enrollmentDate: today.toLocaleDateString(),
+            grade: null
+        };
+        enrollmentData.push(enrollment);
+        localStorage.enrollment = JSON.stringify(enrollmentData);
+        alert('Course registered successfully');
+    }else if(checkingCourse.grade == "F"){
+        alert("Prerequisite not passed");
     }else{
         alert("Prerequisite not completed");
     }
-
-    // if(){
-
-    // }
-
-
-
-
 }
