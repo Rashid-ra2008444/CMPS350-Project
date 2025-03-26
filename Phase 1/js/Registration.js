@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    let enrollments = localStorage.getItem("enrollment");
 
     if (!currentUser || currentUser.status !== 'student') {
 
@@ -65,6 +66,8 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelector('#subjectSelect').addEventListener("change", filterCategory);
 });
 let allCourses = [];
+let today = new Date();
+
 async function loadAllCourses(currentUser){
     const coursesResponse = await fetch("data/courses.json");
     const coursesData = await coursesResponse.json();
@@ -151,13 +154,39 @@ async function filterCategory() {
 
 async function addCourse(course,currentUser){
     const enrollmentfile = await fetch('data/enrollment.json');
-    const enrollmentData = await enrollmentfile.json();
+    let enrollmentData = await enrollmentfile.json();
+    const coursesResponse = await fetch("data/courses.json");
+    const coursesData = await coursesResponse.json();
     // console.log(course);
-    const Usercourses = enrollmentData.filter(c=>c.studentName == currentUser.username);
-    
-    if(Usercourses.find(c=>c.courseNum==course.courseNum)){
+    const userEnrollments = enrollmentData.filter(c=>c.studentName == currentUser.username);
+    const userCourses = coursesData.filter(course=>
+        userEnrollments.some(enrollment => enrollment.courseNum === course.courseNum)
+        );
+    console.log(userCourses);
+    // const prerequisite = coursesData.filter();
+    console.log(userEnrollments);
+    if (userEnrollments.find(c=>c.courseNum==course.courseNum)){
         alert('Course has already been registered');
+    }else if(course.prerequisite === "none" || userCourses.find(c=>c.name == course.prerequisite)){
+            enrollment = {
+                studentId: currentUser.password.toString(),
+                studentName: currentUser.username,
+                courseNum: course.courseNum,
+                instructor: course.instructor,
+                enrollmentDate: today.toLocaleDateString(),
+                grade: null
+            };
+            enrollmentData.push(enrollment);
+            localStorage.enrollment = JSON.stringify(enrollmentData);
     }else{
-        
+        alert("Prerequisite not completed");
     }
+
+    // if(){
+
+    // }
+
+
+
+
 }
