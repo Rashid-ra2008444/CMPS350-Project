@@ -1,7 +1,5 @@
 # Project CMPS 350
 
-*Project overview and objectives go here.*
-
 ---
 
 ## Team
@@ -12,28 +10,6 @@
   **Email:** *ok2003047@qu.edu.qa*
 - **Name:** *Yousef Saeed*  
   **Email:** *ys1908807@qu.edu.qa*
-
----
-
-## Challenges
-
-1. *Challenge description*
-2. *Challenge description*
-3. *Challenge description*
-4. *Challenge description*
-5. *Challenge description*
-6. *Challenge description*
-7. *Challenge description*
-8. *Additional challenge or note*
-
----
-
-## Issues
-
-1. *Issue description*
-2. *Issue description*
-3. *Issue description*
-4. *Issue description*
 
 ---
 
@@ -59,7 +35,7 @@
 | *Yousef*     | *20-03-2025* | *done for learning path and test also i do one event in corses page all in java*|
 | *Omer*       | *21-03-2025* | *Use case 3 being handled using registration html*              |
 | *yousef*     | *22-03-2025* | * only do the css for learning path*           |
-| *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
+| *Rashid*     | *27-03-2025* | *Major updates in codes and fix many logical errors*|
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
