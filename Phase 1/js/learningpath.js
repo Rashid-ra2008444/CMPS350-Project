@@ -120,7 +120,8 @@ function processCourseCategories(studentEnrollments) {
     });
     
     // Find and add pending courses
-    const pendingCount = addPendingCourses(studentEnrollments);
+    // const pendingCount = addPendingCourses(studentEnrollments);
+    addPendingCourses(studentEnrollments);
     
     // Check if tables are empty and display messages if needed
     checkEmptyTables();
@@ -261,8 +262,8 @@ function getGradeClass(grade) {
     if (!grade) return '';
     
     // Convert grade to uppercase to handle case differences
-    const upperGrade = grade.toUpperCase();
-    
+    const upperGrade = grade.toString().toUpperCase();
+        
     if (upperGrade === 'A') {
         return 'grade-a';
     } else if (upperGrade === 'B+' || upperGrade === 'B') {

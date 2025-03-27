@@ -134,6 +134,52 @@ async function loadCourseForGrading(instructorName, courseNum) {
     }
 }
 
+// function submitGrades(students, course, form) {
+//     try {
+//         let allEnrollments = [];
+//         const storedEnrollments = localStorage.getItem('enrollment');
+        
+//         if (storedEnrollments) {
+//             allEnrollments = JSON.parse(storedEnrollments);
+//         }
+        
+        
+//         let updatedEnrollments = allEnrollments.map(enrollment => {
+//             if (enrollment.courseNum === course.courseNum && 
+//                 students.some(s => s.studentId === enrollment.studentId)) {
+                
+               
+//                 const gradeInput = form.querySelector(`input[name="grade-${enrollment.studentId}"]`);
+//                 const grade = parseInt(gradeInput.value, 10);
+                
+               
+//                 return { ...enrollment, grade: grade };
+//             }
+//             return enrollment;
+//         });
+        
+        
+//         localStorage.setItem('enrollment', JSON.stringify(updatedEnrollments));
+        
+        
+//         const successMessage = document.getElementById('success-message');
+//         successMessage.style.display = 'block';
+        
+        
+//         setTimeout(() => {
+//             successMessage.style.display = 'none';
+//         }, 3000);
+        
+//         console.log("Grades submitted and saved to localStorage:", updatedEnrollments);
+        
+//     } catch (error) {
+//         console.error("Error submitting grades:", error);
+//         alert("Error submitting grades. Please try again.");
+//     }
+// }
+
+
+
 function submitGrades(students, course, form) {
     try {
         let allEnrollments = [];
@@ -143,34 +189,49 @@ function submitGrades(students, course, form) {
             allEnrollments = JSON.parse(storedEnrollments);
         }
         
-        
+        // نمشي على كل الطلاب وتحديث درجاتهم
         let updatedEnrollments = allEnrollments.map(enrollment => {
             if (enrollment.courseNum === course.courseNum && 
                 students.some(s => s.studentId === enrollment.studentId)) {
                 
-               
+                // نحصل على الدرجة من حقل الإدخال
                 const gradeInput = form.querySelector(`input[name="grade-${enrollment.studentId}"]`);
-                const grade = parseInt(gradeInput.value, 10);
                 
-               
-                return { ...enrollment, grade: grade };
+                if (gradeInput && gradeInput.value) {
+                    // تحويل الدرجة الرقمية إلى حرف
+                    const numericGrade = parseInt(gradeInput.value, 10);
+                    let letterGrade;
+                    
+                    if (numericGrade >= 90) {
+                        letterGrade = "A";
+                    } else if (numericGrade >= 80) {
+                        letterGrade = "B";
+                    } else if (numericGrade >= 70) {
+                        letterGrade = "C";
+                    } else if (numericGrade >= 60) {
+                        letterGrade = "D";
+                    } else {
+                        letterGrade = "F";
+                    }
+                    
+                    // تحديث السجل بالدرجة الحرفية
+                    return { ...enrollment, grade: letterGrade };
+                }
             }
             return enrollment;
         });
         
-        
+        // تخزين البيانات المحدثة في localStorage
         localStorage.setItem('enrollment', JSON.stringify(updatedEnrollments));
         
-        
+        // إظهار رسالة نجاح
         const successMessage = document.getElementById('success-message');
         successMessage.style.display = 'block';
         
-        
+        // إخفاء الرسالة بعد 3 ثوان
         setTimeout(() => {
             successMessage.style.display = 'none';
         }, 3000);
-        
-        console.log("Grades submitted and saved to localStorage:", updatedEnrollments);
         
     } catch (error) {
         console.error("Error submitting grades:", error);

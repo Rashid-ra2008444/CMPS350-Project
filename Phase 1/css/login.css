@@ -7,15 +7,6 @@
   --accent-color: lightblue ;
 }
 
-.darkmode {
-  --base-color: #121212;
-  --base-variant: #1E1E1E;
-  --text-color: #E0E0E0;
-  --secondary-text: #A3B9FF ;
-  --primary-color: #3A506B ;
-  --accent-color: yellow ;
-}
-
 * {
   margin: 0;
   padding: 0;
