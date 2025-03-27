@@ -36,6 +36,12 @@
 | *Omer*       | *21-03-2025* | *Use case 3 being handled using registration html*              |
 | *yousef*     | *22-03-2025* | * only do the css for learning path*           |
 | *Rashid*     | *27-03-2025* | *Major updates in codes and fix many logical errors*|
+| *yousef     *| *27-03-2025* | *update and done the complete course in learning path*|
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
+| *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
