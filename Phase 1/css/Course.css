@@ -66,6 +66,23 @@ main {
     /* outline:2px solid black; */
 }
 
+#CompletCourses {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    /* Responsive grid */
+    gap: 1rem;
+    /* Spacing between boxes */
+    width: 100%;
+    margin: 0 auto;
+    /* Centers the grid */
+    padding: 0.5rem;
+    /* outline:2px solid black; */
+}
+
+
+
+
+
 /* Course Boxes */
 .class-card {
     border: 3px solid black;

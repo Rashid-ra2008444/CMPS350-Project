@@ -1,34 +1,35 @@
+// Global data store
 const appData = {
     courses: [],
     enrollments: [],
     currentStudent: null
 };
 
-
+// Page initialization
 document.addEventListener('DOMContentLoaded', initializeApp);
 
 async function initializeApp() {
     try {
- 
+        // Authenticate user
         const currentUser = validateUserSession();
         if (!currentUser) return;
         
-    
+        // Load all required data
         await fetchAllData();
         
-       
+        // Set up the learning path for current student
         setupLearningPath(currentUser);
         
-     
+        // Set up navigation buttons
         setupMove();
         
     } catch (error) {
-        console.error('Error loading data:', error);
+        console.error('Initialization error:', error);
         alert('Error loading data. Please try again.');
     }
 }
 
-
+// Authentication & Session validation
 function validateUserSession() {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     
@@ -40,45 +41,47 @@ function validateUserSession() {
     return currentUser;
 }
 
-
+// Data fetching - updated to use localStorage first
 async function fetchAllData() {
-   
-    const localStorageCourses = localStorage.getItem('courses');
-    
-    if (localStorageCourses) {
-        appData.courses = JSON.parse(localStorageCourses);
-    } else {
-       
+    try {
+        // Load courses data
         const coursesResponse = await fetch('data/courses.json');
         appData.courses = await coursesResponse.json();
         
-    
-        localStorage.setItem('courses', JSON.stringify(appData.courses));
-    }
-    
-  
-    const storedEnrollments = localStorage.getItem('enrollment');
-    
-    if (storedEnrollments) {
-        appData.enrollments = JSON.parse(storedEnrollments);
-    } else {
-        const enrollmentResponse = await fetch('data/enrollment.json');
-        appData.enrollments = await enrollmentResponse.json();
-        localStorage.setItem('enrollment', JSON.stringify(appData.enrollments));
+        // Priority to data stored in localStorage
+        const storedEnrollments = localStorage.getItem('enrollment');
+        
+        if (storedEnrollments) {
+            // Use data from localStorage
+            appData.enrollments = JSON.parse(storedEnrollments);
+            console.log("Using enrollment data from localStorage");
+        } else {
+            // Only if no data in localStorage, use the original file
+            const enrollmentResponse = await fetch('data/enrollment.json');
+            appData.enrollments = await enrollmentResponse.json();
+            
+            // Store data in localStorage for next time
+            localStorage.setItem('enrollment', JSON.stringify(appData.enrollments));
+            console.log("Using enrollment data from JSON file, saved to localStorage");
+        }
+    } catch (error) {
+        console.error("Error loading data:", error);
+        throw error;
     }
 }
 
+// Learning path setup
 function setupLearningPath(user) {
     const { username, password } = user;
     const studentId = password.toString();
     
- 
+    // Store current student info
     appData.currentStudent = { name: username, id: studentId };
     
- 
+    // Update UI with student info
     updateStudentInfo(username, studentId);
     
-
+    // Find student enrollments
     const studentEnrollments = appData.enrollments.filter(
         enrollment => enrollment.studentName === username
     );
@@ -88,11 +91,11 @@ function setupLearningPath(user) {
         return;
     }
     
-
+    // Process and display all course categories
     processCourseCategories(studentEnrollments);
 }
 
-
+// UI Updates
 function updateStudentInfo(name, id) {
     document.getElementById('student-name').textContent = name;
     document.getElementById('student-id').textContent = `Student ID: ${id}`;
@@ -106,39 +109,43 @@ function displayNoEnrollmentMessage() {
     document.querySelector('#pending-courses tbody').innerHTML = noDataMessage;
 }
 
-
+// Course processing
 function processCourseCategories(studentEnrollments) {
-    
+    // Clear all tables
     clearAllTables();
     
-    
+    // Process enrolled courses (completed and in-progress)
     studentEnrollments.forEach(enrollment => {
-        const course = appData.courses.find(c => 
-            c.courseNum === enrollment.courseNum && 
-            c.name === (enrollment.courseName || c.name)
-        );
+        // Convert courseNum to integer for correct comparison
+        enrollment.courseNum = parseInt(enrollment.courseNum, 10);
+        
+        const course = appData.courses.find(c => parseInt(c.courseNum, 10) === enrollment.courseNum);
         
         if (!course) {
-            return; 
+            console.warn(`Course ${enrollment.courseNum} not found in courses data`);
+            return;
         }
         
+        // Check if course has a grade (completed) or not (in-progress)
         if (enrollment.grade) {
-          
+            // Completed course (has a grade)
             addCompletedCourse(course, enrollment);
-        } else if (course.status === "valid") {
-           
-            addInProgressCourse(course, enrollment);
         } else {
-           
-            addPendingCourseFromEnrollment(course, enrollment);
+            // In-progress course
+            addInProgressCourse(course, enrollment);
         }
     });
     
-  
-    addRecommendedCourses(studentEnrollments);
+    // MODIFIED: Only show a message in pending courses section
+    const pendingCoursesTable = document.querySelector('#pending-courses tbody');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td colspan="4" class="no-courses">No pending courses. Use the Registration page to register for new courses.</td>
+    `;
+    pendingCoursesTable.appendChild(row);
     
-   
-    checkEmptyTables();
+    // Check if tables are empty and display messages if needed
+    checkEmptyTables(['completed-courses', 'in-progress-courses']);
 }
 
 function clearAllTables() {
@@ -147,12 +154,12 @@ function clearAllTables() {
     document.querySelector('#pending-courses tbody').innerHTML = '';
 }
 
-
+// Table content methods
 function addCompletedCourse(course, enrollment) {
     const tableBody = document.querySelector('#completed-courses tbody');
     const row = document.createElement('tr');
     
-
+    // Format the grade with appropriate styling
     const gradeClass = getGradeClass(enrollment.grade);
     
     row.innerHTML = `
@@ -169,126 +176,21 @@ function addInProgressCourse(course, enrollment) {
     const tableBody = document.querySelector('#in-progress-courses tbody');
     const row = document.createElement('tr');
     
- 
-    const progress = enrollment.progress || Math.floor(Math.random() * (90 - 30 + 1)) + 30;
-    
-   
-    if (!enrollment.progress) {
-        enrollment.progress = progress;
-        
-        
-        const allEnrollments = appData.enrollments.map(e => 
-            (e.studentName === enrollment.studentName && 
-             e.courseNum === enrollment.courseNum && 
-             e.courseName === enrollment.courseName) ? 
-                {...e, progress} : e
-        );
-        
-        localStorage.setItem('enrollment', JSON.stringify(allEnrollments));
-    }
+
     
     row.innerHTML = `
         <td>${course.category} ${course.courseNum}</td>
         <td>${course.name}</td>
-        <td>${progress}%</td>
         <td><span class="status-pill status-in-progress">In Progress</span></td>
     `;
     
     tableBody.appendChild(row);
 }
 
-function addPendingCourseFromEnrollment(course, enrollment) {
-    const tableBody = document.querySelector('#pending-courses tbody');
-    const row = document.createElement('tr');
-    
-   
-    const startDate = enrollment.enrollmentDate || generateFutureDate();
-    
-    row.innerHTML = `
-        <td>${course.category} ${course.courseNum}</td>
-        <td>${course.name}</td>
-        <td>${startDate}</td>
-        <td><span class="status-pill status-pending">Pending</span></td>
-    `;
-    
-    tableBody.appendChild(row);
-}
+// REMOVED: The addPendingCourses function to prevent automatic display of pending courses
 
-function addRecommendedCourses(studentEnrollments) {
-    const tableBody = document.querySelector('#pending-courses tbody');
-    
-
-    const enrolledCourseIds = studentEnrollments.map(enrollment => 
-        `${enrollment.courseNum}-${enrollment.courseName || ''}`
-    );
-    
-    const completedCourses = getCompletedCourseNames(studentEnrollments);
-    
-    appData.courses.forEach(course => {
-        const courseId = `${course.courseNum}-${course.name}`;
-        
-       
-        if (enrolledCourseIds.includes(courseId) || course.status === 'invalid') {
-            return;
-        }
-        
-     
-        if (arePrerequisitesMet(course, completedCourses)) {
-            addRecommendedCourseToTable(course, tableBody);
-        }
-    });
-}
-
-
-function getCompletedCourseNames(enrollments) {
-    return enrollments
-        .filter(enrollment => enrollment.grade) 
-        .map(enrollment => {
-            const course = appData.courses.find(c => 
-                c.courseNum === enrollment.courseNum && 
-                c.name === (enrollment.courseName || c.name)
-            );
-            return course ? course.name : null;
-        })
-        .filter(name => name !== null);
-}
-
-function arePrerequisitesMet(course, completedCourses) {
-  
-    if (!course.prerequisite || 
-        course.prerequisite === 'none' || 
-        course.prerequisite === 'None') {
-        return true;
-    }
-    
-    
-    return completedCourses.includes(course.prerequisite);
-}
-
-function addRecommendedCourseToTable(course, tableBody) {
-    const row = document.createElement('tr');
-    
-  
-    const startDate = generateFutureDate();
-    
-    row.innerHTML = `
-        <td>${course.category} ${course.courseNum}</td>
-        <td>${course.name}</td>
-        <td>${startDate}</td>
-        <td><span class="status-pill status-recommended">Recommended</span></td>
-    `;
-    
-    tableBody.appendChild(row);
-}
-
-function checkEmptyTables() {
-    const tables = [
-        'completed-courses',
-        'in-progress-courses',
-        'pending-courses'
-    ];
-    
-    tables.forEach(tableId => {
+function checkEmptyTables(tableIds) {
+    tableIds.forEach(tableId => {
         const tableBody = document.querySelector(`#${tableId} tbody`);
         if (!tableBody.hasChildNodes()) {
             addEmptyTableMessage(tableId);
@@ -308,8 +210,9 @@ function addEmptyTableMessage(tableId) {
 function getGradeClass(grade) {
     if (!grade) return '';
     
+    // Convert grade to uppercase to handle case differences
     const upperGrade = grade.toString().toUpperCase();
-        
+    
     if (upperGrade === 'A') {
         return 'grade-a';
     } else if (upperGrade === 'B+' || upperGrade === 'B') {
@@ -329,21 +232,22 @@ function generateFutureDate() {
     const today = new Date();
     const futureDate = new Date(today);
     
+    // Add 1-3 months to the current date
     const monthsToAdd = Math.floor(Math.random() * 3) + 1;
     futureDate.setMonth(today.getMonth() + monthsToAdd);
     
-   
+    // Format the date as MM/DD/YYYY
     return `${futureDate.getMonth() + 1}/${futureDate.getDate()}/${futureDate.getFullYear()}`;
 }
 
-
+// Navigation
 function setupMove() {
-  
+    // Course page navigation
     document.querySelector(".coursesBUT").addEventListener('click', () => {
         window.location.href = 'Coursepage.html';
     });
     
-  
+    // Logout functionality
     document.querySelector(".lougBUT").addEventListener('click', () => {
         localStorage.removeItem('currentUser');
         window.location.href = 'login.html';

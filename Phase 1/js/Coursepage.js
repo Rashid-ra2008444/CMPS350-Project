@@ -1,12 +1,18 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // document.getElementById("icon-button").addEventListener("click", function () {
+    //     window.location.href = "login.html";
+    // });
+
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
     if (!currentUser || currentUser.status !== 'student') {
+        // Redirect to login if not a student
         window.location.href = 'login.html';
         return;
     }
 
     document.getElementById('student-name').textContent = currentUser.username;
+    
     
     document.getElementById('logout').addEventListener('click', function (e) {
         e.preventDefault();
@@ -14,176 +20,50 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.href = 'login.html';
     });
 
+
+    // Add navigation to learning path when study plan button is clicked
     document.querySelector('.plan').addEventListener('click', function(e) {
         e.preventDefault();
         window.location.href = 'LearningPath.html';
     });
-
+    // Add navigation to Registration when Register courses button is
     document.querySelector('.Register').addEventListener('click',function(e){
         e.preventDefault();
         window.location.href = 'Registration.html';
     });
 
+
     loadStudentClasses(currentUser);
 
-    document.querySelector('#searchInput').addEventListener("input", () => {
-        const searchValue = document.querySelector('#searchInput').value.toLowerCase();
-        filterAndDisplayCourses(searchValue);
-    });
-
-    document.querySelector('#subjectSelect').addEventListener("change", () => {
-        const searchValue = document.querySelector('#searchInput').value.toLowerCase();
-        filterAndDisplayCourses(searchValue);
-    });
+    document.querySelector('#searchInput').addEventListener("input", filterCourses);
+    document.querySelector('#subjectSelect').addEventListener("change", filterCategory);
 });
 
-let enrolledCourses = [];
+let matchedCourses = [];
+let completedCourses = [];
 let enrollmentsData = [];
 
-// Check if a course is completed (has a grade)
-function isCompletedCourse(course, currentUser) {
-    const enrollment = enrollmentsData.find(e => 
-        e.studentName === currentUser.username && 
-        e.courseNum === course.courseNum && 
-        e.courseName === course.name
-    );
-    
-    return enrollment && enrollment.grade;
-}
-
-function filterAndDisplayCourses(searchValue) {
-    const categoryValue = document.querySelector('#subjectSelect').value;
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    
-    // Filter courses that aren't completed and match search criteria
-    const filteredCourses = enrolledCourses.filter(course => {
-        // Skip completed courses
-        if (isCompletedCourse(course, currentUser)) return false;
-        
-        const matchesSearch = course.name.toLowerCase().includes(searchValue) || 
-                             course.category.toLowerCase().includes(searchValue);
-        const matchesCategory = categoryValue === 'All' || course.category === categoryValue;
-        
-        return matchesSearch && matchesCategory;
-    });
-    
-    displayCoursesByStatus(filteredCourses);
-}
-
-function displayCoursesByStatus(courses) {
-    const validCourseBox = document.querySelector('#validCourses');
-    const pendingCourseBox = document.querySelector('#pendingCourses');
-    
-    // Clear both containers
-    validCourseBox.innerHTML = '';
-    pendingCourseBox.innerHTML = '';
-    
-    // Separate courses by status
-    const validCourses = courses.filter(course => course.status === "valid");
-    const pendingCourses = courses.filter(course => course.status === "pending");
-    
-    // Display valid courses
-    if (validCourses.length === 0) {
-        validCourseBox.innerHTML = '<p>You currently have no validated courses.</p>';
-    } else {
-        validCourses.forEach(course => {
-            const classDiv = createCourseCard(course);
-            validCourseBox.appendChild(classDiv);
-        });
-    }
-    
-    // Display pending courses
-    if (pendingCourses.length === 0) {
-        pendingCourseBox.innerHTML = '<p>You currently have no pending courses.</p>';
-    } else {
-        pendingCourses.forEach(course => {
-            const classDiv = createCourseCard(course, true);
-            pendingCourseBox.appendChild(classDiv);
-        });
-    }
-}
-
-function createCourseCard(course, isPending = false) {
-    const classDiv = document.createElement('div');
-    classDiv.className = 'class-card';
-    classDiv.setAttribute('data-course-id', `${course.name}-${course.courseNum}`);
-
-    classDiv.innerHTML = `
-        <h1>Name: ${course.name}</h1>
-        <p>Category: ${course.category}</p>
-        <p>Course Number: ${course.courseNum}</p>
-        <p>Instructor: ${course.instructor}</p>
-        <p>Prerequisite: ${course.prerequisite}</p>
-        <div class="button-container">
-            ${isPending ? `<button class="delete pixel2">Drop Course</button>` : ''}
-        </div>
-    `;
-    
-    if (isPending) {
-        classDiv.querySelector('.delete').addEventListener('click', function() {
-            dropCourse(course);
-        });
-    }
-    
-    return classDiv;
-}
-
-async function dropCourse(course) {
-    if (confirm(`Are you sure you want to drop ${course.name}?`)) {
-        try {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            
-            let enrollmentData = JSON.parse(localStorage.getItem('enrollment') || '[]');
-            
-            enrollmentData = enrollmentData.filter(enrollment => 
-                !(enrollment.studentName === currentUser.username && 
-                  enrollment.courseNum === course.courseNum &&
-                  enrollment.courseName === course.name)
-            );
-            
-            localStorage.setItem('enrollment', JSON.stringify(enrollmentData));
-            
-            let coursesData = JSON.parse(localStorage.getItem('courses') || '[]');
-            const courseIndex = coursesData.findIndex(c => 
-                c.courseNum === course.courseNum && c.name === course.name
-            );
-            
-            if (courseIndex !== -1) {
-                coursesData[courseIndex].enrollment_actual = Math.max(0, coursesData[courseIndex].enrollment_actual - 1);
-                localStorage.setItem('courses', JSON.stringify(coursesData));
-                localStorage.setItem('courseData', JSON.stringify(coursesData)); 
-            }
-            
-            loadStudentClasses(currentUser);
-            
-            alert('Course dropped successfully');
-        } catch (error) {
-            console.error('Error dropping course:', error);
-            alert('Failed to drop course. Please try again.');
-        }
-    }
-}
-
 async function loadStudentClasses(currentUser) {
-    try {
-        let coursesData;
-        const localCourses = localStorage.getItem('courses');
-        
-        if (localCourses) {
-            coursesData = JSON.parse(localCourses);
-        } else {
-            const coursesResponse = await fetch("data/courses.json");
-            coursesData = await coursesResponse.json();
-        }
+    try{
+        // Load courses data
+        const coursesResponse = await fetch("data/courses.json");
+        const coursesData = await coursesResponse.json();
 
+        // Load enrollment data - always from localStorage first
         const localEnrollments = localStorage.getItem('enrollment');
 
         if (localEnrollments) {
+            // Use data from localStorage
             enrollmentsData = JSON.parse(localEnrollments);
+            console.log("Using enrollment data from localStorage");
         } else {
+            // Only if no data in localStorage, use the original file
             try {
+                console.log("No enrollment data in localStorage, loading from file");
                 const studentsResponse = await fetch("data/enrollment.json");
                 enrollmentsData = await studentsResponse.json();
+
+                // Store data in localStorage for next time
                 localStorage.setItem('enrollment', JSON.stringify(enrollmentsData));
             } catch (err) {
                 console.warn("Could not load enrollment data, using empty array:", err);
@@ -191,39 +71,220 @@ async function loadStudentClasses(currentUser) {
             }
         }
 
-        const studentEnrollments = enrollmentsData.filter(e => e.studentName === currentUser.username);
+        // Find student enrollments
+        const studentCourses = enrollmentsData.filter(c => c.studentName === currentUser.username);
         
-        if (studentEnrollments.length === 0) {
-            document.querySelector('#validCourses').innerHTML = '<p>You currently have no validated courses.</p>';
-            document.querySelector('#pendingCourses').innerHTML = '<p>You currently have no pending courses.</p>';
-            enrolledCourses = [];
-            return;
-        }
+        // Clear course containers
+        const courseBox = document.querySelector('#validCourses');
+        const completedBox = document.querySelector('#CompletCourses');
+        
+        courseBox.innerHTML = '';
+        completedBox.innerHTML = '';
 
-        // Get all enrolled courses
-        enrolledCourses = coursesData.filter(course => 
-            studentEnrollments.some(enrollment => 
-                enrollment.courseNum === course.courseNum && 
-                enrollment.courseName === course.name
-            )
-        );
-        
-        // Filter out completed courses and display the rest
-        const activeCourses = enrolledCourses.filter(course => !isCompletedCourse(course, currentUser));
-        
-        if (activeCourses.length === 0) {
-            document.querySelector('#validCourses').innerHTML = '<p>You have no active courses. View your Learning Path to see completed courses.</p>';
-            document.querySelector('#pendingCourses').innerHTML = '<p>You have no pending courses.</p>';
+        if (studentCourses.length === 0) {
+            courseBox.innerHTML = '<p>You currently have no assigned courses.</p>';
+            completedBox.innerHTML = '<p>You have not completed any courses yet.</p>';
             return;
         }
         
-        displayCoursesByStatus(activeCourses);
+        // Get enrolled course numbers and convert to integers
+        const enrollmentNums = studentCourses.map(e => parseInt(e.courseNum, 10));
+        
+        // Match enrolled courses with course data
+        matchedCourses = [];
+        completedCourses = [];
+        
+        // Separate courses into current and completed
+        studentCourses.forEach(enrollment => {
+            const course = coursesData.find(c => parseInt(c.courseNum, 10) === parseInt(enrollment.courseNum, 10));
+            
+            if (course) {
+                // Add enrollment info to course object
+                const courseWithGrade = {
+                    ...course,
+                    grade: enrollment.grade
+                };
+                
+                if (enrollment.grade) {
+                    // Course has a grade - it's completed
+                    completedCourses.push(courseWithGrade);
+                } else {
+                    // Course has no grade - it's current
+                    matchedCourses.push(courseWithGrade);
+                }
+            }
+        });
 
-    } catch(error) {
+        // Display current courses
+        if (matchedCourses.length === 0) {
+            courseBox.innerHTML = '<p>You have no current courses.</p>';
+        } else {
+            matchedCourses.forEach(course => {
+                const classDiv = document.createElement('div');
+                classDiv.className = 'class-card';
+                classDiv.setAttribute('data-course-num', course.courseNum);
+
+                classDiv.innerHTML = `
+                    <h1> ${course.name}</h1>
+                    <p>Instructor: ${course.instructor}</p>
+                    <p>Course Number: ${course.courseNum}</p>
+                    <p>Category: ${course.category}</p>
+                    <p>Prerequisite: ${course.prerequisite}</p>
+                    <span class="status-pill status-in-progress">In Progress</span>
+                `;
+
+                courseBox.append(classDiv);
+            });
+        }
+        
+        // Display completed courses
+        if (completedCourses.length === 0) {
+            completedBox.innerHTML = '<p>You have not completed any courses yet.</p>';
+        } else {
+            completedCourses.forEach(course => {
+                const classDiv = document.createElement('div');
+                classDiv.className = 'class-card';
+                classDiv.setAttribute('data-course-num', course.courseNum);
+                
+                // Get grade styling
+                const gradeClass = getGradeClass(course.grade);
+
+                classDiv.innerHTML = `
+                    <h1>${course.name}</h1>
+                    <p>Instructor: ${course.instructor}</p>
+                    <p>Course Number: ${course.courseNum}</p>
+                    <p>Category: ${course.category}</p>
+                    <p>Prerequisite: ${course.prerequisite}</p>
+                    <p>Grade: <span class="${gradeClass}">${course.grade}</span></p>
+                    <span class="status-pill status-completed">Completed</span>
+                `;
+
+                completedBox.append(classDiv);
+            });
+        }
+
+    } catch (error) {
         console.error("Error loading courses:", error);
-        document.querySelector('#validCourses').innerHTML = 
+        document.querySelector('#validCourses').innerHTML =
             '<p>Error loading courses. Please try again later.</p>';
-        document.querySelector('#pendingCourses').innerHTML = 
-            '<p>Error loading courses. Please try again later.</p>';
+    }
+};
+
+// Helper function to get grade styling class
+function getGradeClass(grade) {
+    if (!grade) return '';
+    
+    // Convert grade to uppercase to handle case differences
+    const upperGrade = grade.toString().toUpperCase();
+    
+    if (upperGrade === 'A') {
+        return 'grade-a';
+    } else if (upperGrade === 'B+' || upperGrade === 'B') {
+        return 'grade-b';
+    } else if (upperGrade === 'C+' || upperGrade === 'C') {
+        return 'grade-c';
+    } else if (upperGrade === 'D+' || upperGrade === 'D') {
+        return 'grade-d';
+    } else if (upperGrade === 'F') {
+        return 'grade-f';
+    } else {
+        return '';
+    }
+}
+
+// Filter courses by search term
+function filterCourses() {
+    const searchValue = document.querySelector('#searchInput').value.toLowerCase();
+    
+    // Filter current courses
+    const filteredCurrent = matchedCourses.filter(course =>
+        course.name.toLowerCase().includes(searchValue) ||
+        course.category.toLowerCase().includes(searchValue));
+    
+    // Filter completed courses
+    const filteredCompleted = completedCourses.filter(course =>
+        course.name.toLowerCase().includes(searchValue) ||
+        course.category.toLowerCase().includes(searchValue));
+    
+    // Display filtered courses
+    displayFilteredCourses(filteredCurrent, filteredCompleted);
+}
+
+// Filter courses by category
+async function filterCategory() {
+    const select = document.querySelector('#subjectSelect').value;
+    
+    // Filter current courses
+    let filteredCurrent = [];
+    let filteredCompleted = [];
+    
+    if (select !== 'All') {
+        filteredCurrent = matchedCourses.filter(course =>
+            course.category === select);
+        filteredCompleted = completedCourses.filter(course =>
+            course.category === select);
+    } else {
+        filteredCurrent = matchedCourses;
+        filteredCompleted = completedCourses;
+    }
+
+    // Display filtered courses
+    displayFilteredCourses(filteredCurrent, filteredCompleted);
+}
+
+// Display filtered courses in both sections
+function displayFilteredCourses(currentCourses, completedCourses) {
+    // Current courses
+    const courseBox = document.querySelector('#validCourses');
+    courseBox.innerHTML = '';
+    
+    if (currentCourses.length === 0) {
+        courseBox.innerHTML = '<p>No current courses match your criteria.</p>';
+    } else {
+        currentCourses.forEach(course => {
+            const classDiv = document.createElement('div');
+            classDiv.className = 'class-card';
+            classDiv.setAttribute('data-course-num', course.courseNum);
+
+            classDiv.innerHTML = `
+                <h1>${course.name}</h1>
+                <p>Instructor: ${course.instructor}</p>
+                <p>Course Number: ${course.courseNum}</p>
+                <p>Category: ${course.category}</p>
+                <p>Prerequisite: ${course.prerequisite}</p>
+                <span class="status-pill status-in-progress">In Progress</span>
+            `;
+
+            courseBox.append(classDiv);
+        });
+    }
+    
+    // Completed courses
+    const completedBox = document.querySelector('#CompletCourses');
+    completedBox.innerHTML = '';
+    
+    if (completedCourses.length === 0) {
+        completedBox.innerHTML = '<p>No completed courses match your criteria.</p>';
+    } else {
+        completedCourses.forEach(course => {
+            const classDiv = document.createElement('div');
+            classDiv.className = 'class-card';
+            classDiv.setAttribute('data-course-num', course.courseNum);
+            
+            // Get grade styling
+            const gradeClass = getGradeClass(course.grade);
+
+            classDiv.innerHTML = `
+                <h1>${course.name}</h1>
+                <p>Instructor: ${course.instructor}</p>
+                <p>Course Number: ${course.courseNum}</p>
+                <p>Category: ${course.category}</p>
+                <p>Prerequisite: ${course.prerequisite}</p>
+                <p>Grade: <span class="${gradeClass}">${course.grade}</span></p>
+                <span class="status-pill status-completed">Completed</span>
+            `;
+
+            completedBox.append(classDiv);
+        });
     }
 }

@@ -1,10 +1,10 @@
 :root {
-  --base-color: #F7F7F7 ;
-  --base-variant: #EAEAEA ;
-  --text-color: #212121 ;
-  --secondary-text: lightgray ;
-  --primary-color: #4A7BAF ;
-  --accent-color: lightblue ;
+  --base-color: #F7F7F7;
+  --base-variant: #EAEAEA;
+  --text-color: #212121;
+  --secondary-text: lightgray;
+  --primary-color: #4A7BAF;
+  --accent-color: lightblue;
 }
 
 * {
@@ -12,34 +12,30 @@
   padding: 0;
   box-sizing: border-box;
   font-family: 'Pixelify Sans', sans-serif;
-  transition: all 0.3s ease-in-out;
   font-size: 1.1rem;
 }
 
-html {
-  font-size: 16px;
-  scroll-behavior: smooth;
-}
 
 body {
   background-color: var(--base-color);
   color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-header,
-section {
-  padding: 70px min(50px, 7%);
-}
-
-section {
-  background-color: var(--base-variant);
+main {
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
 }
 
 button {
   border: none;
   padding: .8em 2em;
   background-color: var(--primary-color);
-  color: var(--text-color);
+  color: white;
   border-radius: 4px;
   font: inherit;
   text-transform: uppercase;
@@ -47,60 +43,21 @@ button {
   margin-top: 10px;
 }
 
-#theme-switch {
-  height: 50px;
-  width: 50px;
-  padding: 0;
-  border-radius: 50%;
-  background-color: var(--base-variant);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 20px;
-  right: 20px;
-}
 
-#theme-switch svg {
-  fill: var(--accent-color);
-}
-
-#theme-switch svg:last-child {
-  display: none;
-}
-
-.darkmode #theme-switch svg:first-child {
-  display: none;
-}
-
-.darkmode #theme-switch svg:last-child {
-  display: block;
-}
 
 
 .login-form {
-  display: flex;
-  flex-flow: column;
-
   background-color: var(--base-color);
-
-
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  width: 600px;
 }
-
-
-
-
 
 h2 {
   margin: 15px;
-  position: relative;
-  left: 30%;
-  width: 500px;
-
-
+  text-align: center;
+  padding: 10px;
 }
-
-
 
 .login-form form {
   display: flex;
@@ -108,73 +65,54 @@ h2 {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  margin: 2%;
-  border-radius: 8px;
   background-color: var(--base-variant);
-
+  border-radius: 0 0 8px 8px;
 }
 
 .login-form label {
-  width: 50%;
-
+  width: 100%;
+  margin-bottom: 5px;
 }
 
 .login-form form a {
   text-decoration: none;
   text-align: center;
-  position: relative;
-  left: 35%;
   color: var(--text-color);
+  margin: 10px 0;
+  display: block;
+  width: 100%;
 }
 
 .login-form input {
-  width: 50%;
+  width: 100%;
   padding: 12px;
-  margin: 15px;
+  margin-bottom: 15px;
   border: 1px solid snow;
   border-radius: 8px;
-  background-color: var(--secondary-text);
-
-
-
-
+  background-color: white;
 }
 
 button:hover {
-  transform: scale(1.1);
-  /* Makes it pop up */
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
-  /* Adds depth */
+  transform: scale(1.05);
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
 }
 
 @media only screen and (max-width: 600px) {
-
+  main {
+    padding: 10px;
+  }
+  
+ 
+  
   h2 {
-    margin: 15px;
-    position: relative;
-    left: 3%;
-    width: 500px;
-
+    font-size: 1.5rem;
   }
-
-  .login-form form label {
-    width: 100%;
-
+  
+  .login-form form {
+    padding: 15px;
   }
-
-  .login-form form input {
-
-    width: 100%;
-    padding: 12px;
-
-    border: 1px solid snow;
-    border-radius: 8px;
-    background-color: var(--base-variant);
-
-
-
-
+  
+  .login-form input {
+    padding: 10px;
   }
-
-
 }
