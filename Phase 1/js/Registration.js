@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", function () {
     let enrollments = localStorage.getItem("enrollment");
 
     if (!currentUser || currentUser.status !== 'student') {
-
         window.location.href = 'login.html';
         return;
     }
@@ -28,39 +27,45 @@ document.addEventListener("DOMContentLoaded", function () {
     loadAllCourses(currentUser);
 
     document.querySelector('#searchInput').addEventListener("input", () => {
-        const searchValue = document.querySelector('#searchInput').value;
-        console.log(allCourses);
+        const searchValue = document.querySelector('#searchInput').value.toLowerCase();
         const filteredCourses = allCourses.filter(course =>
-            course.name.toLowerCase().includes(searchValue) ||
-            course.category.toLowerCase().includes(searchValue)
-            );
-        const courseBox = document.querySelector('#validCourses');
+            course.status === "pending" && (
+                course.name.toLowerCase().includes(searchValue) ||
+                course.category.toLowerCase().includes(searchValue)
+            )
+        );
+        const courseBox = document.querySelector('#pendingCourses');
 
         courseBox.innerHTML = '';
 
-        if (allCourses.length === 0) {
-            courseBox.innerHTML = '<p>You currently have no assigned courses.</p>';
+        if (filteredCourses.length === 0) {
+            courseBox.innerHTML = '<p>No pending courses match your search.</p>';
             return;
         }
         filteredCourses.forEach(course => {
             const classDiv = document.createElement('div');
             classDiv.className = 'class-card';
-            classDiv.setAttribute('data-course-num', course.courseNum);
+            classDiv.setAttribute('data-course-id', `${course.name}-${course.courseNum}`);
 
             classDiv.innerHTML = `
-            <h1>Name: ${course.name}</h1>
+            <h1>${course.name}</h1>
             <p>Instructor: ${course.instructor}</p>
             <p>Course Number: ${course.courseNum}</p>
             <p>Category: ${course.category}</p>
             <p>Prerequisite: ${course.prerequisite}</p>
-            <p>Status: ${course.status}</p>
+            <p>Enrollment Actual: ${course.enrollment_actual}</p>
+            <p>Enrollment Remaining: ${course.enrollment_maximum}</p>
             <div class="button-container">
-                ${course.status === "valid" ? `<button class="Register pixel2">Register</button>` : ""}
-                ${course.status === "valid" ? `<button class="Remove pixel2">Remove</button>` : ""}
+                <button class="Register pixel2">Register</button>
             </div>
             `;
 
             courseBox.append(classDiv);
+            
+            const registerCourse = classDiv.querySelector('.Register');
+            registerCourse.addEventListener('click', function () {
+                addCourse(course, currentUser);
+            });
         });
     });
     document.querySelector('#subjectSelect').addEventListener("change", filterCategory);
@@ -69,117 +74,205 @@ let allCourses = [];
 let today = new Date();
 
 async function loadAllCourses(currentUser){
-    const coursesResponse = await fetch("data/courses.json");
-    const coursesData = await coursesResponse.json();
-    // console.log(allCourses);
-    // console.log(coursesData);
-    const courseBox = document.querySelector('#validCourses');
-
+   
+    const localStorageCourses = localStorage.getItem('courses');
+    let coursesData;
+    
+    if (localStorageCourses) {
+        coursesData = JSON.parse(localStorageCourses);
+    } else {
+       
+        const coursesResponse = await fetch("data/courses.json");
+        coursesData = await coursesResponse.json();
+        
+        
+        localStorage.setItem('courses', JSON.stringify(coursesData));
+    }
+    
+    const courseBox = document.querySelector('#pendingCourses');
     courseBox.innerHTML = '';
 
-    if (coursesData.length === 0) {
-        courseBox.innerHTML = '<p>No courses available currently.</p>';
+    
+    const pendingCourses = coursesData.filter(course => course.status === "pending");
+    
+    if (pendingCourses.length === 0) {
+        courseBox.innerHTML = '<p>No pending courses available currently.</p>';
         return;
     }
 
-    coursesData.forEach(course =>{
+    allCourses = coursesData; 
+    
+    pendingCourses.forEach(course => {
         const classDiv = document.createElement('div');
         classDiv.className = 'class-card';
-        classDiv.setAttribute('data-course-num', course.courseNum);
-        allCourses.push(course);
+        classDiv.setAttribute('data-course-id', `${course.name}-${course.courseNum}`);
 
         classDiv.innerHTML = `
-            <h1>Name: ${course.name}</h1>
+            <h1>${course.name}</h1>
             <p>Instructor: ${course.instructor}</p>
             <p>Course Number: ${course.courseNum}</p>
             <p>Category: ${course.category}</p>
             <p>Prerequisite: ${course.prerequisite}</p>
-            <p>Status: ${course.status}</p>
+            <p>Enrollment Actual: ${course.enrollment_actual}</p>
+            <p>Enrollment Remaining: ${course.enrollment_maximum}</p>
             <div class="button-container">
-                ${course.status === "valid" ? `<button class="Register pixel2">Register</button>` : ""}
-                ${course.status === "valid" ? `<button class="Remove pixel2">Remove</button>` : ""}
+                <button class="Register pixel2">Register</button>
             </div>
             `;
 
         courseBox.append(classDiv);
-        if(course.status === "valid"){
-            const registerCourse = classDiv.querySelector('.Register')
-            registerCourse.addEventListener('click', function () {
-                addCourse(course,currentUser);
-            });
-        }
         
+        const registerCourse = classDiv.querySelector('.Register');
+        registerCourse.addEventListener('click', function () {
+            addCourse(course, currentUser);
+        });
     });
 }
 
 async function filterCategory() {
     const select = document.querySelector('#subjectSelect').value;
     let filteredCourses = [];
+    
     if (select !== 'All') {
         filteredCourses = allCourses.filter(course =>
-            course.category === select);
+            course.status === "pending" && course.category === select);
     } else {
-        filteredCourses = allCourses;
+        
+        filteredCourses = allCourses.filter(course => course.status === "pending");
     }
 
-    const courseBox = document.querySelector('#validCourses');
+    const courseBox = document.querySelector('#pendingCourses');
 
     courseBox.innerHTML = '';
 
-    if (allCourses.length === 0) {
-        courseBox.innerHTML = '<p>You currently have no assigned courses.</p>';
+    if (filteredCourses.length === 0) {
+        courseBox.innerHTML = '<p>No pending courses available.</p>';
         return;
     }
+    
     filteredCourses.forEach(course => {
         const classDiv = document.createElement('div');
         classDiv.className = 'class-card';
-        classDiv.setAttribute('data-course-num', course.courseNum);
+        classDiv.setAttribute('data-course-id', `${course.name}-${course.courseNum}`);
 
         classDiv.innerHTML = `
-            <h1>Name: ${course.name}</h1>
+            <h1>${course.name}</h1>
             <p>Instructor: ${course.instructor}</p>
             <p>Course Number: ${course.courseNum}</p>
             <p>Category: ${course.category}</p>
             <p>Prerequisite: ${course.prerequisite}</p>
-            <p>Status: ${course.status}</p>
+            <p>Enrollment Actual: ${course.enrollment_actual}</p>
+            <p>Enrollment Remaining: ${course.enrollment_maximum}</p>
             <div class="button-container">
-                ${course.status === "valid" ? `<button class="Register pixel2">Register</button>` : ""}
-                ${course.status === "valid" ? `<button class="Remove pixel2">Remove</button>` : ""}
+                <button class="Register pixel2">Register</button>
             </div>
         `;
         courseBox.append(classDiv);
-
+        
+        const registerCourse = classDiv.querySelector('.Register');
+        registerCourse.addEventListener('click', function () {
+            addCourse(course, currentUser);
+        });
     });
 }
 
-async function addCourse(course,currentUser){
-    const enrollmentfile = await fetch('data/enrollment.json');
-    let enrollmentData = await enrollmentfile.json();
-    const coursesResponse = await fetch("data/courses.json");
-    const coursesData = await coursesResponse.json();
-    const userEnrollments = enrollmentData.filter(c=>c.studentName == currentUser.username);
-    const userCourses = coursesData.filter(course=>
-        userEnrollments.some(enrollment => enrollment.courseNum === course.courseNum)
+async function addCourse(course, currentUser) {
+    try {
+        let enrollmentData;
+        const localEnrollments = localStorage.getItem('enrollment');
+        
+        if (localEnrollments) {
+            enrollmentData = JSON.parse(localEnrollments);
+        } else {
+            const enrollmentResponse = await fetch('data/enrollment.json');
+            enrollmentData = await enrollmentResponse.json();
+        }
+
+       
+        let coursesData;
+        const localCourses = localStorage.getItem('courses');
+        
+        if (localCourses) {
+            coursesData = JSON.parse(localCourses);
+        } else {
+            const coursesResponse = await fetch('data/courses.json');
+            coursesData = await coursesResponse.json();
+        }
+
+        const userEnrollments = enrollmentData.filter(e => e.studentName === currentUser.username);
+        const userCompletedCourses = userEnrollments.filter(e => e.grade && e.grade !== 'F');
+
+       
+        const isAlreadyRegistered = userEnrollments.some(
+            e => e.courseNum === course.courseNum && e.courseName === course.name
         );
-    let preCourse = userCourses.find(c => c.name===course.prerequisite);
-    let checkingCourse = enrollmentData.find(c=> c.courseNum == preCourse.courseNum); 
-    if (userEnrollments.find(c=>c.courseNum==course.courseNum)){
-        alert('Course has already been registered');
-    }else if(course.prerequisite === "none" || checkingCourse.grade != "F"){
-        enrollment = {
-            studentId: currentUser.password.toString(),
-            studentName: currentUser.username,
-            courseNum: course.courseNum,
-            instructor: course.instructor,
-            enrollmentDate: today.toLocaleDateString(),
-            grade: null
-        };
-        enrollmentData.push(enrollment);
-        localStorage.enrollment = JSON.stringify(enrollmentData);
-        alert('Course registered successfully');
-    }else if(checkingCourse.grade == "F"){
-        alert("Prerequisite not passed");
-    }else{
-        alert("Prerequisite not completed");
+
+        if (isAlreadyRegistered) {
+            alert('This specific course is already registered');
+            return;
+        }
+
+        const prerequisiteValidation = validatePrerequisite(course, userCompletedCourses, coursesData);
+
+        if (prerequisiteValidation.isValid) {
+            const newEnrollment = {
+                studentId: currentUser.password.toString(),
+                studentName: currentUser.username,
+                courseNum: course.courseNum,
+                courseName: course.name, 
+                instructor: course.instructor,
+                enrollmentDate: new Date().toISOString().split('T')[0],
+                grade: null
+            };
+
+            enrollmentData.push(newEnrollment);
+            localStorage.setItem('enrollment', JSON.stringify(enrollmentData));
+            
+           
+            const courseIndex = coursesData.findIndex(c => 
+                c.courseNum === course.courseNum && c.name === course.name);
+                
+            if (courseIndex !== -1) {
+                coursesData[courseIndex].enrollment_actual += 1;
+                localStorage.setItem('courses', JSON.stringify(coursesData));
+                localStorage.setItem('courseData', JSON.stringify(coursesData)); // Also update admin view
+            }
+            
+            alert('Course registered successfully');
+            
+          
+            loadAllCourses(currentUser);
+        } else {
+            alert(prerequisiteValidation.message);
+        }
+    } catch (error) {
+        console.error('Course registration error:', error);
+        alert('Registration failed. Please try again.');
     }
+}
+
+function validatePrerequisite(course, completedCourses, allCourses) {
+    if (course.prerequisite === 'none') {
+        return { isValid: true, message: '' };
+    }
+
+    const prerequisiteCourse = allCourses.find(c => c.name === course.prerequisite);
+
+    if (!prerequisiteCourse) {
+        return { 
+            isValid: false, 
+            message: 'Invalid prerequisite configuration' 
+        };
+    }
+
+    const isPrerequisiteCompleted = completedCourses.some(
+        completedCourse => completedCourse.courseNum === prerequisiteCourse.courseNum
+    );
+
+    return isPrerequisiteCompleted 
+        ? { isValid: true, message: '' }
+        : { 
+            isValid: false, 
+            message: `You must complete ${course.prerequisite} before registering` 
+        };
 }

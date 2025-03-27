@@ -60,7 +60,7 @@ main {
 
 
 /* Parent containers */
-#validCourses {
+#pendingCourses {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
     /* Responsive grid */
@@ -233,4 +233,10 @@ body {
 
 footer {
     text-align: center;
+}
+
+
+
+.invalid-course .button-container {
+    display: none;
 }

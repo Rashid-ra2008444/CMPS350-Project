@@ -20,15 +20,41 @@ document.addEventListener("DOMContentLoaded", function() {
     
     
     loadInstructorClasses(currentUser.username);
+    
+ 
+    document.getElementById('searchInput').addEventListener('input', function() {
+        filterClasses(this.value.toLowerCase(), currentUser.username);
+    });
 });
+
+
+function filterClasses(searchTerm, instructorName) {
+    const classCards = document.querySelectorAll('.class-card');
+    
+    classCards.forEach(card => {
+        const className = card.querySelector('h3').textContent.toLowerCase();
+        if (className.includes(searchTerm)) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
 
 async function loadInstructorClasses(instructorName) {
     try {
        
-        const coursesResponse = await fetch("data/courses.json");
-        const coursesData = await coursesResponse.json();
+        let coursesData = [];
+        const localCourses = localStorage.getItem('courses');
         
-       
+        if (localCourses) {
+            coursesData = JSON.parse(localCourses);
+        } else {
+            const coursesResponse = await fetch("data/courses.json");
+            coursesData = await coursesResponse.json();
+        }
+        
+      
         let enrollmentsData = [];
         const localEnrollments = localStorage.getItem('enrollment');
         
@@ -45,7 +71,7 @@ async function loadInstructorClasses(instructorName) {
             }
         }
         
-        
+       
         const instructorCourses = coursesData.filter(course => course.instructor === instructorName);
         
         const classesContainer = document.getElementById('classes-container');
@@ -58,21 +84,24 @@ async function loadInstructorClasses(instructorName) {
             return;
         }
         
-        
+      
         instructorCourses.forEach(course => {
             const classDiv = document.createElement('div');
             classDiv.className = 'class-card';
-            classDiv.setAttribute('data-course-num', course.courseNum);
+            classDiv.setAttribute('data-course-id', `${course.name}-${course.courseNum}`);
             
             
             const statusClass = course.status === 'valid' ? 'status-valid' : 
-                                course.status === 'pending' ? 'status-pending' : 'status-invalid';
+                               course.status === 'pending' ? 'status-pending' : 'status-invalid';
             
-            
+          
             const enrolledStudents = enrollmentsData.filter(enrollment => 
                 enrollment.courseNum === course.courseNum && 
-                enrollment.instructor === instructorName
+                enrollment.courseName === course.name
             );
+            
+           
+            const completedStudents = enrolledStudents.filter(student => student.grade);
             
             classDiv.innerHTML = `
                 <h3>${course.name} (${course.category} ${course.courseNum})</h3>
@@ -80,17 +109,23 @@ async function loadInstructorClasses(instructorName) {
                 <p>Status: <span class="${statusClass}">${course.status}</span></p>
                 <p>Enrollment: ${course.enrollment_actual}/${course.enrollment_maximum}</p>
                 <p><strong>Students Enrolled: ${enrolledStudents.length}</strong></p>
-                <button class="view-grades-btn">View & Submit Grades</button>
+                <p><strong>Students Graded: ${completedStudents.length}/${enrolledStudents.length}</strong></p>
+                <button class="view-grades-btn ${course.status !== 'valid' ? 'disabled' : ''}" 
+                        ${course.status !== 'valid' ? 'disabled' : ''}>
+                    ${course.status === 'valid' ? 'View & Submit Grades' : 'Awaiting Validation'}
+                </button>
             `;
             
             classesContainer.appendChild(classDiv);
             
-            
-            const viewGradesBtn = classDiv.querySelector('.view-grades-btn');
-            viewGradesBtn.addEventListener('click', function() {
-                localStorage.setItem('selectedCourse', course.courseNum);
-                window.location.href = 'instructor_grading.html';
-            });
+            if (course.status === 'valid') {
+                const viewGradesBtn = classDiv.querySelector('.view-grades-btn');
+                viewGradesBtn.addEventListener('click', function() {
+                    localStorage.setItem('selectedCourse', course.courseNum);
+                    localStorage.setItem('selectedCourseName', course.name);
+                    window.location.href = 'instructor_grading.html';
+                });
+            }
         });
         
     } catch (error) {

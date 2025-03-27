@@ -208,7 +208,7 @@ footer {
     border-radius: 10px;
     text-align: center;
     z-index: 1001;
-    max-width: 500px;
+    max-width: 50rem;
     width: 90%;
 }
 
@@ -231,3 +231,5 @@ footer {
     text-align: left;
     margin-bottom: 8px;
 }
+
+

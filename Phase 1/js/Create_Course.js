@@ -32,6 +32,45 @@ document.addEventListener("DOMContentLoaded", function() {
     
     function saveCourseData(courses) {
         localStorage.setItem('courseData', JSON.stringify(courses));
+        
+       
+        updateSystem(courses);
+    }
+    
+
+    function updateSystem(courses) {
+        localStorage.setItem('courses', JSON.stringify(courses));
+        
+       
+        updateEnrollmentStatusFlags(courses);
+    }
+    
+    
+    function updateEnrollmentStatusFlags(courses) {
+        let enrollmentData = [];
+        const localEnrollments = localStorage.getItem('enrollment');
+        
+        if (localEnrollments) {
+            enrollmentData = JSON.parse(localEnrollments);
+            
+            
+            const updatedEnrollments = enrollmentData.map(enrollment => {
+                const matchingCourse = courses.find(course => 
+                    course.courseNum === enrollment.courseNum && course.name === enrollment.courseName);
+                
+                if (matchingCourse) {
+                   
+                    return {
+                        ...enrollment,
+                        courseStatus: matchingCourse.status 
+                    };
+                }
+                return enrollment;
+            });
+            
+            
+            localStorage.setItem('enrollment', JSON.stringify(updatedEnrollments));
+        }
     }
 
     
@@ -88,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 let validateButton = document.createElement("button");
                 validateButton.textContent = "Validate";
                 validateButton.classList.add("pixel2");
-                validateButton.addEventListener("click", () => validateCourse(course.name, box));
+                validateButton.addEventListener("click", () => validateCourse(course.courseNum, course.name, box));
                 buttonContainer.appendChild(validateButton);
             }
 
@@ -135,12 +174,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
         box.querySelector("#saveButton").addEventListener("click", function() {
             console.log("save button clicked");
-            saveCourse(course.name, box);
+            saveCourse(course.courseNum, course.name, box);
         });
     }
 
-    function saveCourse(oldName, box) {
-        let index = courseData.findIndex(course => course.name === oldName);
+    function saveCourse(oldCourseNum, oldName, box) {
+        
+        let index = courseData.findIndex(course => 
+            course.courseNum === oldCourseNum && course.name === oldName);
 
         if (index === -1) {
             console.error("Course not found");
@@ -183,19 +224,21 @@ document.addEventListener("DOMContentLoaded", function() {
 
         box.querySelector(".edit-btn").addEventListener("click", () => editCourse(updateCourse, box));
         if (updateCourse.status === "pending") {
-            box.querySelector(".validate-btn").addEventListener("click", () => validateCourse(updateCourse.name, box));
+            box.querySelector(".validate-btn").addEventListener("click", () => 
+                validateCourse(updateCourse.courseNum, updateCourse.name, box));
         }
         box.querySelector(".delete-btn").addEventListener("click", () => deleteCourse(updateCourse, box));
     }
 
     function deleteCourse(course) {
-        courseData = courseData.filter(c => c.name !== course.name);
+       
+        courseData = courseData.filter(c => 
+            !(c.courseNum === course.courseNum && c.name === course.name));
         
         saveCourseData(courseData);
         displayCourses(courseData);
     }
 
-    // Filter function
     function filterCourses() {
         const searchValue = document.getElementById("searchInput").value.toLowerCase();
         const categoryValue = document.getElementById("courseCategory").value;
@@ -208,8 +251,10 @@ document.addEventListener("DOMContentLoaded", function() {
         displayCourses(filteredCourses);
     }
     
-    function validateCourse(courseName, box) {
-        let course = courseData.find(course => course.name === courseName);
+    function validateCourse(courseNum, courseName, box) {
+       
+        let course = courseData.find(c => 
+            c.courseNum === courseNum && c.name === courseName);
 
         if(course === undefined) {
             console.error("Course not found");
@@ -223,19 +268,22 @@ document.addEventListener("DOMContentLoaded", function() {
         `;
 
         box.querySelector(".valid-btn").addEventListener("click", () => {
-            updateCourseStatus(courseName, "valid");
+            updateCourseStatus(courseNum, courseName, "valid");
             console.log("Course status updated to valid");
             displayCourses(courseData);
         });
         box.querySelector(".invalid-btn").addEventListener("click", () => {
-            updateCourseStatus(courseName, "invalid");
+            updateCourseStatus(courseNum, courseName, "invalid");
             console.log("Course status updated to invalid");
             displayCourses(courseData);
         });
     }
     
-    function updateCourseStatus(courseName, status) {
-        let course = courseData.find(course => course.name === courseName);
+    function updateCourseStatus(courseNum, courseName, status) {
+        // Find course using both courseNum and name to handle duplicate names
+        let course = courseData.find(c => 
+            c.courseNum === courseNum && c.name === courseName);
+            
         if(course === undefined) {
             console.error("Course not found");
             return;
@@ -283,7 +331,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         name: document.getElementById("newName").value,
                         courseNum: document.getElementById("newCourseNum").value,
                         instructor: document.getElementById("newInstructor").value,
-                        prerequisite: document.getElementById("newPrerequisite").value || "None",
+                        prerequisite: document.getElementById("newPrerequisite").value || "none",
                         enrollment_maximum: parseInt(document.getElementById("newEnrolled").value),
                         enrollment_actual: 0,
                         category: document.getElementById("newCategory").value,
@@ -319,6 +367,7 @@ document.addEventListener("DOMContentLoaded", function() {
             resetButton.addEventListener("click", function() {
                 if (confirm("Are you sure you want to reset all course data? This will reload data from the original JSON file.")) {
                     localStorage.removeItem('courseData');
+                    localStorage.removeItem('courses'); // Also clear the registration system data
                     
                     loadFreshData();
                 }
@@ -331,7 +380,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     async function loadFreshData() {
         try {
-            courseData = await fetch("../Phase 1/data/courses.json")
+            courseData = await fetch("data/courses.json")
                 .then(response => response.json())
                 .then(courses => {
                     saveCourseData(courses);

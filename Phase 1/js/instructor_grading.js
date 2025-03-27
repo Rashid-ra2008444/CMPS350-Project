@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
     
-    const selectedCourseNum = parseInt(localStorage.getItem('selectedCourse'), 10);
+    const selectedCourseNum = localStorage.getItem('selectedCourse');
     if (!selectedCourseNum) {
         
         window.location.href = 'instructor_classes.html';
@@ -38,23 +38,31 @@ document.addEventListener("DOMContentLoaded", function() {
 
 async function loadCourseForGrading(instructorName, courseNum) {
     try {
+        // Get courses from localStorage first (if available)
+        let coursesData = [];
+        const localCourses = localStorage.getItem('courses');
         
-        const coursesResponse = await fetch("data/courses.json");
-        const coursesData = await coursesResponse.json();
+        if (localCourses) {
+            coursesData = JSON.parse(localCourses);
+        } else {
+            const coursesResponse = await fetch("data/courses.json");
+            coursesData = await coursesResponse.json();
+        }
         
-        
-        const course = coursesData.find(c => c.courseNum === courseNum && c.instructor === instructorName);
+        // Find the course matching the instructor and course number
+        const course = coursesData.find(c => 
+            c.courseNum === courseNum && c.instructor === instructorName);
         
         if (!course) {
-            document.getElementById('course-container').innerHTML = 
+            document.getElementById('course-details').innerHTML = 
                 '<p>Course not found or you do not have permission to grade this course.</p>';
             return;
         }
         
-        
+        // Set course title in the page
         document.getElementById('course-title').textContent = `${course.name} (${course.category} ${course.courseNum})`;
         
-        
+        // Get enrollment data
         let enrollmentsData = [];
         const localEnrollments = localStorage.getItem('enrollment');
         
@@ -71,16 +79,19 @@ async function loadCourseForGrading(instructorName, courseNum) {
             }
         }
         
-        
+        // Find students enrolled in this course
+        // Fixed: Filter by courseNum only, not by instructor (students will have their own instructor)
         const enrolledStudents = enrollmentsData.filter(enrollment => 
             enrollment.courseNum === course.courseNum && 
-            enrollment.instructor === instructorName
+            enrollment.courseName === course.name
         );
+        
+        console.log("Found enrolled students:", enrolledStudents);
         
         const courseDetails = document.getElementById('course-details');
         const studentList = document.getElementById('student-list');
         
-        
+        // Set status class for styling
         const statusClass = course.status === 'valid' ? 'status-valid' : 
                             course.status === 'pending' ? 'status-pending' : 'status-invalid';
         
@@ -89,6 +100,7 @@ async function loadCourseForGrading(instructorName, courseNum) {
                 <p>Category: ${course.category}</p>
                 <p>Status: <span class="${statusClass}">${course.status}</span></p>
                 <p>Enrollment: ${course.enrollment_actual}/${course.enrollment_maximum}</p>
+                <p>Total Students Enrolled: ${enrolledStudents.length}</p>
             </div>
         `;
         
@@ -100,12 +112,12 @@ async function loadCourseForGrading(instructorName, courseNum) {
                     `<form id="grades-form">
                         ${enrolledStudents.map(student => `
                             <div class="student-item">
-                                <span>${student.studentName} (${student.studentId})</span>
+                                <span>${student.studentName} (ID: ${student.studentId})</span>
                                 <input type="number" class="grade-input" 
                                        name="grade-${student.studentId}" 
                                        min="0" max="100" required
                                        placeholder="Grade"
-                                       value="${student.grade || ''}">
+                                       value="${student.numericGrade || ''}">
                             </div>
                         `).join('')}
                         
@@ -114,11 +126,11 @@ async function loadCourseForGrading(instructorName, courseNum) {
                     </form>`
                     : '<p>No students enrolled in this course.</p>'
                 )
-                : '<p>You can only submit grades for valid courses.</p>'
+                : '<p>You can only submit grades for valid courses. This course must be validated by an administrator first.</p>'
             }
         `;
         
-        
+        // Add event listener for grade submission
         if (course.status === 'valid' && enrolledStudents.length > 0) {
             const form = document.getElementById('grades-form');
             form.addEventListener('submit', function(e) {
@@ -134,52 +146,6 @@ async function loadCourseForGrading(instructorName, courseNum) {
     }
 }
 
-// function submitGrades(students, course, form) {
-//     try {
-//         let allEnrollments = [];
-//         const storedEnrollments = localStorage.getItem('enrollment');
-        
-//         if (storedEnrollments) {
-//             allEnrollments = JSON.parse(storedEnrollments);
-//         }
-        
-        
-//         let updatedEnrollments = allEnrollments.map(enrollment => {
-//             if (enrollment.courseNum === course.courseNum && 
-//                 students.some(s => s.studentId === enrollment.studentId)) {
-                
-               
-//                 const gradeInput = form.querySelector(`input[name="grade-${enrollment.studentId}"]`);
-//                 const grade = parseInt(gradeInput.value, 10);
-                
-               
-//                 return { ...enrollment, grade: grade };
-//             }
-//             return enrollment;
-//         });
-        
-        
-//         localStorage.setItem('enrollment', JSON.stringify(updatedEnrollments));
-        
-        
-//         const successMessage = document.getElementById('success-message');
-//         successMessage.style.display = 'block';
-        
-        
-//         setTimeout(() => {
-//             successMessage.style.display = 'none';
-//         }, 3000);
-        
-//         console.log("Grades submitted and saved to localStorage:", updatedEnrollments);
-        
-//     } catch (error) {
-//         console.error("Error submitting grades:", error);
-//         alert("Error submitting grades. Please try again.");
-//     }
-// }
-
-
-
 function submitGrades(students, course, form) {
     try {
         let allEnrollments = [];
@@ -189,16 +155,17 @@ function submitGrades(students, course, form) {
             allEnrollments = JSON.parse(storedEnrollments);
         }
         
-        // نمشي على كل الطلاب وتحديث درجاتهم
+        // Update enrollments with grades
         let updatedEnrollments = allEnrollments.map(enrollment => {
             if (enrollment.courseNum === course.courseNum && 
+                enrollment.courseName === course.name &&
                 students.some(s => s.studentId === enrollment.studentId)) {
                 
-                // نحصل على الدرجة من حقل الإدخال
+                // Get the grade input
                 const gradeInput = form.querySelector(`input[name="grade-${enrollment.studentId}"]`);
                 
                 if (gradeInput && gradeInput.value) {
-                    // تحويل الدرجة الرقمية إلى حرف
+                    // Convert numeric grade to letter grade
                     const numericGrade = parseInt(gradeInput.value, 10);
                     let letterGrade;
                     
@@ -214,24 +181,30 @@ function submitGrades(students, course, form) {
                         letterGrade = "F";
                     }
                     
-                    // تحديث السجل بالدرجة الحرفية
-                    return { ...enrollment, grade: letterGrade };
+                    // Store both numeric and letter grades, and update status to "completed"
+                    return { 
+                        ...enrollment, 
+                        grade: letterGrade,
+                        numericGrade: numericGrade,
+                        status: "completed" 
+                    };
                 }
             }
             return enrollment;
         });
         
-        // تخزين البيانات المحدثة في localStorage
+        // Save updated enrollments
         localStorage.setItem('enrollment', JSON.stringify(updatedEnrollments));
         
-        // إظهار رسالة نجاح
+        // Show success message
         const successMessage = document.getElementById('success-message');
         successMessage.style.display = 'block';
         
-        // إخفاء الرسالة بعد 3 ثوان
         setTimeout(() => {
             successMessage.style.display = 'none';
         }, 3000);
+        
+        console.log("Grades submitted successfully");
         
     } catch (error) {
         console.error("Error submitting grades:", error);
