@@ -24,7 +24,7 @@
 | *Omer*       | *10-02-2025* | *Making the css file for course page*          |
 | *Rashid*     | *13-02-2025* | *Creating HTML and CSS files for Use Case 5*   |
 | *Rashid*     | *14-02-2025* | *Many adjusting regarding Use Case 5 also added json file including Courses*|
-| *Rashid*     | *15-02-2025* | *Almost done with use case 5 *|
+| *Rashid*     | *15-02-2025* | *Almost done with use case 5 *                 |
 | *yousef*     | *16-02-2025* | create Javascript in login and data json file  |
 | *yousef*     | *09-03-2025* | *update log in front and etc*                  |
 | *Rashid*     | *14-03-2025* | *Update Courses.Json and Create_course now can handle local Storage*|
@@ -33,11 +33,11 @@
 | *Rashid*     | *18-03-2025* | *Done with Use Case 6 , modified the design , changed the coloring in the login*|
 | *Omer*       | *20-03-2025* | *Working on the students courses display, optimizing the display and javascript*|
 | *Yousef*     | *20-03-2025* | *done for learning path and test also i do one event in corses page all in java*|
-| *Omer*       | *21-03-2025* | *Use case 3 being handled using registration html*              |
+| *Omer*       | *21-03-2025* | *Use case 3 being handled using registration html*|
 | *yousef*     | *22-03-2025* | * only do the css for learning path*           |
 | *Rashid*     | *27-03-2025* | *Major updates in codes and fix many logical errors*|
 | *yousef     *| *27-03-2025* | *update and done the complete course in learning path*|
-| *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
+| *yousef*     | *27-03-2025* | *add the vled for the student if full and if not completely Course*|
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
