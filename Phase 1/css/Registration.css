@@ -1,31 +1,38 @@
 * {
     font-family: 'Pixelify Sans', sans-serif;
     font-size: 1.1rem;
+    box-sizing: border-box; /* تطبيق box-sizing على كل العناصر */
+}
+
+body {
+    display: flex;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    max-width: 100%; /* التأكد من عدم تجاوز الصفحة */
+    overflow-x: hidden; /* منع التمرير الأفقي */
 }
 
 main {
     flex: 1;
     display: flex;
     flex-direction: column;
-    /* Stack elements vertically */
     align-items: center;
-    /* Center align */
     gap: 0.4rem;
-    width: 98%;
-    padding: 2px 28px;
+    width: 100%; /* تعديل من 98% إلى 100% */
+    padding: 2px 20px; /* تقليل الهوامش الجانبية */
     justify-self: center;
     font-family: 'Pixelify Sans', sans-serif;
     font-size: 1.1rem;
+    overflow: hidden; /* منع التجاوز */
 }
 
 .banner {
-
     width: 100%;
     padding: 1.3rem;
     border: 4px double black;
     background: white;
     font-weight: bold;
-
 }
 
 .course-box {
@@ -34,6 +41,7 @@ main {
     border: 4px double black;
     padding: 20px;
     text-align: left;
+    overflow: hidden; /* منع التجاوز */
 }
 
 .course-box h2 {
@@ -44,36 +52,30 @@ main {
     display: flex;
     align-items: center;
     gap: 1rem;
+    flex-wrap: wrap; /* السماح بالانتقال للسطر التالي عند الحاجة */
 }
 
 #searchInput,
 #subjectSelect {
-    /* Control overall width so it doesn't span full container */
     width: 200px;
-    /* Increase padding for a bigger feel (height) */
     padding: 0.5rem;
-    /* (Optional) Increase font size if you want them to appear larger */
     font-size: 1rem;
-    /* Ensure box-sizing includes padding in total width/height calculation */
     box-sizing: border-box;
 }
 
-
-/* Parent containers */
+/* تعديل نظام العرض للكروت */
 #pendingCourses {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
-    /* Responsive grid */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* تعديل للتناسب الأفضل */
     gap: 1rem;
-    /* Spacing between boxes */
     width: 100%;
     margin: 0 auto;
-    /* Centers the grid */
     padding: 0.5rem;
-    /* outline:2px solid black; */
+    box-sizing: border-box;
+    overflow: hidden; /* منع التجاوز */
 }
 
-/* Course Boxes */
+/* تعديل أسلوب الكروت */
 .class-card {
     border: 3px solid black;
     padding: 1rem;
@@ -82,6 +84,18 @@ main {
     justify-content: flex-start;
     background-color: wheat;
     transition: all 0.3s ease-in-out;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden; /* منع التجاوز */
+}
+
+/* ضمان عدم تجاوز النصوص */
+.class-card h3, 
+.class-card p {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    margin: 0.5rem 0;
 }
 
 /* Alternate colors for boxes */
@@ -100,14 +114,28 @@ main {
 
 /* Responsive behavior */
 @media (max-width: 768px) {
-
-    #validCourses {
-        grid-template-columns: repeat(auto-fill, minmax(15rem, 20fr));
-
+    #pendingCourses {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     }
 
     .form-box-container {
         grid-template-columns: 1fr;
+    }
+    
+    /* تقليل حجم الهوامش للشاشات الصغيرة */
+    main {
+        padding: 2px 10px;
+    }
+    
+    .course-box {
+        padding: 15px;
+    }
+}
+
+/* للشاشات الصغيرة جدًا */
+@media (max-width: 480px) {
+    #pendingCourses {
+        grid-template-columns: 1fr; /* عمود واحد فقط للشاشات الصغيرة جدًا */
     }
 }
 
@@ -148,14 +176,6 @@ select {
     font-family: 'Press Start 2P', cursive;
 }
 
-body {
-    display: flex;
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-}
-
-
 .sidebar {
     width: 250px;
     background-color: #fff;
@@ -163,12 +183,11 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* justify-content: center; */
     padding-top: 1rem;
     padding-bottom: 1rem;
     min-height: 100vh;
-    /* gap:1rem; */
     text-align: center;
+    flex-shrink: 0; /* منع تقليص الشريط الجانبي */
 }
 
 .sidebar .title {
@@ -187,11 +206,8 @@ body {
 .sidebar nav {
     display: flex;
     flex-direction: column;
-
     width: 100%;
 }
-
-
 
 .sidebar button,
 .sidebar input,
@@ -209,8 +225,6 @@ body {
     color: white;
 }
 
-
-
 .add-course {
     background-color: white;
     border: 3px solid black;
@@ -223,7 +237,6 @@ body {
     transform: translateY(2px);
 }
 
-
 .column {
     border: 6px double black;
     padding: 10px;
@@ -233,12 +246,21 @@ body {
 
 footer {
     text-align: center;
+    width: 100%;
 }
-
-
 
 .invalid-course .button-container {
     display: none;
 }
 
+.prerequisite-not-met {
+    border-left: 4px solid #ff9800;
+    background-color: rgba(255, 152, 0, 0.05);
+}
 
+.prereq-warning {
+    color: #ff5722;
+    font-weight: bold;
+    margin-top: 10px;
+    font-size: 0.9em;
+}

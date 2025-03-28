@@ -146,15 +146,24 @@ async function loadAllCourses(currentUser) {
             if (prereqStatus !== 'met') {
                 classDiv.classList.add('prerequisite-not-met');
             }
+            
+            // Add class if course is full
+            if (course.enrollment_actual >= course.enrollment_maximum) {
+                classDiv.classList.add('course-full');
+            }
 
             classDiv.innerHTML = `
-                <h3>Name: ${course.name}</h3>
+                <h3>${course.name}</h3>
                 <p>Instructor: ${course.instructor}</p>
                 <p>Course Number: ${course.category} ${course.courseNum}</p>
                 <p>Category: ${course.category}</p>
                 <p>Prerequisite: ${course.prerequisite}</p>
                 <p>Status: ${course.status}</p>
-                ${prereqStatus !== 'met' ? `<p class="prereq-warning">⚠️ Prerequisite not completed</p>` : ''}
+                <p>Enrollment: ${course.enrollment_actual}/${course.enrollment_maximum}</p>
+                ${course.enrollment_actual >= course.enrollment_maximum ? 
+                  `<p class="full-warning">⚠️ Course is full</p>` : ''}
+                ${prereqStatus !== 'met' ? 
+                  `<p class="prereq-warning">⚠️ Prerequisite not completed</p>` : ''}
                 <div class="button-container">
                     <button class="Register pixel2">Register</button>
                 </div>
@@ -302,15 +311,24 @@ function displayFilteredCourses(filteredCourses, userEnrollments) {
         if (prereqStatus !== 'met') {
             classDiv.classList.add('prerequisite-not-met');
         }
+        
+        // Add class if course is full
+        if (course.enrollment_actual >= course.enrollment_maximum) {
+            classDiv.classList.add('course-full');
+        }
 
         classDiv.innerHTML = `
-            <h3>Name: ${course.name}</h3>
+            <h3>${course.name}</h3>
             <p>Instructor: ${course.instructor}</p>
             <p>Course Number: ${course.category} ${course.courseNum}</p>
             <p>Category: ${course.category}</p>
             <p>Prerequisite: ${course.prerequisite}</p>
             <p>Status: ${course.status}</p>
-            ${prereqStatus !== 'met' ? `<p class="prereq-warning">⚠️ Prerequisite not completed</p>` : ''}
+            <p>Enrollment: ${course.enrollment_actual}/${course.enrollment_maximum}</p>
+            ${course.enrollment_actual >= course.enrollment_maximum ? 
+              `<p class="full-warning">⚠️ Course is full</p>` : ''}
+            ${prereqStatus !== 'met' ? 
+              `<p class="prereq-warning">⚠️ Prerequisite not completed</p>` : ''}
             <div class="button-container">
                 <button class="Register pixel2">Register</button>
             </div>
@@ -328,7 +346,7 @@ function displayFilteredCourses(filteredCourses, userEnrollments) {
     });
 }
 
-// Add a course for the student - updated to properly check prerequisites
+// Add a course for the student - updated to check enrollment capacity and prerequisites
 async function addCourse(course, currentUser) {
     try {
         // Get enrollment data from localStorage
@@ -354,6 +372,12 @@ async function addCourse(course, currentUser) {
         // Check if student is already enrolled in the course
         if (userEnrollments.some(e => parseInt(e.courseNum, 10) === courseNum)) {
             alert('Course has already been registered');
+            return;
+        }
+        
+        // Check if the course has available seats
+        if (course.enrollment_actual >= course.enrollment_maximum) {
+            alert(`Sorry, the course "${course.name}" is already full (${course.enrollment_actual}/${course.enrollment_maximum} students). Please choose another course.`);
             return;
         }
         
@@ -417,6 +441,26 @@ function registerNewCourse(course, currentUser, enrollmentData) {
     
     // Add new record
     enrollmentData.push(enrollment);
+    
+    // Update enrollment_actual in the course
+    // First, get courses from localStorage
+    let courses = JSON.parse(localStorage.getItem('courses')) || [];
+    const courseIndex = courses.findIndex(c => parseInt(c.courseNum) === parseInt(course.courseNum));
+    
+    if (courseIndex !== -1) {
+        // Increment enrollment count
+        courses[courseIndex].enrollment_actual += 1;
+        // Update courses in localStorage
+        localStorage.setItem('courses', JSON.stringify(courses));
+    } else {
+        console.warn("Course not found in localStorage for updating enrollment count");
+    }
+    
+    // Also update the local allCourses array so UI reflects changes without refresh
+    const localCourseIndex = allCourses.findIndex(c => parseInt(c.courseNum) === parseInt(course.courseNum));
+    if (localCourseIndex !== -1) {
+        allCourses[localCourseIndex].enrollment_actual += 1;
+    }
     
     // Update localStorage
     localStorage.setItem('enrollment', JSON.stringify(enrollmentData));
