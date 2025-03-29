@@ -86,7 +86,7 @@ async function loadInstructorClasses(instructorName) {
                 <h3>${course.name} (${course.category} ${course.courseNum})</h3>
                 <p>Category: ${course.category}</p>
                 <p>Status: <span class="${statusClass}">${course.status}</span></p>
-                <p>Enrollment: ${course.enrollment_actual}/${course.enrollment_maximum}</p>
+                <p>Enrollment: ${course.enrollment_maximum - enrolledStudents.length}/${course.enrollment_maximum}</p>
                 <p><strong>Students Enrolled: ${enrolledStudents.length}</strong></p>
                 <button class="view-grades-btn">View & Submit Grades</button>
             `;
