@@ -94,7 +94,7 @@ async function loadCourseForGrading(instructorName, courseNum) {
             <div class="course-details">
                 <p>Category: ${course.category}</p>
                 <p>Status: <span class="${statusClass}">${course.status}</span></p>
-                <p>Enrollment: ${course.enrollment_actual}/${course.enrollment_maximum}</p>
+                <p>Enrollment: ${course.enrollment_maximum - enrolledStudents.length}/${course.enrollment_maximum}</p>
             </div>
         `;
         
