@@ -65,12 +65,23 @@ document.addEventListener("DOMContentLoaded", function () {
 let allCourses = [];
 let today = new Date();
 
-// Load all available courses - updated to use localStorage
+// Load all available courses - updated to show ONLY pending courses
 async function loadAllCourses(currentUser) {
     try {
-        // Load courses data
-        const coursesResponse = await fetch("data/courses.json");
-        const coursesData = await coursesResponse.json();
+        // First check localStorage for courses data (added by admin)
+        let coursesData = [];
+        const localCourses = localStorage.getItem('courseData');
+        
+        if (localCourses) {
+            // Use courses from localStorage (these include admin additions)
+            coursesData = JSON.parse(localCourses);
+            console.log("Using courses data from localStorage (includes admin additions)");
+        } else {
+            // If not in localStorage, fall back to file
+            console.log("No courses in localStorage, loading from file");
+            const coursesResponse = await fetch("data/courses.json");
+            coursesData = await coursesResponse.json();
+        }
         
         // Load enrollment data from localStorage
         let enrollmentData = JSON.parse(localStorage.getItem("enrollment"));
@@ -98,11 +109,11 @@ async function loadAllCourses(currentUser) {
             return;
         }
 
-        // Store all courses in global variable
-        allCourses = coursesData;
+        // Store only pending courses in global variable
+        allCourses = coursesData.filter(course => course.status === "pending");
+        console.log(`Found ${allCourses.length} pending courses in total`);
         
         // Get current enrollments to avoid showing already enrolled courses
-        // Fixed: Ensure we're correctly checking for this specific student's enrollments
         const currentUserName = currentUser.username;
         console.log("Current user:", currentUserName);
         
@@ -115,23 +126,23 @@ async function loadAllCourses(currentUser) {
         const enrolledCourseNums = userEnrollments.map(e => parseInt(e.courseNum, 10));
         console.log("Already enrolled in courses:", enrolledCourseNums);
         
-        // Filter courses to show only valid ones not already enrolled in
+        // Filter courses to show ONLY pending ones not already enrolled in
         const availableCourses = coursesData.filter(course => {
             const courseNum = parseInt(course.courseNum, 10);
-            const isValid = course.status === "valid";
+            const isPending = course.status === "pending";
             const isAlreadyEnrolled = enrolledCourseNums.includes(courseNum);
             
             if (isAlreadyEnrolled) {
                 console.log(`Course ${courseNum} already enrolled, skipping`);
             }
             
-            return isValid && !isAlreadyEnrolled;
+            return isPending && !isAlreadyEnrolled;
         });
         
-        console.log("Available courses for registration:", availableCourses.length);
+        console.log("Available pending courses for registration:", availableCourses.length);
         
         if (availableCourses.length === 0) {
-            courseBox.innerHTML = '<p>No courses available for registration.</p>';
+            courseBox.innerHTML = '<p>No pending courses available for registration.</p>';
             return;
         }
         
@@ -140,6 +151,9 @@ async function loadAllCourses(currentUser) {
             const classDiv = document.createElement('div');
             classDiv.className = 'class-card';
             classDiv.setAttribute('data-course-num', course.courseNum);
+
+            // Add a class to indicate course status
+            classDiv.classList.add(`status-${course.status}`);
 
             // Add a class to indicate prerequisite status
             const prereqStatus = getPrerequisiteStatus(course, userEnrollments, coursesData);
@@ -151,6 +165,10 @@ async function loadAllCourses(currentUser) {
             if (course.enrollment_actual >= course.enrollment_maximum) {
                 classDiv.classList.add('course-full');
             }
+            
+            // Disable registration if prerequisites not met or course is full
+            const isRegistrationDisabled = course.enrollment_actual >= course.enrollment_maximum || 
+                                          prereqStatus !== 'met';
 
             classDiv.innerHTML = `
                 <h3>${course.name}</h3>
@@ -158,14 +176,15 @@ async function loadAllCourses(currentUser) {
                 <p>Course Number: ${course.category} ${course.courseNum}</p>
                 <p>Category: ${course.category}</p>
                 <p>Prerequisite: ${course.prerequisite}</p>
-                <p>Status: ${course.status}</p>
+                <p>Status: <span class="status-pill status-pending">Pending Approval</span></p>
                 <p>Enrollment: ${course.enrollment_actual}/${course.enrollment_maximum}</p>
                 ${course.enrollment_actual >= course.enrollment_maximum ? 
                   `<p class="full-warning">⚠️ Course is full</p>` : ''}
                 ${prereqStatus !== 'met' ? 
                   `<p class="prereq-warning">⚠️ Prerequisite not completed</p>` : ''}
+                <p class="pending-notice">ℹ️ This course is pending approval</p>
                 <div class="button-container">
-                    <button class="Register pixel2">Register</button>
+                    <button class="Register pixel2" ${isRegistrationDisabled ? 'disabled' : ''}>Register</button>
                 </div>
             `;
 
@@ -173,7 +192,7 @@ async function loadAllCourses(currentUser) {
             
             // Add register button event listener
             const registerCourse = classDiv.querySelector('.Register');
-            if (registerCourse) {
+            if (registerCourse && !registerCourse.hasAttribute('disabled')) {
                 registerCourse.addEventListener('click', function () {
                     addCourse(course, currentUser);
                 });
@@ -194,7 +213,7 @@ function getPrerequisiteStatus(course, userEnrollments, allCourses) {
         return 'met';
     }
     
-    // Find the prerequisite course
+    // Find the prerequisite course - check all courses, not just pending ones
     const prereqCourse = allCourses.find(c => c.name === course.prerequisite);
     if (!prereqCourse) {
         return 'unknown';
@@ -220,7 +239,7 @@ function getPrerequisiteStatus(course, userEnrollments, allCourses) {
     return 'met';
 }
 
-// Filter courses by search term
+// Filter courses by search term - now only for pending courses
 function filterCourses() {
     const searchInput = document.querySelector('#searchInput');
     if (!searchInput) return;
@@ -238,9 +257,8 @@ function filterCourses() {
     );
     const enrolledCourseNums = userEnrollments.map(e => parseInt(e.courseNum, 10));
     
-    // Filter courses
+    // Filter pending courses only
     const filteredCourses = allCourses.filter(course =>
-        course.status === "valid" &&
         !enrolledCourseNums.includes(parseInt(course.courseNum, 10)) &&
         (course.name.toLowerCase().includes(searchValue) ||
          course.category.toLowerCase().includes(searchValue))
@@ -249,7 +267,7 @@ function filterCourses() {
     displayFilteredCourses(filteredCourses, userEnrollments);
 }
 
-// Filter courses by category
+// Filter courses by category - now only for pending courses
 function filterCategory() {
     const select = document.querySelector('#subjectSelect');
     if (!select) return;
@@ -267,18 +285,16 @@ function filterCategory() {
     );
     const enrolledCourseNums = userEnrollments.map(e => parseInt(e.courseNum, 10));
     
-    // Filter courses
+    // Filter pending courses by category
     let filteredCourses = [];
     
     if (selectValue !== 'All') {
         filteredCourses = allCourses.filter(course =>
-            course.status === "valid" &&
             !enrolledCourseNums.includes(parseInt(course.courseNum, 10)) &&
             course.category === selectValue
         );
     } else {
         filteredCourses = allCourses.filter(course =>
-            course.status === "valid" &&
             !enrolledCourseNums.includes(parseInt(course.courseNum, 10))
         );
     }
@@ -297,8 +313,18 @@ function displayFilteredCourses(filteredCourses, userEnrollments) {
     courseBox.innerHTML = '';
 
     if (filteredCourses.length === 0) {
-        courseBox.innerHTML = '<p>No courses match your criteria.</p>';
+        courseBox.innerHTML = '<p>No pending courses match your criteria.</p>';
         return;
+    }
+    
+    // Get all courses for prerequisite checking
+    let allCoursesData = [];
+    const localCourses = localStorage.getItem('courseData');
+    
+    if (localCourses) {
+        allCoursesData = JSON.parse(localCourses);
+    } else {
+        allCoursesData = []; // Empty fallback if needed
     }
     
     filteredCourses.forEach(course => {
@@ -306,8 +332,11 @@ function displayFilteredCourses(filteredCourses, userEnrollments) {
         classDiv.className = 'class-card';
         classDiv.setAttribute('data-course-num', course.courseNum);
 
+        // Add a class to indicate pending status
+        classDiv.classList.add(`status-pending`);
+
         // Add a class to indicate prerequisite status
-        const prereqStatus = getPrerequisiteStatus(course, userEnrollments, allCourses);
+        const prereqStatus = getPrerequisiteStatus(course, userEnrollments, allCoursesData);
         if (prereqStatus !== 'met') {
             classDiv.classList.add('prerequisite-not-met');
         }
@@ -316,6 +345,10 @@ function displayFilteredCourses(filteredCourses, userEnrollments) {
         if (course.enrollment_actual >= course.enrollment_maximum) {
             classDiv.classList.add('course-full');
         }
+        
+        // Disable registration if prerequisites not met or course is full
+        const isRegistrationDisabled = course.enrollment_actual >= course.enrollment_maximum || 
+                                      prereqStatus !== 'met';
 
         classDiv.innerHTML = `
             <h3>${course.name}</h3>
@@ -323,14 +356,15 @@ function displayFilteredCourses(filteredCourses, userEnrollments) {
             <p>Course Number: ${course.category} ${course.courseNum}</p>
             <p>Category: ${course.category}</p>
             <p>Prerequisite: ${course.prerequisite}</p>
-            <p>Status: ${course.status}</p>
+            <p>Status: <span class="status-pill status-pending">Pending Approval</span></p>
             <p>Enrollment: ${course.enrollment_actual}/${course.enrollment_maximum}</p>
             ${course.enrollment_actual >= course.enrollment_maximum ? 
               `<p class="full-warning">⚠️ Course is full</p>` : ''}
             ${prereqStatus !== 'met' ? 
               `<p class="prereq-warning">⚠️ Prerequisite not completed</p>` : ''}
+            <p class="pending-notice">ℹ️ This course is pending approval</p>
             <div class="button-container">
-                <button class="Register pixel2">Register</button>
+                <button class="Register pixel2" ${isRegistrationDisabled ? 'disabled' : ''}>Register</button>
             </div>
         `;
         
@@ -338,7 +372,7 @@ function displayFilteredCourses(filteredCourses, userEnrollments) {
         
         // Add register button event listener
         const registerCourse = classDiv.querySelector('.Register');
-        if (registerCourse) {
+        if (registerCourse && !registerCourse.hasAttribute('disabled')) {
             registerCourse.addEventListener('click', function () {
                 addCourse(course, currentUser);
             });
@@ -346,9 +380,15 @@ function displayFilteredCourses(filteredCourses, userEnrollments) {
     });
 }
 
-// Add a course for the student - updated to check enrollment capacity and prerequisites
+// Add a course for the student - updated for pending courses only
 async function addCourse(course, currentUser) {
     try {
+        // Confirm the course is pending
+        if (course.status !== "pending") {
+            alert('Only pending courses can be registered.');
+            return;
+        }
+        
         // Get enrollment data from localStorage
         let enrollmentData = JSON.parse(localStorage.getItem("enrollment"));
         
@@ -358,8 +398,17 @@ async function addCourse(course, currentUser) {
             enrollmentData = await enrollmentResponse.json();
         }
         
-        // Load courses data
-        const coursesData = await fetch("data/courses.json").then(res => res.json());
+        // Load all courses data for prerequisite checking from localStorage
+        let coursesData = [];
+        const localCourses = localStorage.getItem('courseData');
+        
+        if (localCourses) {
+            coursesData = JSON.parse(localCourses);
+        } else {
+            // If not available in localStorage, load from file
+            const coursesResponse = await fetch("data/courses.json");
+            coursesData = await coursesResponse.json();
+        }
         
         // Check student enrollments - Fixed to use case-insensitive comparison
         const userEnrollments = enrollmentData.filter(e => 
@@ -386,7 +435,7 @@ async function addCourse(course, currentUser) {
             // No prerequisites, can register
             registerNewCourse(course, currentUser, enrollmentData);
         } else {
-            // Find the prerequisite course in the available courses
+            // Find the prerequisite course in all courses
             const prereqCourse = coursesData.find(c => c.name === course.prerequisite);
             
             if (!prereqCourse) {
@@ -427,33 +476,57 @@ async function addCourse(course, currentUser) {
 
 // Register a new course
 function registerNewCourse(course, currentUser, enrollmentData) {
-    // Create new enrollment record
+    // Create new enrollment record with explicit pending status
     const enrollment = {
         studentId: currentUser.password.toString(),
         studentName: currentUser.username,
         courseNum: parseInt(course.courseNum, 10),
         courseName: course.name, // Add course name for easier reference
-        instructor: course.instructor,
+        instructor: course.instructor, // تأكد من أخذ اسم المدرس من الكورس
         enrollmentDate: today.toLocaleDateString(),
         grade: null,
-        courseStatus: course.status // Track course status
+        courseStatus: 'pending' // Explicitly mark as pending
     };
+    
+    // طباعة معلومات التسجيل للتحقق
+    console.log("Course instructor before registration:", course.instructor);
+    console.log("New enrollment with instructor:", enrollment);
+    
+    console.log("Creating new enrollment:", enrollment);
     
     // Add new record
     enrollmentData.push(enrollment);
     
     // Update enrollment_actual in the course
     // First, get courses from localStorage
-    let courses = JSON.parse(localStorage.getItem('courses')) || [];
-    const courseIndex = courses.findIndex(c => parseInt(c.courseNum) === parseInt(course.courseNum));
+    let courses = [];
+    const localCourses = localStorage.getItem('courseData');
     
-    if (courseIndex !== -1) {
+    if (localCourses) {
+        courses = JSON.parse(localCourses);
+        const courseIndex = courses.findIndex(c => parseInt(c.courseNum) === parseInt(course.courseNum));
+        
+        if (courseIndex !== -1) {
+            // Increment enrollment count
+            courses[courseIndex].enrollment_actual += 1;
+            // Update courses in localStorage
+            localStorage.setItem('courseData', JSON.stringify(courses));
+            console.log(`Updated course enrollment in 'courseData': ${courses[courseIndex].name}, new count: ${courses[courseIndex].enrollment_actual}`);
+        } else {
+            console.warn("Course not found in localStorage courseData for updating enrollment count");
+        }
+    }
+    
+    // Also try to update courses in the standard 'courses' localStorage
+    let altCourses = JSON.parse(localStorage.getItem('courses')) || [];
+    const altCourseIndex = altCourses.findIndex(c => parseInt(c.courseNum) === parseInt(course.courseNum));
+    
+    if (altCourseIndex !== -1) {
         // Increment enrollment count
-        courses[courseIndex].enrollment_actual += 1;
+        altCourses[altCourseIndex].enrollment_actual += 1;
         // Update courses in localStorage
-        localStorage.setItem('courses', JSON.stringify(courses));
-    } else {
-        console.warn("Course not found in localStorage for updating enrollment count");
+        localStorage.setItem('courses', JSON.stringify(altCourses));
+        console.log(`Updated course enrollment in 'courses': ${altCourses[altCourseIndex].name}, new count: ${altCourses[altCourseIndex].enrollment_actual}`);
     }
     
     // Also update the local allCourses array so UI reflects changes without refresh
@@ -464,9 +537,10 @@ function registerNewCourse(course, currentUser, enrollmentData) {
     
     // Update localStorage
     localStorage.setItem('enrollment', JSON.stringify(enrollmentData));
+    console.log(`Updated 'enrollment' in localStorage with ${enrollmentData.length} records`);
     
     // Notify user
-    alert('Course registered successfully');
+    alert('Course registered successfully! Note that this course is pending approval.');
     
     // Reload the page to show updated courses
     window.location.reload();

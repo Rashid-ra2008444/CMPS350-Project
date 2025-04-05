@@ -66,7 +66,7 @@ main {
 /* تعديل نظام العرض للكروت */
 #pendingCourses {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* تعديل للتناسب الأفضل */
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* تعديل للتناسب الأفضل */
     gap: 1rem;
     width: 100%;
     margin: 0 auto;
@@ -253,14 +253,5 @@ footer {
     display: none;
 }
 
-.prerequisite-not-met {
-    border-left: 4px solid #ff9800;
-    background-color: rgba(255, 152, 0, 0.05);
-}
 
-.prereq-warning {
-    color: #ff5722;
-    font-weight: bold;
-    margin-top: 10px;
-    font-size: 0.9em;
-}
+

@@ -41,28 +41,51 @@ function validateUserSession() {
     return currentUser;
 }
 
-// Data fetching - updated to use localStorage first
+// Data fetching - updated to use localStorage first and check multiple sources
 async function fetchAllData() {
     try {
-        // Load courses data
-        const coursesResponse = await fetch('data/courses.json');
-        appData.courses = await coursesResponse.json();
+        // Load courses data - try all possible localStorage sources
+        let loadedCourses = false;
         
-        // Priority to data stored in localStorage
+        // First try courseData (admin data)
+        const adminCoursesStorage = localStorage.getItem('courseData');
+        if (adminCoursesStorage) {
+            appData.courses = JSON.parse(adminCoursesStorage);
+            console.log(`Loaded ${appData.courses.length} courses from 'courseData' in localStorage`);
+            loadedCourses = true;
+        } 
+        // Then try courses (registration system data)
+        else {
+            const registrationCoursesStorage = localStorage.getItem('courses');
+            if (registrationCoursesStorage) {
+                appData.courses = JSON.parse(registrationCoursesStorage);
+                console.log(`Loaded ${appData.courses.length} courses from 'courses' in localStorage`);
+                loadedCourses = true;
+            }
+        }
+        
+        // If no courses found in localStorage, load from file
+        if (!loadedCourses) {
+            const coursesResponse = await fetch('data/courses.json');
+            appData.courses = await coursesResponse.json();
+            console.log(`Loaded ${appData.courses.length} courses from data file`);
+        }
+        
+        // Priority to data stored in localStorage for enrollments
         const storedEnrollments = localStorage.getItem('enrollment');
         
         if (storedEnrollments) {
             // Use data from localStorage
             appData.enrollments = JSON.parse(storedEnrollments);
-            console.log("Using enrollment data from localStorage");
+            console.log(`Loaded ${appData.enrollments.length} enrollment records from localStorage`);
         } else {
             // Only if no data in localStorage, use the original file
             const enrollmentResponse = await fetch('data/enrollment.json');
             appData.enrollments = await enrollmentResponse.json();
+            console.log(`Loaded ${appData.enrollments.length} enrollment records from file`);
             
             // Store data in localStorage for next time
             localStorage.setItem('enrollment', JSON.stringify(appData.enrollments));
-            console.log("Using enrollment data from JSON file, saved to localStorage");
         }
     } catch (error) {
         console.error("Error loading data:", error);
@@ -85,6 +108,8 @@ function setupLearningPath(user) {
     const studentEnrollments = appData.enrollments.filter(
         enrollment => enrollment.studentName === username
     );
+    
+    console.log(`Found ${studentEnrollments.length} enrollments for student ${username}`);
     
     if (studentEnrollments.length === 0) {
         displayNoEnrollmentMessage();
@@ -109,16 +134,22 @@ function displayNoEnrollmentMessage() {
     document.querySelector('#pending-courses tbody').innerHTML = noDataMessage;
 }
 
-// Course processing
+// Course processing - updated to handle pending courses
 function processCourseCategories(studentEnrollments) {
     // Clear all tables
     clearAllTables();
     
-    // Process enrolled courses (completed and in-progress)
+    // Count for different course types
+    let completedCount = 0;
+    let inProgressCount = 0;
+    let pendingCount = 0;
+    
+    // Process enrolled courses (completed, in-progress, and pending)
     studentEnrollments.forEach(enrollment => {
         // Convert courseNum to integer for correct comparison
         enrollment.courseNum = parseInt(enrollment.courseNum, 10);
         
+        // Find course info
         const course = appData.courses.find(c => parseInt(c.courseNum, 10) === enrollment.courseNum);
         
         if (!course) {
@@ -126,26 +157,42 @@ function processCourseCategories(studentEnrollments) {
             return;
         }
         
-        // Check if course has a grade (completed) or not (in-progress)
+        console.log(`Processing enrollment for course ${course.courseNum} with status: ${course.status}`);
+        console.log(`Enrollment courseStatus: ${enrollment.courseStatus || 'not set'}, has grade: ${!!enrollment.grade}`);
+        
+        // Check course status and grade
         if (enrollment.grade) {
             // Completed course (has a grade)
             addCompletedCourse(course, enrollment);
-        } else {
-            // In-progress course
+            completedCount++;
+        } 
+        // Check both enrollment.courseStatus and course.status for pending
+        else if (enrollment.courseStatus === 'pending' || course.status === 'pending') {
+            // Pending course
+            addPendingCourse(course, enrollment);
+            pendingCount++;
+        } 
+        else {
+            // In-progress course (not pending and no grade)
             addInProgressCourse(course, enrollment);
+            inProgressCount++;
         }
     });
     
-    // MODIFIED: Only show a message in pending courses section
-    const pendingCoursesTable = document.querySelector('#pending-courses tbody');
-    const row = document.createElement('tr');
-    row.innerHTML = `
-        <td colspan="4" class="no-courses">No pending courses. Use the Registration page to register for new courses.</td>
-    `;
-    pendingCoursesTable.appendChild(row);
+    console.log(`Processed ${completedCount} completed courses, ${inProgressCount} in-progress courses, and ${pendingCount} pending courses`);
     
     // Check if tables are empty and display messages if needed
-    checkEmptyTables(['completed-courses', 'in-progress-courses']);
+    if (completedCount === 0) {
+        addEmptyTableMessage('completed-courses');
+    }
+    
+    if (inProgressCount === 0) {
+        addEmptyTableMessage('in-progress-courses');
+    }
+    
+    if (pendingCount === 0) {
+        addEmptyTableMessage('pending-courses');
+    }
 }
 
 function clearAllTables() {
@@ -176,8 +223,6 @@ function addInProgressCourse(course, enrollment) {
     const tableBody = document.querySelector('#in-progress-courses tbody');
     const row = document.createElement('tr');
     
-
-    
     row.innerHTML = `
         <td>${course.category} ${course.courseNum}</td>
         <td>${course.name}</td>
@@ -187,7 +232,26 @@ function addInProgressCourse(course, enrollment) {
     tableBody.appendChild(row);
 }
 
-// REMOVED: The addPendingCourses function to prevent automatic display of pending courses
+// New function to add pending courses to the pending courses table
+function addPendingCourse(course, enrollment) {
+    const tableBody = document.querySelector('#pending-courses tbody');
+    const row = document.createElement('tr');
+    
+    // Use current date for enrollment date if not available
+    const enrollmentDate = enrollment.enrollmentDate || new Date().toLocaleDateString();
+    
+    row.innerHTML = `
+        <td>${course.category} ${course.courseNum}</td>
+        <td>${course.name}</td>
+        <td>${enrollmentDate}</td>
+        <td><span class="status-pill status-pending">Pending Approval</span></td>
+    `;
+    
+    // Add a class to highlight pending courses
+    row.classList.add('pending-row');
+    
+    tableBody.appendChild(row);
+}
 
 function checkEmptyTables(tableIds) {
     tableIds.forEach(tableId => {
@@ -226,18 +290,6 @@ function getGradeClass(grade) {
     } else {
         return '';
     }
-}
-
-function generateFutureDate() {
-    const today = new Date();
-    const futureDate = new Date(today);
-    
-    // Add 1-3 months to the current date
-    const monthsToAdd = Math.floor(Math.random() * 3) + 1;
-    futureDate.setMonth(today.getMonth() + monthsToAdd);
-    
-    // Format the date as MM/DD/YYYY
-    return `${futureDate.getMonth() + 1}/${futureDate.getDate()}/${futureDate.getFullYear()}`;
 }
 
 // Navigation

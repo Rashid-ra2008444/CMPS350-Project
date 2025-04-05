@@ -53,7 +53,7 @@ main {
 
 
 /* Parent containers */
-#validCourses {
+#validCourses,#pendingCourses {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
     /* Responsive grid */

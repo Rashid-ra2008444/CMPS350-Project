@@ -88,5 +88,15 @@
         "enrollment_actual": 30,
         "category": "CMPS",
         "status": "valid"
+    },
+    {
+        "name": "Programming Concept",
+        "courseNum": 151,
+        "instructor": "Mohammed Azeem",
+        "prerequisite": "none",
+        "enrollment_maximum": 30,
+        "enrollment_actual": 15,
+        "category": "CMPS",
+        "status": "pending"
     }
 ]
