@@ -136,7 +136,6 @@ p {
     font-size: 0.8rem;
 }
 
-/* Improved banner styling */
 .banner {
     margin-top: 20px;
     width: 100%;
@@ -149,7 +148,6 @@ p {
     box-sizing: border-box;
 }
 
-/* Button styling */
 .coursesBUT, .lougBUT {
     background-color: white;
     border: 4px double black;
@@ -171,7 +169,6 @@ p {
     transform: translateY(2px);
 }
 
-/* Responsive styles */
 @media (max-width: 600px) {
     .container {
         padding: 5px;

@@ -27,7 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.href = 'Registration.html';
     });
 
-    // تحميل المواد المعلقة والمواد المتاحة
     loadAllCourses(currentUser);
 
     document.querySelector('#searchInput').addEventListener("input", filterCourses);
@@ -39,7 +38,6 @@ let pendingCourses = []; // Pending courses
 let validCourses = []; // Valid courses
 let enrollmentsData = [];
 
-// تحميل جميع المواد (المعلقة والمتاحة)
 async function loadAllCourses(currentUser) {
     try {
         console.log("Loading pending courses for user:", currentUser.username);
@@ -177,10 +175,8 @@ async function loadAllCourses(currentUser) {
                 classDiv.className = 'class-card pending-card'; // Add pending-card class for styling
                 classDiv.setAttribute('data-course-num', course.courseNum);
 
-                // طباعة معلومات المدرس للتحقق
                 console.log(`Pending course ${course.courseNum} instructor:`, course.instructor);
                 
-                // استخدام اسم المدرس من الكورس أو من تسجيل الطالب إذا كان متاحًا
                 const instructorName = course.instructor || "Unknown";
                 
                 classDiv.innerHTML = `
@@ -206,10 +202,8 @@ async function loadAllCourses(currentUser) {
                 classDiv.className = 'class-card valid-card'; // Add valid-card class for styling
                 classDiv.setAttribute('data-course-num', course.courseNum);
 
-                // طباعة معلومات المدرس للتحقق
                 console.log(`Valid course ${course.courseNum} instructor:`, course.instructor);
                 
-                // استخدام اسم المدرس من الكورس أو من تسجيل الطالب إذا كان متاحًا
                 const instructorName = course.instructor || "Unknown";
                 
                 classDiv.innerHTML = `

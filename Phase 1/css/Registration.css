@@ -1,7 +1,7 @@
 * {
     font-family: 'Pixelify Sans', sans-serif;
     font-size: 1.1rem;
-    box-sizing: border-box; /* تطبيق box-sizing على كل العناصر */
+    box-sizing: border-box;
 }
 
 body {
@@ -9,8 +9,8 @@ body {
     margin: 0;
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
-    max-width: 100%; /* التأكد من عدم تجاوز الصفحة */
-    overflow-x: hidden; /* منع التمرير الأفقي */
+    max-width: 100%; 
+    overflow-x: hidden; 
 }
 
 main {
@@ -19,12 +19,12 @@ main {
     flex-direction: column;
     align-items: center;
     gap: 0.4rem;
-    width: 100%; /* تعديل من 98% إلى 100% */
-    padding: 2px 20px; /* تقليل الهوامش الجانبية */
+    width: 100%; 
+    padding: 2px 20px; 
     justify-self: center;
     font-family: 'Pixelify Sans', sans-serif;
     font-size: 1.1rem;
-    overflow: hidden; /* منع التجاوز */
+    overflow: hidden; 
 }
 
 .banner {
@@ -41,7 +41,7 @@ main {
     border: 4px double black;
     padding: 20px;
     text-align: left;
-    overflow: hidden; /* منع التجاوز */
+    overflow: hidden;
 }
 
 .course-box h2 {
@@ -52,7 +52,7 @@ main {
     display: flex;
     align-items: center;
     gap: 1rem;
-    flex-wrap: wrap; /* السماح بالانتقال للسطر التالي عند الحاجة */
+    flex-wrap: wrap;
 }
 
 #searchInput,
@@ -63,19 +63,18 @@ main {
     box-sizing: border-box;
 }
 
-/* تعديل نظام العرض للكروت */
 #pendingCourses {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* تعديل للتناسب الأفضل */
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: 1rem;
     width: 100%;
     margin: 0 auto;
     padding: 0.5rem;
     box-sizing: border-box;
-    overflow: hidden; /* منع التجاوز */
+    overflow: hidden; 
 }
 
-/* تعديل أسلوب الكروت */
+
 .class-card {
     border: 3px solid black;
     padding: 1rem;
@@ -86,10 +85,10 @@ main {
     transition: all 0.3s ease-in-out;
     width: 100%;
     box-sizing: border-box;
-    overflow: hidden; /* منع التجاوز */
+    overflow: hidden;
 }
 
-/* ضمان عدم تجاوز النصوص */
+
 .class-card h3, 
 .class-card p {
     max-width: 100%;
@@ -98,7 +97,6 @@ main {
     margin: 0.5rem 0;
 }
 
-/* Alternate colors for boxes */
 .class-card:nth-child(odd) {
     background-color: wheat;
 }
@@ -112,7 +110,6 @@ main {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Responsive behavior */
 @media (max-width: 768px) {
     #pendingCourses {
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -122,7 +119,6 @@ main {
         grid-template-columns: 1fr;
     }
     
-    /* تقليل حجم الهوامش للشاشات الصغيرة */
     main {
         padding: 2px 10px;
     }
@@ -132,10 +128,9 @@ main {
     }
 }
 
-/* للشاشات الصغيرة جدًا */
 @media (max-width: 480px) {
     #pendingCourses {
-        grid-template-columns: 1fr; /* عمود واحد فقط للشاشات الصغيرة جدًا */
+        grid-template-columns: 1fr; 
     }
 }
 
@@ -187,7 +182,7 @@ select {
     padding-bottom: 1rem;
     min-height: 100vh;
     text-align: center;
-    flex-shrink: 0; /* منع تقليص الشريط الجانبي */
+    flex-shrink: 0;
 }
 
 .sidebar .title {

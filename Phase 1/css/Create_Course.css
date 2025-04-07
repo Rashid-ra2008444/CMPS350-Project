@@ -2,7 +2,7 @@ main {
     flex: 1;
     display: flex;
     flex-direction: column; /* Stack elements vertically */
-    align-items: center; /* Center align */
+    align-items: center; 
     gap:0.4rem;
     width: 98%;
     padding: 2px  28px;
@@ -28,7 +28,6 @@ main {
     text-align: left;
 }
 
-/* Parent containers */
 #invalidCourses, #pendingCourses, #validCourses {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); /* Responsive grid */
