@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function() {
             
             // Map through enrollments and update course status
             const updatedEnrollments = enrollmentData.map(enrollment => {
-                // Try to match by CRN first
+                // Try to match by CRN first (this is the primary identifier)
                 let matchingCourse = null;
                 
                 if (enrollment.crn) {
@@ -73,18 +73,19 @@ document.addEventListener("DOMContentLoaded", function() {
                         parseInt(course.crn, 10) === enrollmentCourseCrn);
                 }
                 
-                // If no match by CRN, try to match by courseNum (backwards compatibility)
-                if (!matchingCourse && enrollment.courseNum) {
+                // Only if no match by CRN, try to match by courseNum AND instructor (both needed for uniqueness)
+                if (!matchingCourse && enrollment.courseNum && enrollment.instructor) {
                     const enrollmentCourseNum = parseInt(enrollment.courseNum, 10);
                     
-                    // Find matching course by courseNum
+                    // Find matching course by courseNum AND instructor to ensure we only match the right section
                     matchingCourse = courses.find(course => 
-                        parseInt(course.courseNum, 10) === enrollmentCourseNum);
+                        parseInt(course.courseNum, 10) === enrollmentCourseNum && 
+                        course.instructor === enrollment.instructor);
                         
-                    // If we found a match by courseNum, update the CRN in the enrollment record
+                    // If we found a match by courseNum+instructor, update the CRN in the enrollment record
                     if (matchingCourse) {
                         enrollment.crn = matchingCourse.crn;
-                        console.log(`Updated enrollment CRN for courseNum ${enrollmentCourseNum} to ${matchingCourse.crn}`);
+                        console.log(`Updated enrollment CRN for courseNum ${enrollmentCourseNum} with instructor ${enrollment.instructor} to ${matchingCourse.crn}`);
                     }
                 }
                 
@@ -124,6 +125,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function generateRandomCRN() {
+
         return Math.floor(10000+Math.random() * 90000); 
     }
     
@@ -132,29 +134,29 @@ document.addEventListener("DOMContentLoaded", function() {
         const pendingCourses = document.getElementById("pendingCourses");
         const validCourses = document.getElementById("validCourses");
         const invalidCourses = document.getElementById("invalidCourses");
-
+    
         pendingCourses.innerHTML = "";
         validCourses.innerHTML = "";
         invalidCourses.innerHTML = "";
-
+    
         // Count courses by status for display
         let pendingCount = 0;
         let validCount = 0;
         let invalidCount = 0;
-
+    
         courses.forEach(course => {
             const box = document.createElement("div");
             box.classList.add("box");
-
-            // Track actual enrollment from enrollment data
-            const actualEnrollment = getActualEnrollment(course.courseNum, course.crn);
+    
+            // Track actual enrollment from enrollment data - UPDATED: Pass instructor too
+            const actualEnrollment = getActualEnrollment(course.courseNum, course.crn, course.instructor);
             
             // Update course enrollment count if different
             if (actualEnrollment !== null && course.enrollment_actual !== actualEnrollment) {
                 course.enrollment_actual = actualEnrollment;
                 // We'll save this update at the end
             }
-
+    
             let courseContent = document.createElement("div");
             courseContent.classList.add("course-content");
             courseContent.innerHTML = `
@@ -166,17 +168,19 @@ document.addEventListener("DOMContentLoaded", function() {
                 <p><strong>Status:</strong> <span class="status-${course.status}">${course.status}</span></p>
                 <p><strong>CRN:</strong> ${course.crn}</p>
             `;
-
+    
+            
+            
             let buttonContainer = document.createElement("div");
             buttonContainer.classList.add("button-container");
-
+    
             if(course.status === "pending") {
                 let editButton = document.createElement("button");
                 editButton.textContent = "Edit";
                 editButton.classList.add("pixel2");
                 editButton.addEventListener("click", () => editCourse(course, box));
                 buttonContainer.appendChild(editButton);
-
+    
                 let validateButton = document.createElement("button");
                 validateButton.textContent = "Validate";
                 validateButton.classList.add("pixel2");
@@ -189,13 +193,13 @@ document.addEventListener("DOMContentLoaded", function() {
             } else {
                 invalidCount++;
             }
-
+    
             let deleteButton = document.createElement("button");
             deleteButton.textContent = "Delete";
             deleteButton.classList.add("pixel2");
             deleteButton.addEventListener("click", () => deleteCourse(course, box));
             buttonContainer.appendChild(deleteButton);
-
+    
             box.appendChild(courseContent);
             box.appendChild(buttonContainer);
             
@@ -215,17 +219,23 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Get actual enrollment count from enrollment data
-    function getActualEnrollment(courseNum, crn) {
+    function getActualEnrollment(courseNum, crn, instructor) {
         const enrollmentData = JSON.parse(localStorage.getItem('enrollment'));
         if (!enrollmentData) return null;
         
         // First try to get enrollments by CRN (primary method)
-        let enrollments = enrollmentData.filter(e => e.crn && parseInt(e.crn, 10) === parseInt(crn, 10));
+        let enrollments = enrollmentData.filter(e => 
+            e.crn && parseInt(e.crn, 10) === parseInt(crn, 10) && 
+            e.instructor === instructor // Add instructor check for proper section identification
+        );
         
-        // Fallback to courseNum if no CRN matches found (backwards compatibility)
-        if (enrollments.length === 0 && courseNum) {
+        // Fallback to courseNum + instructor if no CRN matches found (backwards compatibility)
+        if (enrollments.length === 0 && courseNum && instructor) {
             const courseNumInt = parseInt(courseNum, 10);
-            enrollments = enrollmentData.filter(e => parseInt(e.courseNum, 10) === courseNumInt);
+            enrollments = enrollmentData.filter(e => 
+                parseInt(e.courseNum, 10) === courseNumInt && 
+                e.instructor === instructor // Must match both courseNum and instructor
+            );
         }
         
         return enrollments.length;
@@ -434,7 +444,19 @@ document.addEventListener("DOMContentLoaded", function() {
                         alert("Please fill in all required fields.");
                         return;
                     }
-                    
+                    let isExistCrn = false;
+                    let newCrn = 0;
+                    while (isExistCrn === false) {
+                        // Check if CRN already exists
+                        newCrn = generateRandomCRN();
+                        isExistCrn = courseData.some(course => parseInt(course.crn, 10) === newCrn);
+                        if (isExistCrn) {
+                            console.log(`CRN ${newCrn} already exists, generating a new one...`);
+                        } else {
+                            console.log(`Generated new CRN: ${newCrn}`);
+                            break;
+                        }
+                    }
                     // Create new course object
                     let newCourse = {
                         name: name,
@@ -445,7 +467,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         enrollment_actual: 0,
                         category: document.getElementById("newCategory").value,
                         status: "pending",
-                        crn: generateRandomCRN() // Generate random CRN
+                        crn: newCrn // Generate random CRN
                     };
                     
                     // Add course to data

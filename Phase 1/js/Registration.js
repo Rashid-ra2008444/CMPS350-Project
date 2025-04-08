@@ -123,17 +123,33 @@ async function loadAllCourses(currentUser) {
         
         console.log("User enrollments found:", userEnrollments.length);
         
-        const enrolledCourseNums = userEnrollments.map(e => parseInt(e.courseNum, 10));
-        console.log("Already enrolled in courses:", enrolledCourseNums);
+        // Create a set of enrolled course identifiers (CRN and courseNum)
+        const enrolledCRNs = new Set();
+        const enrolledCourseNums = new Set();
+        
+        userEnrollments.forEach(enrollment => {
+            // Add CRN to enrolled set if available
+            if (enrollment.crn) {
+                enrolledCRNs.add(parseInt(enrollment.crn, 10));
+            }
+            // Always add courseNum as backup
+            enrolledCourseNums.add(parseInt(enrollment.courseNum, 10));
+        });
+        
+        console.log("Already enrolled CRNs:", [...enrolledCRNs]);
+        console.log("Already enrolled course numbers:", [...enrolledCourseNums]);
         
         // Filter courses to show ONLY pending ones not already enrolled in
         const availableCourses = coursesData.filter(course => {
             const courseNum = parseInt(course.courseNum, 10);
+            const courseCRN = parseInt(course.crn, 10);
             const isPending = course.status === "pending";
-            const isAlreadyEnrolled = enrolledCourseNums.includes(courseNum);
+            
+            // Check if student is already enrolled using either CRN or courseNum
+            const isAlreadyEnrolled = enrolledCRNs.has(courseCRN) || enrolledCourseNums.has(courseNum);
             
             if (isAlreadyEnrolled) {
-                console.log(`Course ${courseNum} already enrolled, skipping`);
+                console.log(`Course ${courseNum} (CRN: ${courseCRN}) already enrolled, skipping`);
             }
             
             return isPending && !isAlreadyEnrolled;
@@ -151,6 +167,7 @@ async function loadAllCourses(currentUser) {
             const classDiv = document.createElement('div');
             classDiv.className = 'class-card';
             classDiv.setAttribute('data-course-num', course.courseNum);
+            classDiv.setAttribute('data-crn', course.crn);
 
             // Add a class to indicate course status
             classDiv.classList.add(`status-${course.status}`);
@@ -170,14 +187,23 @@ async function loadAllCourses(currentUser) {
             const isRegistrationDisabled = course.enrollment_actual >= course.enrollment_maximum || 
                                           prereqStatus !== 'met';
 
-            const enrolledStudents = enrollmentData.filter(enrollment => 
-                parseInt(enrollment.courseNum, 10) === parseInt(course.courseNum,10) && 
-                    enrollment.instructor === course.instructor
-                        );
+            // Find enrolled students for this course by CRN (preferred) or courseNum
+            const enrolledStudents = enrollmentData.filter(enrollment => {
+                // Try to match by CRN first
+                if (enrollment.crn && course.crn) {
+                    return parseInt(enrollment.crn, 10) === parseInt(course.crn, 10) && 
+                           enrollment.instructor === course.instructor;
+                }
+                // Fall back to courseNum
+                return parseInt(enrollment.courseNum, 10) === parseInt(course.courseNum, 10) && 
+                       enrollment.instructor === course.instructor;
+            });
+            
             classDiv.innerHTML = `
                 <h3>${course.name}</h3>
                 <p>Instructor: ${course.instructor}</p>
                 <p>Course Number: ${course.category} ${course.courseNum}</p>
+                <p>CRN: ${course.crn}</p>
                 <p>Category: ${course.category}</p>
                 <p>Prerequisite: ${course.prerequisite}</p>
                 <p>Status: <span class="status-pill status-pending">Pending Approval</span></p>
@@ -224,9 +250,21 @@ function getPrerequisiteStatus(course, userEnrollments, allCourses) {
     }
     
     // Check if student has completed the prerequisite
-    const prereqEnrollment = userEnrollments.find(e => 
-        parseInt(e.courseNum, 10) === parseInt(prereqCourse.courseNum, 10)
-    );
+    // First try to find by CRN
+    let prereqEnrollment = null;
+    
+    if (prereqCourse.crn) {
+        prereqEnrollment = userEnrollments.find(e => 
+            e.crn && parseInt(e.crn, 10) === parseInt(prereqCourse.crn, 10)
+        );
+    }
+    
+    // If not found by CRN, fall back to courseNum
+    if (!prereqEnrollment) {
+        prereqEnrollment = userEnrollments.find(e => 
+            parseInt(e.courseNum, 10) === parseInt(prereqCourse.courseNum, 10)
+        );
+    }
     
     if (!prereqEnrollment) {
         return 'not-enrolled';
@@ -259,14 +297,31 @@ function filterCourses() {
     const userEnrollments = enrollmentData.filter(e => 
         e.studentName && e.studentName.toLowerCase() === currentUser.username.toLowerCase()
     );
-    const enrolledCourseNums = userEnrollments.map(e => parseInt(e.courseNum, 10));
     
-    // Filter pending courses only
-    const filteredCourses = allCourses.filter(course =>
-        !enrolledCourseNums.includes(parseInt(course.courseNum, 10)) &&
-        (course.name.toLowerCase().includes(searchValue) ||
-         course.category.toLowerCase().includes(searchValue))
-    );
+    // Create sets of enrolled course identifiers
+    const enrolledCRNs = new Set();
+    const enrolledCourseNums = new Set();
+    
+    userEnrollments.forEach(enrollment => {
+        if (enrollment.crn) {
+            enrolledCRNs.add(parseInt(enrollment.crn, 10));
+        }
+        enrolledCourseNums.add(parseInt(enrollment.courseNum, 10));
+    });
+    
+    // Filter pending courses that match search term and are not enrolled
+    const filteredCourses = allCourses.filter(course => {
+        const courseCRN = parseInt(course.crn, 10);
+        const courseNum = parseInt(course.courseNum, 10);
+        const isEnrolled = enrolledCRNs.has(courseCRN) || enrolledCourseNums.has(courseNum);
+        
+        return !isEnrolled && (
+            course.name.toLowerCase().includes(searchValue) ||
+            course.category.toLowerCase().includes(searchValue) ||
+            course.crn.toString().includes(searchValue) ||
+            course.courseNum.toString().includes(searchValue)
+        );
+    });
     
     displayFilteredCourses(filteredCourses, userEnrollments);
 }
@@ -287,20 +342,37 @@ function filterCategory() {
     const userEnrollments = enrollmentData.filter(e => 
         e.studentName && e.studentName.toLowerCase() === currentUser.username.toLowerCase()
     );
-    const enrolledCourseNums = userEnrollments.map(e => parseInt(e.courseNum, 10));
+    
+    // Create sets of enrolled course identifiers
+    const enrolledCRNs = new Set();
+    const enrolledCourseNums = new Set();
+    
+    userEnrollments.forEach(enrollment => {
+        if (enrollment.crn) {
+            enrolledCRNs.add(parseInt(enrollment.crn, 10));
+        }
+        enrolledCourseNums.add(parseInt(enrollment.courseNum, 10));
+    });
     
     // Filter pending courses by category
     let filteredCourses = [];
     
     if (selectValue !== 'All') {
-        filteredCourses = allCourses.filter(course =>
-            !enrolledCourseNums.includes(parseInt(course.courseNum, 10)) &&
-            course.category === selectValue
-        );
+        filteredCourses = allCourses.filter(course => {
+            const courseCRN = parseInt(course.crn, 10);
+            const courseNum = parseInt(course.courseNum, 10);
+            const isEnrolled = enrolledCRNs.has(courseCRN) || enrolledCourseNums.has(courseNum);
+            
+            return !isEnrolled && course.category === selectValue;
+        });
     } else {
-        filteredCourses = allCourses.filter(course =>
-            !enrolledCourseNums.includes(parseInt(course.courseNum, 10))
-        );
+        filteredCourses = allCourses.filter(course => {
+            const courseCRN = parseInt(course.crn, 10);
+            const courseNum = parseInt(course.courseNum, 10);
+            const isEnrolled = enrolledCRNs.has(courseCRN) || enrolledCourseNums.has(courseNum);
+            
+            return !isEnrolled;
+        });
     }
 
     displayFilteredCourses(filteredCourses, userEnrollments);
@@ -331,10 +403,14 @@ function displayFilteredCourses(filteredCourses, userEnrollments) {
         allCoursesData = []; // Empty fallback if needed
     }
     
+    // Get enrollment data to check current enrollment counts
+    const enrollmentData = JSON.parse(localStorage.getItem("enrollment")) || [];
+    
     filteredCourses.forEach(course => {
         const classDiv = document.createElement('div');
         classDiv.className = 'class-card';
         classDiv.setAttribute('data-course-num', course.courseNum);
+        classDiv.setAttribute('data-crn', course.crn);
 
         // Add a class to indicate pending status
         classDiv.classList.add(`status-pending`);
@@ -345,24 +421,40 @@ function displayFilteredCourses(filteredCourses, userEnrollments) {
             classDiv.classList.add('prerequisite-not-met');
         }
         
+        // Find enrolled students in this course by CRN or courseNum
+        const enrolledStudents = enrollmentData.filter(enrollment => {
+            // Try to match by CRN first
+            if (enrollment.crn && course.crn) {
+                return parseInt(enrollment.crn, 10) === parseInt(course.crn, 10) && 
+                       enrollment.instructor === course.instructor;
+            }
+            // Fall back to courseNum
+            return parseInt(enrollment.courseNum, 10) === parseInt(course.courseNum, 10) && 
+                   enrollment.instructor === course.instructor;
+        });
+        
+        // Calculate current enrollment
+        const currentEnrollment = enrolledStudents.length;
+        
         // Add class if course is full
-        if (course.enrollment_actual >= course.enrollment_maximum) {
+        if (currentEnrollment >= course.enrollment_maximum) {
             classDiv.classList.add('course-full');
         }
         
         // Disable registration if prerequisites not met or course is full
-        const isRegistrationDisabled = course.enrollment_actual >= course.enrollment_maximum || 
+        const isRegistrationDisabled = currentEnrollment >= course.enrollment_maximum || 
                                       prereqStatus !== 'met';
 
         classDiv.innerHTML = `
             <h3>${course.name}</h3>
             <p>Instructor: ${course.instructor}</p>
             <p>Course Number: ${course.category} ${course.courseNum}</p>
+            <p>CRN: ${course.crn}</p>
             <p>Category: ${course.category}</p>
             <p>Prerequisite: ${course.prerequisite}</p>
             <p>Status: <span class="status-pill status-pending">Pending Approval</span></p>
-            <p>Enrollment: ${course.enrollment_actual}/${course.enrollment_maximum}</p>
-            ${course.enrollment_actual >= course.enrollment_maximum ? 
+            <p>Enrollment: ${currentEnrollment}/${course.enrollment_maximum}</p>
+            ${currentEnrollment >= course.enrollment_maximum ? 
               `<p class="full-warning">⚠️ Course is full</p>` : ''}
             ${prereqStatus !== 'met' ? 
               `<p class="prereq-warning">⚠️ Prerequisite not completed</p>` : ''}
@@ -419,18 +511,34 @@ async function addCourse(course, currentUser) {
             e.studentName && e.studentName.toLowerCase() === currentUser.username.toLowerCase()
         );
         
-        // Convert course numbers to integers for correct comparison
+        // Convert course identifiers to integers for correct comparison
         const courseNum = parseInt(course.courseNum, 10);
+        const courseCRN = parseInt(course.crn, 10);
         
-        // Check if student is already enrolled in the course
-        if (userEnrollments.some(e => parseInt(e.courseNum, 10) === courseNum)) {
+        // Check if student is already enrolled in the course (by CRN or courseNum)
+        if (userEnrollments.some(e => 
+            (e.crn && parseInt(e.crn, 10) === courseCRN) || 
+            parseInt(e.courseNum, 10) === courseNum
+        )) {
             alert('Course has already been registered');
             return;
         }
         
+        // Find enrolled students in this course by CRN or courseNum
+        const enrolledStudents = enrollmentData.filter(enrollment => {
+            // Try to match by CRN first
+            if (enrollment.crn && course.crn) {
+                return parseInt(enrollment.crn, 10) === parseInt(course.crn, 10) && 
+                       enrollment.instructor === course.instructor;
+            }
+            // Fall back to courseNum
+            return parseInt(enrollment.courseNum, 10) === parseInt(course.courseNum, 10) && 
+                   enrollment.instructor === course.instructor;
+        });
+        
         // Check if the course has available seats
-        if (course.enrollment_actual >= course.enrollment_maximum) {
-            alert(`Sorry, the course "${course.name}" is already full (${course.enrollment_actual}/${course.enrollment_maximum} students). Please choose another course.`);
+        if (enrolledStudents.length >= course.enrollment_maximum) {
+            alert(`Sorry, the course "${course.name}" is already full (${enrolledStudents.length}/${course.enrollment_maximum} students). Please choose another course.`);
             return;
         }
         
@@ -448,9 +556,21 @@ async function addCourse(course, currentUser) {
             }
             
             // Check if the student has completed the prerequisite course
-            const prereqEnrollment = userEnrollments.find(e => 
-                parseInt(e.courseNum, 10) === parseInt(prereqCourse.courseNum, 10)
-            );
+            // First try to find by CRN
+            let prereqEnrollment = null;
+            
+            if (prereqCourse.crn) {
+                prereqEnrollment = userEnrollments.find(e => 
+                    e.crn && parseInt(e.crn, 10) === parseInt(prereqCourse.crn, 10)
+                );
+            }
+            
+            // If not found by CRN, fall back to courseNum
+            if (!prereqEnrollment) {
+                prereqEnrollment = userEnrollments.find(e => 
+                    parseInt(e.courseNum, 10) === parseInt(prereqCourse.courseNum, 10)
+                );
+            }
             
             if (!prereqEnrollment) {
                 alert(`You must first enroll in and complete the prerequisite course: ${course.prerequisite}`);
@@ -485,15 +605,17 @@ function registerNewCourse(course, currentUser, enrollmentData) {
         studentId: currentUser.password.toString(),
         studentName: currentUser.username,
         courseNum: parseInt(course.courseNum, 10),
+        crn: parseInt(course.crn, 10), // Include CRN for better course identification
         courseName: course.name, // Add course name for easier reference
-        instructor: course.instructor, // تأكد من أخذ اسم المدرس من الكورس
+        instructor: course.instructor,
         enrollmentDate: today.toLocaleDateString(),
         grade: null,
         courseStatus: 'pending' // Explicitly mark as pending
     };
     
-    // طباعة معلومات التسجيل للتحقق
+    // Print registration information for verification
     console.log("Course instructor before registration:", course.instructor);
+    console.log("New enrollment with CRN:", enrollment.crn);
     console.log("New enrollment with instructor:", enrollment);
     
     console.log("Creating new enrollment:", enrollment);
@@ -501,14 +623,21 @@ function registerNewCourse(course, currentUser, enrollmentData) {
     // Add new record
     enrollmentData.push(enrollment);
     
-    // Update enrollment_actual in the course
+    // Update enrollment counts in course data
     // First, get courses from localStorage
     let courses = [];
     const localCourses = localStorage.getItem('courseData');
     
     if (localCourses) {
         courses = JSON.parse(localCourses);
-        const courseIndex = courses.findIndex(c => parseInt(c.courseNum) === parseInt(course.courseNum));
+        
+        // Find course by CRN (primary) or courseNum (fallback)
+        let courseIndex = courses.findIndex(c => parseInt(c.crn, 10) === parseInt(course.crn, 10));
+        
+        // If not found by CRN, try by courseNum
+        if (courseIndex === -1) {
+            courseIndex = courses.findIndex(c => parseInt(c.courseNum, 10) === parseInt(course.courseNum, 10));
+        }
         
         if (courseIndex !== -1) {
             // Increment enrollment count
@@ -523,7 +652,14 @@ function registerNewCourse(course, currentUser, enrollmentData) {
     
     // Also try to update courses in the standard 'courses' localStorage
     let altCourses = JSON.parse(localStorage.getItem('courses')) || [];
-    const altCourseIndex = altCourses.findIndex(c => parseInt(c.courseNum) === parseInt(course.courseNum));
+    
+    // Find by CRN first
+    let altCourseIndex = altCourses.findIndex(c => parseInt(c.crn, 10) === parseInt(course.crn, 10));
+    
+    // If not found by CRN, try by courseNum
+    if (altCourseIndex === -1) {
+        altCourseIndex = altCourses.findIndex(c => parseInt(c.courseNum, 10) === parseInt(course.courseNum, 10));
+    }
     
     if (altCourseIndex !== -1) {
         // Increment enrollment count
@@ -534,9 +670,17 @@ function registerNewCourse(course, currentUser, enrollmentData) {
     }
     
     // Also update the local allCourses array so UI reflects changes without refresh
-    const localCourseIndex = allCourses.findIndex(c => parseInt(c.courseNum) === parseInt(course.courseNum));
+    // Find by CRN first
+    const localCourseIndex = allCourses.findIndex(c => parseInt(c.crn, 10) === parseInt(course.crn, 10));
+    
     if (localCourseIndex !== -1) {
         allCourses[localCourseIndex].enrollment_actual += 1;
+    } else {
+        // If not found by CRN, try by courseNum
+        const backupIndex = allCourses.findIndex(c => parseInt(c.courseNum, 10) === parseInt(course.courseNum, 10));
+        if (backupIndex !== -1) {
+            allCourses[backupIndex].enrollment_actual += 1;
+        }
     }
     
     // Update localStorage

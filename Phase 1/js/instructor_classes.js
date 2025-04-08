@@ -94,20 +94,28 @@ async function loadInstructorClasses(instructorName) {
         instructorCourses.forEach(course => {
             // Convert course number to integer for correct comparison
             const courseNum = parseInt(course.courseNum, 10);
+            const courseCRN = parseInt(course.crn, 10);
             
             const classDiv = document.createElement('div');
             classDiv.className = 'class-card';
             classDiv.setAttribute('data-course-num', courseNum);
+            classDiv.setAttribute('data-crn', courseCRN);
             
             // Determine course status
             const statusClass = course.status === 'valid' ? 'status-valid' : 
                               course.status === 'pending' ? 'status-pending' : 'status-invalid';
             
-            // Find students enrolled in the course
-            const enrolledStudents = enrollmentsData.filter(enrollment => 
-                parseInt(enrollment.courseNum, 10) === courseNum && 
-                enrollment.instructor === instructorName
-            );
+            // Find students enrolled in the course using CRN (primary) or courseNum (fallback)
+            const enrolledStudents = enrollmentsData.filter(enrollment => {
+                // Try to match by CRN first
+                if (enrollment.crn) {
+                    return parseInt(enrollment.crn, 10) === courseCRN && 
+                           enrollment.instructor === instructorName;
+                }
+                // Fall back to courseNum if CRN not available
+                return parseInt(enrollment.courseNum, 10) === courseNum && 
+                       enrollment.instructor === instructorName;
+            });
             
             // Determine if grading is allowed (only for valid courses)
             const canGrade = course.status === 'valid';
@@ -116,6 +124,7 @@ async function loadInstructorClasses(instructorName) {
                 <h3>${course.name} (${course.category} ${course.courseNum})</h3>
                 <p>Category: ${course.category}</p>
                 <p>Status: <span class="${statusClass}">${course.status}</span></p>
+                <p>CRN: ${course.crn}</p>
                 <p>Enrollment: ${course.enrollment_maximum-enrolledStudents.length}/${course.enrollment_maximum}</p>
                 <p><strong>Students Enrolled: ${enrolledStudents.length}</strong></p>
                 ${canGrade ? 
@@ -130,7 +139,9 @@ async function loadInstructorClasses(instructorName) {
             if (canGrade) {
                 const viewGradesBtn = classDiv.querySelector('.view-grades-btn');
                 viewGradesBtn.addEventListener('click', function() {
+                    // Store both courseNum and CRN for the grading page
                     localStorage.setItem('selectedCourse', courseNum);
+                    localStorage.setItem('selectedCRN', courseCRN);
                     window.location.href = 'instructor_grading.html';
                 });
             }

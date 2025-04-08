@@ -8,9 +8,11 @@ document.addEventListener("DOMContentLoaded", function() {
         return;
     }
     
-    // Get the selected course number
+    // Get the selected course number and CRN
     const selectedCourseNum = parseInt(localStorage.getItem('selectedCourse'), 10);
-    if (!selectedCourseNum) {
+    const selectedCRN = parseInt(localStorage.getItem('selectedCRN'), 10);
+    
+    if (!selectedCourseNum && !selectedCRN) {
         // Redirect to instructor classes page if no course selected
         window.location.href = 'instructor_classes.html';
         return;
@@ -33,17 +35,17 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     
     // Load course data for grading
-    loadCourseForGrading(currentUser.username, selectedCourseNum);
+    loadCourseForGrading(currentUser.username, selectedCourseNum, selectedCRN);
     
     // Check for admin updates when page gets focus
     window.addEventListener('focus', function() {
         // Reload course data when window regains focus
         // This ensures course status changes by admin are reflected
-        loadCourseForGrading(currentUser.username, selectedCourseNum);
+        loadCourseForGrading(currentUser.username, selectedCourseNum, selectedCRN);
     });
 });
 
-async function loadCourseForGrading(instructorName, courseNum) {
+async function loadCourseForGrading(instructorName, courseNum, courseCRN) {
     try {
         // Load courses data from localStorage first
         let coursesData = [];
@@ -65,10 +67,23 @@ async function loadCourseForGrading(instructorName, courseNum) {
             }
         }
         
-        // Find the selected course
-        const course = coursesData.find(c => 
-            parseInt(c.courseNum, 10) === courseNum && c.instructor === instructorName
-        );
+        // Find the selected course - first try by CRN, then by courseNum
+        let course = null;
+        
+        if (courseCRN) {
+            course = coursesData.find(c => 
+                parseInt(c.crn, 10) === courseCRN && c.instructor === instructorName
+            );
+            console.log(`Searching for course with CRN ${courseCRN}`);
+        }
+        
+        // If no course found by CRN, try by courseNum (backward compatibility)
+        if (!course && courseNum) {
+            course = coursesData.find(c => 
+                parseInt(c.courseNum, 10) === courseNum && c.instructor === instructorName
+            );
+            console.log(`Searching for course with courseNum ${courseNum}`);
+        }
         
         if (!course) {
             document.getElementById('course-container').innerHTML = 
@@ -99,11 +114,17 @@ async function loadCourseForGrading(instructorName, courseNum) {
             }
         }
         
-        // Find students enrolled in the course
-        const enrolledStudents = enrollmentsData.filter(enrollment => 
-            parseInt(enrollment.courseNum, 10) === courseNum && 
-            enrollment.instructor === instructorName
-        );
+        // Find students enrolled in the course using CRN (primary) or courseNum (fallback)
+        const enrolledStudents = enrollmentsData.filter(enrollment => {
+            // Try to match by CRN first
+            if (enrollment.crn && courseCRN) {
+                return parseInt(enrollment.crn, 10) === courseCRN && 
+                       enrollment.instructor === instructorName;
+            }
+            // Fall back to courseNum if CRN not available
+            return parseInt(enrollment.courseNum, 10) === parseInt(course.courseNum, 10) && 
+                   enrollment.instructor === instructorName;
+        });
         
         console.log(`Found ${enrolledStudents.length} students enrolled in this course`);
         
@@ -119,6 +140,7 @@ async function loadCourseForGrading(instructorName, courseNum) {
             <div class="course-details">
                 <p>Category: ${course.category}</p>
                 <p>Status: <span class="${statusClass}">${course.status}</span></p>
+                <p>CRN: ${course.crn}</p>
                 <p>Enrollment: ${enrolledStudents.length}/${course.enrollment_maximum}</p>
             </div>
         `;
@@ -217,11 +239,16 @@ function submitGrades(students, course, form) {
         
         // Update student grades
         let updatedEnrollments = allEnrollments.map(enrollment => {
-            // Convert courseNum to integer for correct comparison
-            const enrollmentCourseNum = parseInt(enrollment.courseNum, 10);
-            const courseCourseNum = parseInt(course.courseNum, 10);
+            // Check if this enrollment matches our course
+            // First try matching by CRN (preferred)
+            const matchesByCRN = enrollment.crn && 
+                                 parseInt(enrollment.crn, 10) === parseInt(course.crn, 10);
             
-            if (enrollmentCourseNum === courseCourseNum && 
+            // Fallback to courseNum for backward compatibility
+            const matchesByCourseNum = parseInt(enrollment.courseNum, 10) === parseInt(course.courseNum, 10);
+            
+            // Only update if the enrollment matches our course AND the student is in our list
+            if ((matchesByCRN || matchesByCourseNum) && 
                 students.some(s => s.studentId === enrollment.studentId)) {
                 
                 // Get the input grade
@@ -253,7 +280,12 @@ function submitGrades(students, course, form) {
                     console.log(`Updating grade for student ${enrollment.studentName} in course ${course.name} to ${letterGrade}`);
                     
                     // Create updated enrollment copy
-                    return { ...enrollment, grade: letterGrade };
+                    // Make sure to include CRN in the updated enrollment
+                    return { 
+                        ...enrollment, 
+                        grade: letterGrade,
+                        crn: enrollment.crn || course.crn // Ensure CRN is preserved or added
+                    };
                 }
             }
             return enrollment;

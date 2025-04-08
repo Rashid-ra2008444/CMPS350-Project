@@ -98,7 +98,7 @@ async function loadAllCourses(currentUser) {
             const match = enrollment.studentName && 
                           enrollment.studentName.toLowerCase() === currentUser.username.toLowerCase();
             if (match) {
-                console.log(`Found enrollment for course ${enrollment.courseNum}`);
+                console.log(`Found enrollment for course ${enrollment.courseNum} ${enrollment.crn ? `(CRN: ${enrollment.crn})` : ''}`);
             }
             return match;
         });
@@ -125,7 +125,30 @@ async function loadAllCourses(currentUser) {
         // Filter courses by status
         studentCourses.forEach(enrollment => {
             console.log(`Checking enrollment for course ${enrollment.courseNum} with status: ${enrollment.courseStatus || 'unknown'}`);
-            const course = coursesData.find(c => parseInt(c.courseNum, 10) === parseInt(enrollment.courseNum, 10));
+            
+            // Try to find course by CRN first (preferred)
+            let course = null;
+            
+            if (enrollment.crn) {
+                course = coursesData.find(c => parseInt(c.crn, 10) === parseInt(enrollment.crn, 10));
+                if (course) {
+                    console.log(`Found course by CRN ${enrollment.crn}`);
+                }
+            }
+            
+            // If not found by CRN, fallback to courseNum (backward compatibility)
+            if (!course) {
+                course = coursesData.find(c => parseInt(c.courseNum, 10) === parseInt(enrollment.courseNum, 10));
+                if (course) {
+                    console.log(`Found course by courseNum ${enrollment.courseNum}`);
+                    
+                    // Update enrollment with CRN if missing
+                    if (!enrollment.crn && course.crn) {
+                        enrollment.crn = course.crn;
+                        console.log(`Updated enrollment with CRN ${course.crn}`);
+                    }
+                }
+            }
             
             if (course) {
                 console.log(`Found course ${course.courseNum} with status: ${course.status}`);
@@ -134,7 +157,8 @@ async function loadAllCourses(currentUser) {
                 const courseWithInfo = {
                     ...course,
                     grade: enrollment.grade,
-                    instructor: enrollment.instructor || course.instructor // استخدام اسم المدرس من التسجيل إذا كان متاحًا، وإلا استخدم من الكورس
+                    instructor: enrollment.instructor || course.instructor,
+                    crn: course.crn || enrollment.crn // Ensure CRN is included
                 };
                 
                 console.log(`Course ${course.courseNum} instructor set to:`, courseWithInfo.instructor);
@@ -174,8 +198,9 @@ async function loadAllCourses(currentUser) {
                 const classDiv = document.createElement('div');
                 classDiv.className = 'class-card pending-card'; // Add pending-card class for styling
                 classDiv.setAttribute('data-course-num', course.courseNum);
+                classDiv.setAttribute('data-crn', course.crn); // Add CRN attribute
 
-                console.log(`Pending course ${course.courseNum} instructor:`, course.instructor);
+                console.log(`Pending course ${course.courseNum} (CRN: ${course.crn}) instructor:`, course.instructor);
                 
                 const instructorName = course.instructor || "Unknown";
                 
@@ -183,6 +208,7 @@ async function loadAllCourses(currentUser) {
                     <h1>${course.name}</h1>
                     <p>Instructor: ${instructorName}</p>
                     <p>Course Number: ${course.courseNum}</p>
+                    <p>CRN: ${course.crn}</p>
                     <p>Category: ${course.category}</p>
                     <p>Prerequisite: ${course.prerequisite}</p>
                     <p class="pending-status">Status: <span class="status-pill status-pending">Pending Approval</span></p>
@@ -200,8 +226,9 @@ async function loadAllCourses(currentUser) {
                 const classDiv = document.createElement('div');
                 classDiv.className = 'class-card valid-card'; // Add valid-card class for styling
                 classDiv.setAttribute('data-course-num', course.courseNum);
+                classDiv.setAttribute('data-crn', course.crn); // Add CRN attribute
 
-                console.log(`Valid course ${course.courseNum} instructor:`, course.instructor);
+                console.log(`Valid course ${course.courseNum} (CRN: ${course.crn}) instructor:`, course.instructor);
                 
                 const instructorName = course.instructor || "Unknown";
                 
@@ -209,6 +236,7 @@ async function loadAllCourses(currentUser) {
                     <h1>${course.name}</h1>
                     <p>Instructor: ${instructorName}</p>
                     <p>Course Number: ${course.courseNum}</p>
+                    <p>CRN: ${course.crn}</p>
                     <p>Category: ${course.category}</p>
                     <p>Prerequisite: ${course.prerequisite}</p>
                     <p class="status">Status: <span class="status-pill status-valid">Approved</span></p>
@@ -279,6 +307,7 @@ function displayFilteredCourses(filteredPending, filteredValid) {
             const classDiv = document.createElement('div');
             classDiv.className = 'class-card pending-card'; // Add pending-card class for styling
             classDiv.setAttribute('data-course-num', course.courseNum);
+            classDiv.setAttribute('data-crn', course.crn); // Add CRN attribute
 
             const instructorName = course.instructor || "Unknown";
 
@@ -286,6 +315,7 @@ function displayFilteredCourses(filteredPending, filteredValid) {
                 <h1>${course.name}</h1>
                 <p>Instructor: ${instructorName}</p>
                 <p>Course Number: ${course.courseNum}</p>
+                <p>CRN: ${course.crn}</p>
                 <p>Category: ${course.category}</p>
                 <p>Prerequisite: ${course.prerequisite}</p>
                 <p class="pending-status">Status: <span class="status-pill status-pending">Pending Approval</span></p>
@@ -307,6 +337,7 @@ function displayFilteredCourses(filteredPending, filteredValid) {
             const classDiv = document.createElement('div');
             classDiv.className = 'class-card valid-card'; // Add valid-card class for styling
             classDiv.setAttribute('data-course-num', course.courseNum);
+            classDiv.setAttribute('data-crn', course.crn); // Add CRN attribute
 
             const instructorName = course.instructor || "Unknown";
 
@@ -314,6 +345,7 @@ function displayFilteredCourses(filteredPending, filteredValid) {
                 <h1>${course.name}</h1>
                 <p>Instructor: ${instructorName}</p>
                 <p>Course Number: ${course.courseNum}</p>
+                <p>CRN: ${course.crn}</p>
                 <p>Category: ${course.category}</p>
                 <p>Prerequisite: ${course.prerequisite}</p>
                 <p class="status">Status: <span class="status-pill status-valid">Approved</span></p>
