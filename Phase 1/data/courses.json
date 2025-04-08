@@ -7,7 +7,8 @@
         "enrollment_maximum": 50,
         "enrollment_actual": 0,
         "category": "CMPS",
-        "status": "valid"
+        "status": "valid",
+        "crn":12345
     },
     {
         "name": "Object-Oriented Programming",
@@ -17,7 +18,8 @@
         "enrollment_maximum": 40,
         "enrollment_actual": 0,
         "category": "CMPS",
-        "status": "pending"
+        "status": "pending",
+        "crn":23456
     },
     {
         "name": "Calculus I",
@@ -27,7 +29,8 @@
         "enrollment_maximum": 60,
         "enrollment_actual": 0,
         "category": "MATH",
-        "status": "valid"
+        "status": "valid",
+        "crn":34567
     },
     {
         "name": "Probability and Statistics for Engineers",
@@ -37,7 +40,8 @@
         "enrollment_maximum": 45,
         "enrollment_actual": 0,
         "category": "GENG",
-        "status": "invalid"
+        "status": "invalid",
+        "crn":45678
     },
     {
         "name": "Data Structure",
@@ -47,7 +51,8 @@
         "enrollment_maximum": 30,
         "enrollment_actual": 0,
         "category": "CMPS",
-        "status": "pending"
+        "status": "pending",
+        "crn":56789
     },
     {
         "name": "Computer Architecture and Organization I",
@@ -57,7 +62,8 @@
         "enrollment_maximum": 50,
         "enrollment_actual": 0,
         "category": "CMPE",
-        "status": "valid"
+        "status": "valid",
+        "crn":67890
     },
     {
         "name": "Web Development Fundamentals",
@@ -67,7 +73,8 @@
         "enrollment_maximum": 40,
         "enrollment_actual": 0,
         "category": "CMPS",
-        "status": "valid"
+        "status": "valid",
+        "crn":78901
     },
     {
         "name": "Data Communication and Computer Networks I",
@@ -77,7 +84,8 @@
         "enrollment_maximum": 35,
         "enrollment_actual": 0,
         "category": "CMPE",
-        "status": "pending"
+        "status": "pending",
+        "crn":89012
     },
     {
         "name": "Fundamentals of Database Systems",
@@ -87,7 +95,8 @@
         "enrollment_maximum": 45,
         "enrollment_actual": 0,
         "category": "CMPS",
-        "status": "valid"
+        "status": "valid",
+        "crn":90123
     },
     {
         "name": "Programming Concept",
@@ -97,6 +106,7 @@
         "enrollment_maximum": 30,
         "enrollment_actual": 0,
         "category": "CMPS",
-        "status": "pending"
+        "status": "pending",
+        "crn":12346
     }
 ]

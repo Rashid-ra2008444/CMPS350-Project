@@ -61,15 +61,35 @@ document.addEventListener("DOMContentLoaded", function() {
             
             // Map through enrollments and update course status
             const updatedEnrollments = enrollmentData.map(enrollment => {
-                // Convert course numbers to integers for correct comparison
-                const enrollmentCourseNum = parseInt(enrollment.courseNum, 10);
+                // Try to match by CRN first
+                let matchingCourse = null;
                 
-                // Find matching course
-                const matchingCourse = courses.find(course => 
-                    parseInt(course.courseNum, 10) === enrollmentCourseNum);
+                if (enrollment.crn) {
+                    // Convert CRN to integers for correct comparison
+                    const enrollmentCourseCrn = parseInt(enrollment.crn, 10);
+                    
+                    // Find matching course by CRN
+                    matchingCourse = courses.find(course => 
+                        parseInt(course.crn, 10) === enrollmentCourseCrn);
+                }
+                
+                // If no match by CRN, try to match by courseNum (backwards compatibility)
+                if (!matchingCourse && enrollment.courseNum) {
+                    const enrollmentCourseNum = parseInt(enrollment.courseNum, 10);
+                    
+                    // Find matching course by courseNum
+                    matchingCourse = courses.find(course => 
+                        parseInt(course.courseNum, 10) === enrollmentCourseNum);
+                        
+                    // If we found a match by courseNum, update the CRN in the enrollment record
+                    if (matchingCourse) {
+                        enrollment.crn = matchingCourse.crn;
+                        console.log(`Updated enrollment CRN for courseNum ${enrollmentCourseNum} to ${matchingCourse.crn}`);
+                    }
+                }
                 
                 if (matchingCourse) {
-                    console.log(`Updating enrollment status for course ${enrollmentCourseNum} to ${matchingCourse.status}`);
+                    console.log(`Updating enrollment status for course ${matchingCourse.crn} to ${matchingCourse.status}`);
                     
                     // Return updated enrollment with course status
                     return {
@@ -103,6 +123,10 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
+    function generateRandomCRN() {
+        return Math.floor(10000+Math.random() * 90000); 
+    }
+    
     // Display courses with status indicators
     function displayCourses(courses) {
         const pendingCourses = document.getElementById("pendingCourses");
@@ -123,7 +147,7 @@ document.addEventListener("DOMContentLoaded", function() {
             box.classList.add("box");
 
             // Track actual enrollment from enrollment data
-            const actualEnrollment = getActualEnrollment(course.courseNum);
+            const actualEnrollment = getActualEnrollment(course.courseNum, course.crn);
             
             // Update course enrollment count if different
             if (actualEnrollment !== null && course.enrollment_actual !== actualEnrollment) {
@@ -140,6 +164,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 <p><strong>Enrollment Maximum:</strong> ${course.enrollment_maximum}</p>
                 <p><strong>Enrollment Actual:</strong> ${course.enrollment_actual}</p>
                 <p><strong>Status:</strong> <span class="status-${course.status}">${course.status}</span></p>
+                <p><strong>CRN:</strong> ${course.crn}</p>
             `;
 
             let buttonContainer = document.createElement("div");
@@ -155,7 +180,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 let validateButton = document.createElement("button");
                 validateButton.textContent = "Validate";
                 validateButton.classList.add("pixel2");
-                validateButton.addEventListener("click", () => validateCourse(course.courseNum, course.name, box));
+                validateButton.addEventListener("click", () => validateCourse(course, box));
                 buttonContainer.appendChild(validateButton);
                 
                 pendingCount++;
@@ -187,23 +212,21 @@ document.addEventListener("DOMContentLoaded", function() {
         
         // Save any enrollment count updates
         saveCourseData(courseData);
-        
-        // Add counters to headers
-        document.querySelector('.course-box h2:contains("Pending")').textContent = `Pending (${pendingCount})`;
-        document.querySelector('.course-box h2:contains("Valid")').textContent = `Valid Course (${validCount})`;
-        document.querySelector('.course-box h2:contains("Invalid")').textContent = `Invalid Course (${invalidCount})`;
     }
 
     // Get actual enrollment count from enrollment data
-    function getActualEnrollment(courseNum) {
+    function getActualEnrollment(courseNum, crn) {
         const enrollmentData = JSON.parse(localStorage.getItem('enrollment'));
         if (!enrollmentData) return null;
         
-        // Convert course numbers to integers for correct comparison
-        const courseNumInt = parseInt(courseNum, 10);
+        // First try to get enrollments by CRN (primary method)
+        let enrollments = enrollmentData.filter(e => e.crn && parseInt(e.crn, 10) === parseInt(crn, 10));
         
-        // Count enrollments for this course
-        const enrollments = enrollmentData.filter(e => parseInt(e.courseNum, 10) === courseNumInt);
+        // Fallback to courseNum if no CRN matches found (backwards compatibility)
+        if (enrollments.length === 0 && courseNum) {
+            const courseNumInt = parseInt(courseNum, 10);
+            enrollments = enrollmentData.filter(e => parseInt(e.courseNum, 10) === courseNumInt);
+        }
         
         return enrollments.length;
     }
@@ -230,14 +253,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
         box.querySelector("#saveButton").addEventListener("click", function() {
             console.log("save button clicked");
-            saveCourse(course.courseNum, course.name, box);
+            saveCourse(course, box);
         });
     }
 
-    function saveCourse(oldCourseNum, oldName, box) {
+    function saveCourse(course, box) {
         // Find course index in data
-        let index = courseData.findIndex(course => 
-            parseInt(course.courseNum, 10) === parseInt(oldCourseNum, 10) && course.name === oldName);
+        let index = courseData.findIndex(c => 
+            parseInt(c.crn, 10) === parseInt(course.crn, 10));
 
         if (index === -1) {
             console.error("Course not found");
@@ -256,7 +279,8 @@ document.addEventListener("DOMContentLoaded", function() {
             enrollment_maximum: parseInt(box.querySelector("#editEnrolled").value),
             enrollment_actual: currentEnrollment, // Preserve current enrollment count
             category: box.querySelector("#editCategory").value,
-            status: courseData[index].status
+            status: courseData[index].status,
+            crn: courseData[index].crn // Keep the same CRN
         };
 
         // Update course data
@@ -274,6 +298,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <p><strong>Enrollment Maximum:</strong> ${updateCourse.enrollment_maximum}</p>
             <p><strong>Enrollment Actual:</strong> ${updateCourse.enrollment_actual}</p>
             <p><strong>Status:</strong> <span class="status-${updateCourse.status}">${updateCourse.status}</span></p>
+            <p><strong>CRN:</strong> ${updateCourse.crn}</p>
         </div>
         <div class="button-container">
             <button class="edit-btn pixel2">Edit</button>
@@ -288,19 +313,19 @@ document.addEventListener("DOMContentLoaded", function() {
         box.querySelector(".edit-btn").addEventListener("click", () => editCourse(updateCourse, box));
         if (updateCourse.status === "pending") {
             box.querySelector(".validate-btn").addEventListener("click", () => 
-                validateCourse(updateCourse.courseNum, updateCourse.name, box));
+                validateCourse(updateCourse, box));
         }
         box.querySelector(".delete-btn").addEventListener("click", () => deleteCourse(updateCourse, box));
     }
 
-    function deleteCourse(course) {
+    function deleteCourse(course, box) {
         if (!confirm(`Are you sure you want to delete "${course.name}"? This cannot be undone.`)) {
             return;
         }
         
         // Filter out the course to delete
         courseData = courseData.filter(c => 
-            !(parseInt(c.courseNum, 10) === parseInt(course.courseNum, 10) && c.name === course.name));
+            !(parseInt(c.crn, 10) === parseInt(course.crn, 10)));
         
         // Save changes to localStorage
         saveCourseData(courseData);
@@ -321,16 +346,7 @@ document.addEventListener("DOMContentLoaded", function() {
         displayCourses(filteredCourses);
     }
     
-    function validateCourse(courseNum, courseName, box) {
-        // Find the course
-        let course = courseData.find(c => 
-            parseInt(c.courseNum, 10) === parseInt(courseNum, 10) && c.name === courseName);
-
-        if(course === undefined) {
-            console.error("Course not found");
-            return;
-        }
-        
+    function validateCourse(course, box) {
         // Show validation options
         box.innerHTML = `
         <div class="course-content"> 
@@ -343,22 +359,22 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Add event listeners for validation buttons
         box.querySelector(".valid-btn").addEventListener("click", () => {
-            updateCourseStatus(courseNum, courseName, "valid");
+            updateCourseStatus(course.crn, "valid");
             console.log("Course status updated to valid");
             displayCourses(courseData);
         });
         
         box.querySelector(".invalid-btn").addEventListener("click", () => {
-            updateCourseStatus(courseNum, courseName, "invalid");
+            updateCourseStatus(course.crn, "invalid");
             console.log("Course status updated to invalid");
             displayCourses(courseData);
         });
     }
     
-    function updateCourseStatus(courseNum, courseName, status) {
-        // Find course using both courseNum and name to handle duplicate names
+    function updateCourseStatus(courseCrn, status) {
+        // Find course using CRN
         let course = courseData.find(c => 
-            parseInt(c.courseNum, 10) === parseInt(courseNum, 10) && c.name === courseName);
+            parseInt(c.crn, 10) === parseInt(courseCrn, 10));
             
         if(course === undefined) {
             console.error("Course not found");
@@ -428,7 +444,8 @@ document.addEventListener("DOMContentLoaded", function() {
                         enrollment_maximum: parseInt(document.getElementById("newMaxEnrolled").value),
                         enrollment_actual: 0,
                         category: document.getElementById("newCategory").value,
-                        status: "pending"
+                        status: "pending",
+                        crn: generateRandomCRN() // Generate random CRN
                     };
                     
                     // Add course to data
