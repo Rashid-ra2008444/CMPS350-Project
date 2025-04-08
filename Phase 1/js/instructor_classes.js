@@ -20,14 +20,41 @@ document.addEventListener("DOMContentLoaded", function() {
     
     // Load instructor classes
     loadInstructorClasses(currentUser.username);
+    
+    // Check for admin updates when page gets focus
+    window.addEventListener('focus', function() {
+        // Reload classes when window regains focus
+        // This ensures course status changes by admin are reflected
+        loadInstructorClasses(currentUser.username);
+    });
 });
 
-// Load instructor classes - updated to use localStorage
+// Load instructor classes - updated to use localStorage and handle admin changes
 async function loadInstructorClasses(instructorName) {
     try {
-        // Load courses data
-        const coursesResponse = await fetch("data/courses.json");
-        const coursesData = await coursesResponse.json();
+        // Load courses data - first try localStorage
+        let coursesData = [];
+        const adminCoursesStorage = localStorage.getItem('courseData');
+        
+        if (adminCoursesStorage) {
+            coursesData = JSON.parse(adminCoursesStorage);
+            console.log(`Loaded ${coursesData.length} courses from 'courseData' in localStorage`);
+        } else {
+            const coursesStorage = localStorage.getItem('courses');
+            if (coursesStorage) {
+                coursesData = JSON.parse(coursesStorage);
+                console.log(`Loaded ${coursesData.length} courses from 'courses' in localStorage`);
+            } else {
+                // Fall back to file if not in localStorage
+                console.log("No courses in localStorage, loading from file");
+                const coursesResponse = await fetch("data/courses.json");
+                coursesData = await coursesResponse.json();
+                
+                // Store for future use
+                localStorage.setItem('courseData', JSON.stringify(coursesData));
+                localStorage.setItem('courses', JSON.stringify(coursesData));
+            }
+        }
         
         // Load enrollment data - always from localStorage first
         let enrollmentsData = [];
@@ -82,23 +109,31 @@ async function loadInstructorClasses(instructorName) {
                 enrollment.instructor === instructorName
             );
             
+            // Determine if grading is allowed (only for valid courses)
+            const canGrade = course.status === 'valid';
+            
             classDiv.innerHTML = `
                 <h3>${course.name} (${course.category} ${course.courseNum})</h3>
                 <p>Category: ${course.category}</p>
                 <p>Status: <span class="${statusClass}">${course.status}</span></p>
-                <p>Enrollment: ${course.enrollment_maximum - enrolledStudents.length}/${course.enrollment_maximum}</p>
+                <p>Enrollment: ${enrolledStudents.length}/${course.enrollment_maximum}</p>
                 <p><strong>Students Enrolled: ${enrolledStudents.length}</strong></p>
-                <button class="view-grades-btn">View & Submit Grades</button>
+                ${canGrade ? 
+                    `<button class="view-grades-btn">View & Submit Grades</button>` : 
+                    `<p class="grading-notice">⚠️ Grading unavailable until course is approved</p>`
+                }
             `;
             
             classesContainer.appendChild(classDiv);
             
-            // Add view grades button event listener
-            const viewGradesBtn = classDiv.querySelector('.view-grades-btn');
-            viewGradesBtn.addEventListener('click', function() {
-                localStorage.setItem('selectedCourse', courseNum);
-                window.location.href = 'instructor_grading.html';
-            });
+            // Add view grades button event listener (only for valid courses)
+            if (canGrade) {
+                const viewGradesBtn = classDiv.querySelector('.view-grades-btn');
+                viewGradesBtn.addEventListener('click', function() {
+                    localStorage.setItem('selectedCourse', courseNum);
+                    window.location.href = 'instructor_grading.html';
+                });
+            }
         });
         
     } catch (error) {

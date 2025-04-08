@@ -34,16 +34,41 @@ document.addEventListener("DOMContentLoaded", function() {
     
     // Load course data for grading
     loadCourseForGrading(currentUser.username, selectedCourseNum);
+    
+    // Check for admin updates when page gets focus
+    window.addEventListener('focus', function() {
+        // Reload course data when window regains focus
+        // This ensures course status changes by admin are reflected
+        loadCourseForGrading(currentUser.username, selectedCourseNum);
+    });
 });
 
 async function loadCourseForGrading(instructorName, courseNum) {
     try {
-        // Load courses data
-        const coursesResponse = await fetch("data/courses.json");
-        const coursesData = await coursesResponse.json();
+        // Load courses data from localStorage first
+        let coursesData = [];
+        const adminCoursesStorage = localStorage.getItem('courseData');
+        
+        if (adminCoursesStorage) {
+            coursesData = JSON.parse(adminCoursesStorage);
+            console.log(`Loaded ${coursesData.length} courses from 'courseData' in localStorage`);
+        } else {
+            const coursesStorage = localStorage.getItem('courses');
+            if (coursesStorage) {
+                coursesData = JSON.parse(coursesStorage);
+                console.log(`Loaded ${coursesData.length} courses from 'courses' in localStorage`);
+            } else {
+                // Fall back to file if not in localStorage
+                console.log("No courses in localStorage, loading from file");
+                const coursesResponse = await fetch("data/courses.json");
+                coursesData = await coursesResponse.json();
+            }
+        }
         
         // Find the selected course
-        const course = coursesData.find(c => parseInt(c.courseNum, 10) === courseNum && c.instructor === instructorName);
+        const course = coursesData.find(c => 
+            parseInt(c.courseNum, 10) === courseNum && c.instructor === instructorName
+        );
         
         if (!course) {
             document.getElementById('course-container').innerHTML = 
@@ -94,17 +119,16 @@ async function loadCourseForGrading(instructorName, courseNum) {
             <div class="course-details">
                 <p>Category: ${course.category}</p>
                 <p>Status: <span class="${statusClass}">${course.status}</span></p>
-                <p>Enrollment: ${course.enrollment_maximum - enrolledStudents.length}/${course.enrollment_maximum}</p>
+                <p>Enrollment: ${enrolledStudents.length}/${course.enrollment_maximum}</p>
             </div>
         `;
         
-        // Display student list and grade inputs
-        studentList.innerHTML = `
-            <h3>Students & Grades</h3>
-            ${
-                course.status === 'valid' ? 
-                (enrolledStudents.length > 0 ? 
-                    `<form id="grades-form">
+        // Display student list and grade inputs - only for valid courses
+        if (course.status === 'valid') {
+            if (enrolledStudents.length > 0) {
+                studentList.innerHTML = `
+                    <h3>Students & Grades</h3>
+                    <form id="grades-form">
                         ${enrolledStudents.map(student => `
                             <div class="student-item">
                                 <span>${student.studentName} (${student.studentId})</span>
@@ -118,20 +142,38 @@ async function loadCourseForGrading(instructorName, courseNum) {
                         
                         <button type="submit" class="submit-btn">Submit Grades</button>
                         <p class="success-message" id="success-message" style="display:none">Grades submitted successfully!</p>
-                    </form>`
-                    : '<p>No students enrolled in this course.</p>'
-                )
-                : '<p>You can only submit grades for valid courses.</p>'
+                    </form>
+                `;
+                
+                // Add form submit event listener
+                const form = document.getElementById('grades-form');
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    submitGrades(enrolledStudents, course, form);
+                });
+            } else {
+                studentList.innerHTML = '<p>No students enrolled in this course.</p>';
             }
-        `;
-        
-        // Add form submit event listener
-        if (course.status === 'valid' && enrolledStudents.length > 0) {
-            const form = document.getElementById('grades-form');
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                submitGrades(enrolledStudents, course, form);
-            });
+        } else {
+            // Cannot grade non-valid courses
+            studentList.innerHTML = `
+                <div class="error-message">
+                    <p>⚠️ You can only submit grades for approved courses.</p>
+                    <p>Current status: <span class="${statusClass}">${course.status}</span></p>
+                    <p>Please contact an administrator to approve this course.</p>
+                </div>
+                ${enrolledStudents.length > 0 ? 
+                    `<h3>Enrolled Students (${enrolledStudents.length})</h3>
+                    <div class="student-list-readonly">
+                        ${enrolledStudents.map(student => `
+                            <div class="student-item-readonly">
+                                <span>${student.studentName} (${student.studentId})</span>
+                            </div>
+                        `).join('')}
+                    </div>` : 
+                    '<p>No students enrolled in this course.</p>'
+                }
+            `;
         }
         
     } catch (error) {
