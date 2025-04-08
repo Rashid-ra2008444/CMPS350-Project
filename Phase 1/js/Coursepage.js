@@ -186,7 +186,6 @@ async function loadAllCourses(currentUser) {
                     <p>Category: ${course.category}</p>
                     <p>Prerequisite: ${course.prerequisite}</p>
                     <p class="pending-status">Status: <span class="status-pill status-pending">Pending Approval</span></p>
-                    <span class="status-pill status-waiting">Waiting for Approval</span>
                 `;
 
                 pendingBox.append(classDiv);
