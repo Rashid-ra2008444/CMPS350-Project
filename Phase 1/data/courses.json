@@ -5,7 +5,7 @@
         "instructor": "Zeyad Ali",
         "prerequisite": "none",
         "enrollment_maximum": 50,
-        "enrollment_actual": 15,
+        "enrollment_actual": 0,
         "category": "CMPS",
         "status": "valid"
     },
@@ -15,7 +15,7 @@
         "instructor": "Mohammed Saleh",
         "prerequisite": "Programming Concept",
         "enrollment_maximum": 40,
-        "enrollment_actual": 39,
+        "enrollment_actual": 0,
         "category": "CMPS",
         "status": "pending"
     },
@@ -25,7 +25,7 @@
         "instructor": "Sahbi Ayari",
         "prerequisite": "none",
         "enrollment_maximum": 60,
-        "enrollment_actual": 55,
+        "enrollment_actual": 0,
         "category": "MATH",
         "status": "valid"
     },
@@ -35,7 +35,7 @@
         "instructor": "Nabeel Ahmed",
         "prerequisite": "Calculus I",
         "enrollment_maximum": 45,
-        "enrollment_actual": 45,
+        "enrollment_actual": 0,
         "category": "GENG",
         "status": "invalid"
     },
@@ -45,7 +45,7 @@
         "instructor": "Saleh Al-Hazbi",
         "prerequisite": "Object-Oriented Programming",
         "enrollment_maximum": 30,
-        "enrollment_actual": 16,
+        "enrollment_actual": 0,
         "category": "CMPS",
         "status": "pending"
     },
@@ -55,7 +55,7 @@
         "instructor": "Mohammed Azeem",
         "prerequisite": "none",
         "enrollment_maximum": 50,
-        "enrollment_actual": 3,
+        "enrollment_actual": 0,
         "category": "CMPE",
         "status": "valid"
     },
@@ -65,7 +65,7 @@
         "instructor": "Zeyad Ali",
         "prerequisite": "Programming Concept",
         "enrollment_maximum": 40,
-        "enrollment_actual": 25,
+        "enrollment_actual": 0,
         "category": "CMPS",
         "status": "valid"
     },
@@ -75,7 +75,7 @@
         "instructor": "Zeyad Ali",
         "prerequisite": "Object-Oriented Programming",
         "enrollment_maximum": 35,
-        "enrollment_actual": 18,
+        "enrollment_actual": 0,
         "category": "CMPE",
         "status": "pending"
     },
@@ -85,7 +85,7 @@
         "instructor": "Zeyad Ali",
         "prerequisite": "Data Structure",
         "enrollment_maximum": 45,
-        "enrollment_actual": 30,
+        "enrollment_actual": 0,
         "category": "CMPS",
         "status": "valid"
     },
@@ -95,7 +95,7 @@
         "instructor": "Mohammed Azeem",
         "prerequisite": "none",
         "enrollment_maximum": 30,
-        "enrollment_actual": 15,
+        "enrollment_actual": 0,
         "category": "CMPS",
         "status": "pending"
     }

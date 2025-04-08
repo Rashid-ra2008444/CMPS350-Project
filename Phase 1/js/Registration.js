@@ -170,6 +170,10 @@ async function loadAllCourses(currentUser) {
             const isRegistrationDisabled = course.enrollment_actual >= course.enrollment_maximum || 
                                           prereqStatus !== 'met';
 
+            const enrolledStudents = enrollmentData.filter(enrollment => 
+                parseInt(enrollment.courseNum, 10) === parseInt(course.courseNum,10) && 
+                    enrollment.instructor === course.instructor
+                        );
             classDiv.innerHTML = `
                 <h3>${course.name}</h3>
                 <p>Instructor: ${course.instructor}</p>
@@ -177,7 +181,7 @@ async function loadAllCourses(currentUser) {
                 <p>Category: ${course.category}</p>
                 <p>Prerequisite: ${course.prerequisite}</p>
                 <p>Status: <span class="status-pill status-pending">Pending Approval</span></p>
-                <p>Enrollment: ${course.enrollment_actual}/${course.enrollment_maximum}</p>
+                <p>Enrollment: ${course.enrollment_maximum-enrolledStudents.length}/${course.enrollment_maximum}</p>
                 ${course.enrollment_actual >= course.enrollment_maximum ? 
                   `<p class="full-warning">⚠️ Course is full</p>` : ''}
                 ${prereqStatus !== 'met' ? 
