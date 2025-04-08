@@ -62,6 +62,9 @@ button {
   text-transform: uppercase;
   cursor: pointer;
   margin-top: 10px;
+  border: 1px solid #212121;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
 }
 
 
@@ -114,12 +117,25 @@ button:hover {
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 1024px) {
   main {
     padding: 10px;
   }
   
- 
+ header {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+  }
+  
+  header h1 {
+    font-size: 2rem;
+  }
+  
+  .login-form {
+    width: 100%;
+    max-width: 100%;
+ }
   
   h2 {
     font-size: 1.5rem;
@@ -132,4 +148,16 @@ button:hover {
   .login-form input {
     padding: 10px;
   }
+
+  body {
+    background-size:auto;
+    background-position: 25%;
+    height: fit-content;
+    object-fit: cover;
+    background-repeat: no-repeat;
+    background-attachment:scroll;
+    background-size: cover;
+    background-color: #020112;
+  }
 }
+

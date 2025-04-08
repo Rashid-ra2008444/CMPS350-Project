@@ -190,14 +190,14 @@ function getNumericEquivalent(letterGrade) {
     const upperGrade = letterGrade.toString().toUpperCase();
     
     switch (upperGrade) {
-        case 'A': return 95;
-        case 'B+': return 88;
-        case 'B': return 85;
-        case 'C+': return 78;
-        case 'C': return 75;
-        case 'D+': return 68;
-        case 'D': return 65;
-        case 'F': return 55;
+        case 'A': return 90;
+        case 'B+': return 85;
+        case 'B': return 80;
+        case 'C+': return 75;
+        case 'C': return 70;
+        case 'D+': return 65;
+        case 'D': return 60;
+        case 'F': return 0;
         default: return '';
     }
 }
@@ -234,10 +234,16 @@ function submitGrades(students, course, form) {
                     
                     if (numericGrade >= 90) {
                         letterGrade = "A";
+                    } else if (numericGrade >= 85) {
+                        letterGrade = "B+";
                     } else if (numericGrade >= 80) {
                         letterGrade = "B";
+                    } else if (numericGrade >= 75) {
+                        letterGrade = "C+";
                     } else if (numericGrade >= 70) {
                         letterGrade = "C";
+                    } else if (numericGrade >= 65) {
+                        letterGrade = "D+";
                     } else if (numericGrade >= 60) {
                         letterGrade = "D";
                     } else {

@@ -1,18 +1,79 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: 'Pixelify Sans', sans-serif;
     margin: 0;
     padding: 0;
     background-color: #f0f0f0;
-    font-size: 0.9rem;
+    font-size: 16px;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
+}
+
+.banner2 {
+    width: 100%;
+    height: 120px;
+    background: url('https://i.gifer.com/origin/d2/d239082e1cb1c5e859df88766e18a6b0_w200.gif') repeat-x;
+    background-size: contain;
+    animation: scroll 10s linear infinite;
+}
+
+@keyframes scroll {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: -100% 0;
+    }
+}
+
+.walking-dog {
+    position: fixed;
+    bottom: 0;
+    left: -200px;
+    width: 150px;
+    z-index: 1000;
+    animation: walkAcross 12s linear infinite, zoomEffect 12s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.walking-dog img {
+    width: 100%;
+    height: auto;
+}
+
+@keyframes walkAcross {
+    0% {
+        left: -200px;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+@keyframes zoomEffect {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.3);
+    }
 }
 
 .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 10px;
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border: 4px double black;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     flex: 1;
 }
 
@@ -20,70 +81,72 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
     background-color: #fff;
-    padding: 10px;
+    padding: 15px;
     border-radius: 5px;
     border: 4px double black;
-    box-shadow: none;
 }
 
 .student-info {
-    margin-left: 10px;
+    margin: 0 15px;
 }
 
 h1 {
     color: #333;
     margin: 0;
     font-family: 'Press Start 2P', cursive;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
 }
 
 h2 {
     color: #555;
-    margin-top: 15px;
+    margin-top: 20px;
     border-bottom: 2px solid #ddd;
-    padding-bottom: 5px;
-    font-size: 1rem;
+    padding-bottom: 8px;
+    font-size: 1.2rem;
 }
 
 h3 {
-    font-size: 0.95rem;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
 }
 
 p {
-    font-size: 0.85rem;
+    font-size: 1rem;
+    margin-bottom: 5px;
 }
 
 .courses-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    margin-top: 15px;
+    margin-bottom: 20px;
     background-color: white;
-    box-shadow: none;
     border: 4px double black;
-    border-radius: 0;
 }
 
 .courses-table th {
     background-color: #f8f8f8;
-    padding: 8px 10px;
+    padding: 12px;
     text-align: left;
     border-bottom: 2px solid #ddd;
-    font-size: 0.85rem;
+    font-size: 1rem;
 }
 
 .courses-table td {
-    padding: 6px 10px;
+    padding: 10px 12px;
     border-bottom: 1px solid #eee;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
 }
 
 .status-pill {
     display: inline-block;
-    padding: 3px 8px;
+    padding: 4px 10px;
     border-radius: 15px;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     font-weight: bold;
     text-transform: uppercase;
 }
@@ -130,10 +193,10 @@ p {
 
 .no-courses {
     text-align: center;
-    padding: 10px;
+    padding: 15px;
     color: #777;
     font-style: italic;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
 }
 
 .banner {
@@ -143,9 +206,8 @@ p {
     background: white;
     font-weight: bold;
     text-align: center;
-    padding: 10px 0;
-    font-size: 0.85rem;
-    box-sizing: border-box;
+    padding: 15px;
+    font-size: 0.9rem;
 }
 
 .coursesBUT, .lougBUT {
@@ -153,10 +215,10 @@ p {
     border: 4px double black;
     font-family: 'Pixelify Sans', sans-serif;
     font-weight: bold;
-    padding: 6px 12px;
-    margin-left: 5px;
+    padding: 8px 15px;
+    margin: 5px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     transition: all 0.2s ease;
 }
 
@@ -169,34 +231,135 @@ p {
     transform: translateY(2px);
 }
 
-@media (max-width: 600px) {
+/* Tablet Styles */
+@media (max-width: 992px) {
     .container {
-        padding: 5px;
+        width: 95%;
+        padding: 15px;
+    }
+    
+    .banner2 {
+        height: 100px;
+    }
+    
+    .header {
+        padding: 12px;
+    }
+    
+    h1 {
+        font-size: 1.3rem;
+    }
+    
+    h2 {
+        font-size: 1.1rem;
+    }
+    
+    .walking-dog {
+        width: 120px;
+    }
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .container {
+        width: 100%;
+        padding: 10px;
+        margin: 10px auto;
     }
     
     .header {
         flex-direction: column;
         align-items: flex-start;
+        padding: 10px;
+    }
+    
+    .header > div:last-child {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
     }
     
     .student-info {
-        margin-left: 0;
-        margin-top: 5px;
+        margin: 10px 0;
+    }
+    
+    .banner2 {
+        height: 80px;
+    }
+    
+    h1 {
+        font-size: 1.2rem;
+    }
+    
+    .courses-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
     }
     
     .courses-table th,
     .courses-table td {
-        padding: 5px 8px;
+        padding: 8px 10px;
+        font-size: 0.9rem;
+    }
+    
+    .walking-dog {
+        width: 100px;
+    }
+}
+
+/* Small Mobile Styles */
+@media (max-width: 480px) {
+    .container {
+        padding: 8px;
+        margin: 5px auto;
+    }
+    
+    .header {
+        padding: 8px;
+    }
+    
+    h1 {
+        font-size: 1.1rem;
+    }
+    
+    h2 {
+        font-size: 1rem;
+        margin-top: 15px;
+        padding-bottom: 5px;
+    }
+    
+    h3 {
+        font-size: 0.95rem;
+    }
+    
+    p {
+        font-size: 0.9rem;
+    }
+    
+    .banner2 {
+        height: 60px;
+    }
+    
+    .courses-table th,
+    .courses-table td {
+        padding: 6px 8px;
+        font-size: 0.85rem;
     }
     
     .coursesBUT, .lougBUT {
-        margin-top: 8px;
-        margin-left: 0;
-        margin-right: 5px;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        margin: 3px;
+    }
+    
+    .walking-dog {
+        width: 80px;
     }
     
     .banner {
-        padding: 8px 5px;
-        font-size: 0.75rem;
+        padding: 10px;
+        font-size: 0.8rem;
     }
 }
