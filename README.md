@@ -36,9 +36,9 @@
 | *Omer*       | *21-03-2025* | *Use case 3 being handled using registration html*|
 | *yousef*     | *22-03-2025* | * only do the css for learning path*           |
 | *Rashid*     | *27-03-2025* | *Major updates in codes and fix many logical errors*|
-| *yousef     *| *27-03-2025* | *update and done the complete course in learning path*|
+| *yousef*     | *27-03-2025* | *update and done the complete course in learning path*|
 | *yousef*     | *27-03-2025* | *add the vled for the student if full and if not completely Course*|
-| *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
+| *Rashid*     | *08-04-2025* | *Managed the responsive on CSS , Adapted the CRN (I know its late) currently working in Create_course.Js also for the data*              |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
