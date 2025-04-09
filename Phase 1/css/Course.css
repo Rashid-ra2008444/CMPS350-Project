@@ -176,6 +176,7 @@ select {
     min-height: 100vh;
     text-align: center;
     transition: all 0.3s ease;
+   
 }
 
 .sidebar .title {
@@ -231,6 +232,18 @@ footer {
     text-align: center;
     width: 100%;
     padding: 1rem;
+}
+.sidebar-footer {
+    width: 100%;
+    margin-top: auto;
+}
+
+
+.stev{
+    width: 100%;
+    background-color: white; 
+  
+  
 }
 
 /* Tablet Styles */
@@ -310,6 +323,10 @@ footer {
     .course-box {
         padding: 0.75rem;
     }
+
+    .sidebar-footer{
+        display: none;
+    }
 }
 
 /* Small Mobile Styles */
@@ -329,4 +346,8 @@ footer {
     .button-container button {
         width: 100%;
     }
+    .sidebar-footer{
+        display: none;
+    }
+    
 }

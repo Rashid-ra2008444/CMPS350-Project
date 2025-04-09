@@ -272,6 +272,18 @@ footer {
 .invalid-course .button-container {
     display: none;
 }
+.sidebar-footer {
+    width: 100%;
+    margin-top: auto;
+}
+
+
+.stev{
+    width: 100%;
+    background-color: white; 
+  
+  
+}
 
 /* Tablet Styles */
 @media (max-width: 992px) {
@@ -348,6 +360,9 @@ footer {
     .walking-dog {
         width: 100px;
     }
+    .sidebar-footer{
+        display: none;
+    }
 }
 
 /* Small Mobile Styles */
@@ -373,6 +388,9 @@ footer {
     }
     
     .walking-dog {
+        display: none;
+    }
+    .sidebar-footer{
         display: none;
     }
 
