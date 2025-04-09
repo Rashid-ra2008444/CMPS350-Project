@@ -43,6 +43,11 @@
         "username": "Saleh Al-Hazbi",
         "password": 333,
         "status": "instructor"
+    },
+    {
+        "username": "Mohammed Azeem",
+        "password": 444,
+        "status": "instructor"
     }
 
 
