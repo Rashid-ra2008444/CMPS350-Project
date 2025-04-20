@@ -1,0 +1,120 @@
+/* Instructor.css */
+
+/* Back button on grading page */
+.back-btn {
+    background-color: white;
+    border: 3px solid black;
+    font-weight: bold;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-right: 20px;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background-color: black;
+    color: white;
+}
+
+.back-btn:active {
+    transform: translateY(2px);
+}
+
+/* View grades button */
+.view-grades-btn {
+    background-color: white;
+    border: 3px solid black;
+    font-weight: bold;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+    align-self: center;
+}
+
+.view-grades-btn:hover {
+    background-color: black;
+    color: white;
+}
+
+.view-grades-btn:active {
+    transform: translateY(2px);
+}
+
+/* Student list styles */
+.student-list {
+    margin-top: 15px;
+}
+
+.student-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    border-bottom: 3px solid black;
+}
+
+.student-item-readonly {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.student-list-readonly {
+    margin-top: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+
+.grade-input {
+    width: 70px;
+    padding: 8px;
+    border: 3px solid black;
+    text-align: center;
+}
+
+.submit-btn {
+    background-color: white;
+    border: 3px solid black;
+    font-weight: bold;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: black;
+    color: white;
+}
+
+.submit-btn:active {
+    transform: translateY(2px);
+}
+
+.success-message {
+    color: green;
+    font-weight: bold;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #e7f5ea;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.error-message {
+    color: #dc3545;
+    background-color: #f8d7da;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.grading-notice {
+    color: #856404;
+    background-color: #fff3cd;
+    padding: 8px;
+    border-radius: 4px;
+    margin-top: 10px;
+    text-align: center;
+}
