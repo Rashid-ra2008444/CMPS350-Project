@@ -40,7 +40,7 @@
 | *yousef*     | *27-03-2025* | *add the vled for the student if full and if not completely Course*|
 | *Rashid*     | *08-04-2025* | *Managed the responsive on CSS , Adapted the CRN (I know its late) currently working in Create_course.Js also for the data*              |
 | *Rashid*       | *09-04-2025* | *Handling CRN to ALL JS files*              |
-| *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
+| *Rashid*       | *20-04-2025* | *initial Phase 2*              |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
