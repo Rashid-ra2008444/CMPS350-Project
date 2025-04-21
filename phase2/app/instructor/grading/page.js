@@ -120,11 +120,17 @@ export default function InstructorGrading() {
   }
 
   const handleGradeChange = (studentId, value) => {
+    const numericValue = parseInt(value, 10);
+    if (isNaN(numericValue) || numericValue < 0 || numericValue > 100) {
+      alert("Grade must be a number between 0 and 100.");
+      return;
+    }
+
     setGrades({
       ...grades,
-      [studentId]: value,
-    })
-  }
+      [studentId]: numericValue,
+    });
+  };
 
   const handleSubmitGrades = async (e) => {
     e.preventDefault()

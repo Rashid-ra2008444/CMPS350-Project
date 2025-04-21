@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react"
 import styles from "./admin-courses.module.css"
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || ""
+
 export default function AdminCourses() {
   const [courses, setCourses] = useState([])
   const [showAddForm, setShowAddForm] = useState(false)
@@ -52,11 +54,11 @@ export default function AdminCourses() {
     }
   }, [])
 
-  const loadCourses = async () => {
+  async function loadCourses() {
     try {
-      const response = await fetch("/api/courses")
-      const coursesData = await response.json()
-      setCourses(coursesData)
+      const response = await fetch(`${BASE_URL}/api/courses`)
+      const data = await response.json()
+      setCourses(data)
     } catch (error) {
       console.error("Error loading courses:", error)
     }
@@ -139,26 +141,23 @@ export default function AdminCourses() {
     }
   }
 
-  const deleteCourse = async (course) => {
-    if (!confirm(`Are you sure you want to delete "${course.name}"? This cannot be undone.`)) {
-      return
-    }
-
+  async function deleteCourse(course) {
     try {
       const response = await fetch(`/api/courses/${course.crn}`, {
         method: "DELETE",
-      })
+      });
 
       if (response.ok) {
         // Reload courses
-        loadCourses()
-        alert("Course deleted successfully!")
+        loadCourses();
+        alert("Course deleted successfully!");
       } else {
-        alert("Error deleting course. Please try again.")
+        const errorData = await response.json();
+        alert(`Error deleting course: ${errorData.message || "Please try again."}`);
       }
     } catch (error) {
-      console.error("Error deleting course:", error)
-      alert("Error deleting course. Please try again.")
+      console.error("Error deleting course:", error);
+      alert("Network error. Please try again later.");
     }
   }
 
