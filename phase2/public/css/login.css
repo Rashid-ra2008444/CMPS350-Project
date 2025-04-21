@@ -1,0 +1,163 @@
+:root {
+  --base-color: #F7F7F7;
+  --base-variant: #EAEAEA;
+  --text-color: #212121;
+  --secondary-text: lightgray;
+  --primary-color: #4A7BAF;
+  --accent-color: lightblue;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 1.1rem;
+  
+}
+
+
+body {
+  background-color: var(--base-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: url("../img/fatih-emir-bg-design.gif");
+  background-size: cover;
+  background-position: center;
+}
+
+header {
+  
+  width: 100%;
+  max-width: 500px;
+  place-items: center;
+  margin-left: 150px;
+  
+}
+
+header h1 {
+  font-size: 2.5rem;
+ 
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+main {
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
+}
+
+button {
+  border: none;
+  padding: .8em 2em;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 4px;
+  font: inherit;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 10px;
+  border: 1px solid #212121;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+}
+
+
+
+
+.login-form {
+ /* background-color: var(--base-color); */
+  border-radius: 10px;
+  /* box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); */
+  width: 600px;
+}
+
+h2 {
+  margin: 15px;
+  text-align: center;
+  padding: 10px;
+  font-size: 1.75rem;
+}
+
+.login-form form {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  /* background-color: var(--base-variant); */
+  border-radius: 0 0 8px 8px;
+}
+
+label {
+  width: 100%;
+  margin-bottom: 5px;
+  size: 100px;
+  
+}
+
+
+
+.login-form input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  /* border: 1px solid snow; */
+  border-radius: 8px;
+  /* background-color: white; */
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+@media only screen and (max-width: 1024px) {
+  main {
+    padding: 10px;
+  }
+  
+ header {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+  }
+  
+  header h1 {
+    font-size: 2rem;
+  }
+  
+  .login-form {
+    width: 100%;
+    max-width: 100%;
+ }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  .login-form form {
+    padding: 15px;
+  }
+  
+  .login-form input {
+    padding: 10px;
+  }
+
+  body {
+    background-size:auto;
+    background-position: 25%;
+    height: fit-content;
+    object-fit: cover;
+    background-repeat: no-repeat;
+    background-attachment:scroll;
+    background-size: cover;
+    background-color: #020112;
+  }
+}
+

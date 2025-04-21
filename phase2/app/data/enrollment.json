@@ -1,0 +1,209 @@
+[
+  {
+    "studentId": "2008444",
+    "studentName": "Rashid",
+    "courseNum": 151,
+    "crn": 12345,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-15",
+    "grade": null
+  },
+  {
+    "studentId": "2003047",
+    "studentName": "Omer",
+    "courseNum": 151,
+    "crn": 12345,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-15",
+    "grade": null
+  },
+  {
+    "studentId": "2008444",
+    "studentName": "Rashid",
+    "courseNum": 263,
+    "crn": 67890,
+    "instructor": "Mohammed Azeem",
+    "enrollmentDate": "2024-01-17",
+    "grade": null
+  },
+  {
+    "studentId": "2003047",
+    "studentName": "Omer",
+    "courseNum": 263,
+    "crn": 67890,
+    "instructor": "Mohammed Azeem",
+    "enrollmentDate": "2024-01-17",
+    "grade": null
+  },
+  {
+    "studentId": "2006123",
+    "studentName": "Ahmed",
+    "courseNum": 151,
+    "crn": 12345,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-15",
+    "grade": null
+  },
+  {
+    "studentId": "2005789",
+    "studentName": "Fatima",
+    "courseNum": 151,
+    "crn": 12345,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-16",
+    "grade": null
+  },
+  {
+    "studentId": "2007456",
+    "studentName": "Maryam",
+    "courseNum": 151,
+    "crn": 12345,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-17",
+    "grade": null
+  },
+  {
+    "studentId": "2001234",
+    "studentName": "Abdullah",
+    "courseNum": 350,
+    "crn": 78901,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-15",
+    "grade": null
+  },
+  {
+    "studentId": "2002345",
+    "studentName": "Noura",
+    "courseNum": 350,
+    "crn": 78901,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-15",
+    "grade": null
+  },
+  {
+    "studentId": "2003456",
+    "studentName": "Khalid",
+    "courseNum": 350,
+    "crn": 78901,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-16",
+    "grade": null
+  },
+  {
+    "studentId": "2004567",
+    "studentName": "Aisha",
+    "courseNum": 350,
+    "crn": 78901,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-16",
+    "grade": null
+  },
+  {
+    "studentId": "2005678",
+    "studentName": "Mohammed",
+    "courseNum": 350,
+    "crn": 78901,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-17",
+    "grade": null
+  },
+  {
+    "studentId": "2008444",
+    "studentName": "Rashid",
+    "courseNum": 350,
+    "crn": 78901,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-17",
+    "grade": null
+  },
+  {
+    "studentId": "2003047",
+    "studentName": "Omer",
+    "courseNum": 350,
+    "crn": 78901,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-18",
+    "grade": null
+  },
+  {
+    "studentId": "2006789",
+    "studentName": "Hassan",
+    "courseNum": 355,
+    "crn": 89012,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-15",
+    "grade": null
+  },
+  {
+    "studentId": "2007890",
+    "studentName": "Sara",
+    "courseNum": 355,
+    "crn": 89012,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-16",
+    "grade": null
+  },
+  {
+    "studentId": "2008901",
+    "studentName": "Jamal",
+    "courseNum": 355,
+    "crn": 89012,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-17",
+    "grade": null
+  },
+  {
+    "studentId": "2009012",
+    "studentName": "Latifa",
+    "courseNum": 355,
+    "crn": 89012,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-17",
+    "grade": null
+  },
+  {
+    "studentId": "2001234",
+    "studentName": "Abdullah",
+    "courseNum": 351,
+    "crn": 90123,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-15",
+    "grade": null
+  },
+  {
+    "studentId": "2002345",
+    "studentName": "Noura",
+    "courseNum": 351,
+    "crn": 90123,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-15",
+    "grade": null
+  },
+  {
+    "studentId": "2003456",
+    "studentName": "Khalid",
+    "courseNum": 352,
+    "crn": 90123,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-16",
+    "grade": null
+  },
+  {
+    "studentId": "2004567",
+    "studentName": "Aisha",
+    "courseNum": 351,
+    "crn": 90123,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-16",
+    "grade": null
+  },
+  {
+    "studentId": "2005678",
+    "studentName": "Mohammed",
+    "courseNum": 351,
+    "crn": 90123,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2024-01-17",
+    "grade": null
+  }
+]

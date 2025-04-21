@@ -1,0 +1,397 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Pixelify Sans', sans-serif;
+}
+
+body {
+    display: flex;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    min-height: 100vh;
+    font-size: 16px;
+    overflow-x: hidden;
+}
+
+/* Walking dog animation */
+.walking-dog {
+    position: fixed;
+    bottom: 0;
+    left: -200px;
+    width: 150px;
+    z-index: 1000;
+    animation: walkAcross 4.5s linear infinite, zoomEffect 4.5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.walking-dog img {
+    width: 100%;
+    height: auto;
+}
+
+@keyframes walkAcross {
+    0% {
+        left: -200px;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+@keyframes zoomEffect {
+    0% {
+        transform: scale(1.5);
+    }
+    50% {
+        transform: scale(1);
+    }
+    75% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(0.75);
+    }
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.5rem;
+    justify-self: center;
+    overflow-x: hidden;
+}
+
+.banner {
+    width: 100%;
+    padding: 1.3rem;
+    border: 4px double black;
+    background: white;
+    font-weight: bold;
+    text-align: center;
+}
+
+.course-box {
+    width: 100%;
+    background: white;
+    border: 4px double black;
+    padding: 1rem;
+    text-align: left;
+    margin-bottom: 0.5rem;
+}
+
+.course-box h2 {
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+#searchInput,
+#subjectSelect {
+    width: 200px;
+    padding: 0.5rem;
+    font-size: 1rem;
+    box-sizing: border-box;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+}
+
+#pendingCourses {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0.5rem;
+}
+
+.class-card {
+    border: 3px solid black;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    background-color: wheat;
+    transition: all 0.3s ease-in-out;
+    height: 100%;
+}
+
+.class-card h3, 
+.class-card p {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    margin: 0.5rem 0;
+}
+
+.class-card:nth-child(odd) {
+    background-color: wheat;
+}
+
+.class-card:nth-child(even) {
+    background-color: lightgray;
+}
+
+.class-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.button-container {
+    margin-top: auto;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.button-container button {
+    padding: 0.5rem 1rem;
+    background-color: white;
+    border: 2px solid black;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.button-container button:hover {
+    background-color: black;
+    color: white;
+}
+
+.column {
+    flex: 1;
+    padding: 1rem;
+    border: 2px solid black;
+    background-color: white;
+}
+
+.form-box-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+label {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 0.5rem;
+}
+
+input,
+select {
+    flex: 1;
+    min-width: 0;
+}
+
+.title {
+    font-family: 'Press Start 2P', cursive;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #fff;
+    border: 6px double black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 0;
+    min-height: 100vh;
+    text-align: center;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.sidebar .title {
+    padding-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+}
+
+.sidebar button,
+.sidebar input,
+.sidebar select {
+    background-color: white;
+    border: 4px double black;
+    font-weight: bold;
+    padding: 10px;
+    cursor: pointer;
+    text-align: left;
+    width: 90%;
+    margin: 0 auto;
+}
+
+.sidebar button:hover {
+    background-color: black;
+    color: white;
+}
+
+.add-course {
+    background-color: white;
+    border: 3px solid black;
+    font-weight: bold;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.add-course:active {
+    transform: translateY(2px);
+}
+
+footer {
+    text-align: center;
+    width: 100%;
+    padding: 1rem;
+}
+
+.invalid-course .button-container {
+    display: none;
+}
+.sidebar-footer {
+    width: 100%;
+    margin-top: auto;
+}
+
+
+.stev{
+    width: 100%;
+    background-color: white; 
+  
+  
+}
+
+/* Tablet Styles */
+@media (max-width: 992px) {
+    #pendingCourses {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+    
+    .sidebar {
+        width: 220px;
+    }
+    
+    .sidebar .title {
+        font-size: 1rem;
+    }
+    
+    .walking-dog {
+        width: 120px;
+    }
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        min-height: auto;
+        padding: 0.5rem 0;
+        border-width: 4px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+    
+    .sidebar nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 0.5rem;
+    }
+    
+    .sidebar button,
+    .sidebar input,
+    .sidebar select {
+        width: auto;
+        margin: 0.25rem;
+        padding: 8px;
+    }
+    
+    #pendingCourses {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-box-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .search-bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    #searchInput,
+    #subjectSelect {
+        width: 100%;
+    }
+    
+    .course-box {
+        padding: 0.75rem;
+    }
+    
+    .walking-dog {
+        width: 100px;
+    }
+    .sidebar-footer{
+        display: none;
+    }
+}
+
+/* Small Mobile Styles */
+@media (max-width: 480px) {
+    .title {
+        font-size: 1.2rem;
+    }
+    
+    .banner {
+        padding: 0.75rem;
+    }
+    
+    .button-container {
+        flex-direction: column;
+    }
+    
+    .button-container button {
+        width: 100%;
+    }
+    
+    .class-card {
+        padding: 0.75rem;
+    }
+    
+    .walking-dog {
+        display: none;
+    }
+    .sidebar-footer{
+        display: none;
+    }
+
+}

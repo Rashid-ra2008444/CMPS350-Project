@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QU Student Management - Grading</title>
+    <link rel="stylesheet" href="css/instructor.css" />
+    <script src="js/instructor_grading.js" defer></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="sidebar">
+      <h2 class="title">CMPS 350</h2>
+      <nav>
+        <button id="back-to-classes" class="back-btn">
+          &larr; Back to Classes
+        </button>
+        <button id="logout">Logout</button>
+      </nav>
+    </div>
+
+    <main>
+      <section class="banner">
+        <h1 class="title">
+          Course Grading - <span id="instructor-name"></span>
+        </h1>
+        <h2 id="course-title">Course ID: CMPS151</h2>
+      </section>
+
+      <div class="course-box">
+        <h2>Course Details</h2>
+        <div id="course-details" class="course-details">
+          <!-- Course details will be loaded here -->
+        </div>
+      </div>
+
+      <div class="course-box">
+        <h2>Student Grades</h2>
+        <div id="student-list" class="student-list">
+          <!-- Student list will be loaded here -->
+          <p id="loading-message">Loading student data...</p>
+        </div>
+        <div id="success-message" class="success-message" style="display: none">
+          Grades submitted successfully!
+        </div>
+      </div>
+
+      <footer class="banner">
+        &copy; Qatar University Group Project Collections of this magnificant
+        Work 2025. All rights reserved
+      </footer>
+    </main>
+  </body>
+</html>

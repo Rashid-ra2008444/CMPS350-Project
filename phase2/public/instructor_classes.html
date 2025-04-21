@@ -1,0 +1,46 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QU Student Management - Instructor Classes</title>
+    <link rel="stylesheet" href="css/instructor.css" />
+    <script src="js/instructor_classes.js" defer></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="sidebar">
+      <h2 class="title">CMPS 350</h2>
+      <nav>
+        <input type="text" id="searchInput" placeholder="Search Classes" />
+        <button id="logout">Logout</button>
+      </nav>
+    </div>
+
+    <main>
+      <section class="banner">
+        <h1 class="title">Welcome <span id="instructor-name"></span></h1>
+        <h2>My Classes</h2>
+      </section>
+
+      <div class="course-box">
+        <h2>Current Classes</h2>
+        <div id="classes-container">
+          <!-- Classes will be loaded here dynamically -->
+          <p id="loading-message">Loading classes...</p>
+        </div>
+      </div>
+
+      <footer class="banner">
+        &copy; Qatar University Group Project Collections of this magnificant
+        Work 2025. All rights reserved
+      </footer>
+    </main>
+  </body>
+</html>

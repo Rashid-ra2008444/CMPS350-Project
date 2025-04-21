@@ -1,0 +1,112 @@
+[
+    {
+        "name": "Programming Concept",
+        "courseNum": 151,
+        "instructor": "Zeyad Ali",
+        "prerequisite": "none",
+        "enrollment_maximum": 50,
+        "enrollment_actual": 0,
+        "category": "CMPS",
+        "status": "valid",
+        "crn":12345
+    },
+    {
+        "name": "Object-Oriented Programming",
+        "courseNum": 251,
+        "instructor": "Mohammed Saleh",
+        "prerequisite": "Programming Concept",
+        "enrollment_maximum": 40,
+        "enrollment_actual": 0,
+        "category": "CMPS",
+        "status": "pending",
+        "crn":23456
+    },
+    {
+        "name": "Calculus I",
+        "courseNum": 101,
+        "instructor": "Sahbi Ayari",
+        "prerequisite": "none",
+        "enrollment_maximum": 60,
+        "enrollment_actual": 0,
+        "category": "MATH",
+        "status": "valid",
+        "crn":34567
+    },
+    {
+        "name": "Probability and Statistics for Engineers",
+        "courseNum": 200,
+        "instructor": "Nabeel Ahmed",
+        "prerequisite": "Calculus I",
+        "enrollment_maximum": 45,
+        "enrollment_actual": 0,
+        "category": "GENG",
+        "status": "invalid",
+        "crn":45678
+    },
+    {
+        "name": "Data Structure",
+        "courseNum": 303,
+        "instructor": "Saleh Al-Hazbi",
+        "prerequisite": "Object-Oriented Programming",
+        "enrollment_maximum": 30,
+        "enrollment_actual": 0,
+        "category": "CMPS",
+        "status": "pending",
+        "crn":56789
+    },
+    {
+        "name": "Computer Architecture and Organization I",
+        "courseNum": 263,
+        "instructor": "Mohammed Azeem",
+        "prerequisite": "none",
+        "enrollment_maximum": 50,
+        "enrollment_actual": 0,
+        "category": "CMPE",
+        "status": "valid",
+        "crn":67890
+    },
+    {
+        "name": "Web Development Fundamentals",
+        "courseNum": 350,
+        "instructor": "Zeyad Ali",
+        "prerequisite": "Programming Concept",
+        "enrollment_maximum": 40,
+        "enrollment_actual": 0,
+        "category": "CMPS",
+        "status": "valid",
+        "crn":78901
+    },
+    {
+        "name": "Data Communication and Computer Networks I",
+        "courseNum": 355,
+        "instructor": "Zeyad Ali",
+        "prerequisite": "Object-Oriented Programming",
+        "enrollment_maximum": 35,
+        "enrollment_actual": 0,
+        "category": "CMPE",
+        "status": "pending",
+        "crn":89012
+    },
+    {
+        "name": "Fundamentals of Database Systems",
+        "courseNum": 351,
+        "instructor": "Zeyad Ali",
+        "prerequisite": "Data Structure",
+        "enrollment_maximum": 45,
+        "enrollment_actual": 0,
+        "category": "CMPS",
+        "status": "valid",
+        "crn":90123
+    },
+    {
+        "name": "Programming Concept",
+        "courseNum": 151,
+        "instructor": "Mohammed Saleh",
+        "prerequisite": "none",
+        "enrollment_maximum": 30,
+        "enrollment_actual": 0,
+        "category": "CMPS",
+        "status": "pending",
+        "crn":12346
+    }
+]

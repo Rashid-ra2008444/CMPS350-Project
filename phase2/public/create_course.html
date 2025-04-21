@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Creating & Validation Courses</title>
+    <link rel="stylesheet" href="css/Create_Course.css" />
+    <script src="js/Create_Course.js" defer></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <!-- Navigation Course-->
+
+  <body>
+    <header></header>
+    <div class="sidebar">
+      <h2 class="title">CMPS 350</h2>
+      <nav>
+        <input type="text" id="searchInput" placeholder="Course Name" />
+        <select id="courseCategory">
+          <option value="all" selected>All Category</option>
+          <option value="CMPS">Computer Science</option>
+          <option value="CMPE">Computer Engineering</option>
+          <option value="MATH">Mathmatics</option>
+          <option value="GENG">General Engineering</option>
+        </select>
+        <button class="add-course">Add Course</button>
+        <button id="logout">Logout</button>
+      </nav>
+    </div>
+
+    <main>
+      <section class="banner">
+        <h1 class="title">Welcome Admin</h1>
+        <h2>Creating & Validation Courses</h2>
+      </section>
+      <div class="course-box">
+        <h2>Pending</h2>
+        <div id="pendingCourses"></div>
+      </div>
+      <div class="course-box">
+        <h2>Valid Course</h2>
+        <div id="validCourses"></div>
+      </div>
+      <div class="course-box">
+        <h2>Invalid Course</h2>
+        <div id="invalidCourses"></div>
+      </div>
+      <footer class="banner">
+        &copy; Qatar University Group Project Collections of this magnificant
+        Work 2025. All rights reserved
+      </footer>
+    </main>
+  </body>
+</html>

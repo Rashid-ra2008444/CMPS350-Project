@@ -1,0 +1,207 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import styles from "./registration.module.css"
+
+export default function Registration() {
+  const [user, setUser] = useState(null)
+  const [allCourses, setAllCourses] = useState([])
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedSubject, setSelectedSubject] = useState("All")
+
+  useEffect(() => {
+    // Get current user
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"))
+    if (!currentUser) return
+    setUser(currentUser)
+
+    // Load available courses
+    loadAllCourses(currentUser)
+  }, [])
+
+  const loadAllCourses = async (currentUser) => {
+    try {
+      // Fetch courses
+      const coursesResponse = await fetch("/api/courses")
+      const coursesData = await coursesResponse.json()
+
+      // Fetch enrollments
+      const enrollmentsResponse = await fetch("/api/enrollments")
+      const enrollmentData = await enrollmentsResponse.json()
+
+      // Filter courses to show ONLY pending ones not already enrolled in
+      const userEnrollments = enrollmentData.filter(
+        (e) => e.studentName && e.studentName.toLowerCase() === currentUser.username.toLowerCase(),
+      )
+
+      // Create sets of enrolled course identifiers
+      const enrolledCRNs = new Set()
+      const enrolledCourseNums = new Set()
+
+      userEnrollments.forEach((enrollment) => {
+        if (enrollment.crn) {
+          enrolledCRNs.add(Number.parseInt(enrollment.crn, 10))
+        }
+        enrolledCourseNums.add(Number.parseInt(enrollment.courseNum, 10))
+      })
+
+      // Filter available courses
+      const availableCourses = coursesData.filter((course) => {
+        const courseNum = Number.parseInt(course.courseNum, 10)
+        const courseCRN = Number.parseInt(course.crn, 10)
+        const isPending = course.status === "pending"
+
+        // Check if student is already enrolled
+        const isAlreadyEnrolled = enrolledCRNs.has(courseCRN) || enrolledCourseNums.has(courseNum)
+
+        return isPending && !isAlreadyEnrolled
+      })
+
+      setAllCourses(availableCourses)
+    } catch (error) {
+      console.error("Error loading courses:", error)
+    }
+  }
+
+  const filterCourses = () => {
+    // This will be implemented for filtering courses
+  }
+
+  const addCourse = async (course) => {
+    try {
+      // Check if the course is pending
+      if (course.status !== "pending") {
+        alert("Only pending courses can be registered.")
+        return
+      }
+
+      // Create new enrollment
+      const enrollment = {
+        studentId: user.password.toString(),
+        studentName: user.username,
+        courseNum: Number.parseInt(course.courseNum, 10),
+        crn: Number.parseInt(course.crn, 10),
+        courseName: course.name,
+        instructor: course.instructor,
+        enrollmentDate: new Date().toLocaleDateString(),
+        grade: null,
+        courseStatus: "pending",
+      }
+
+      // Send enrollment to API
+      const response = await fetch("/api/enrollments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(enrollment),
+      })
+
+      if (response.ok) {
+        alert("Course registered successfully! Note that this course is pending approval.")
+        // Reload courses
+        loadAllCourses(user)
+      } else {
+        alert("Error registering for course. Please try again.")
+      }
+    } catch (error) {
+      console.error("Error registering for course:", error)
+      alert("Error registering for course. Please try again.")
+    }
+  }
+
+  return (
+    <>
+      <section className="banner">
+        <h1 className="title">Welcome {user?.username}</h1>
+      </section>
+
+      <div className="course-box">
+        <div className="search-bar">
+          <h2>Courses</h2>
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Course Name"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <select id="subjectSelect" value={selectedSubject} onChange={(e) => setSelectedSubject(e.target.value)}>
+            <option value="All">All</option>
+            <option value="MATH">MATH</option>
+            <option value="CMPS">CMPS</option>
+            <option value="CMPE">CMPE</option>
+            <option value="GENG">GENG</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="course-box">
+        <h2>Register a Course</h2>
+        <div id="pendingCourses" className={styles.coursesGrid}>
+          {allCourses.length === 0 ? (
+            <p>No pending courses available for registration.</p>
+          ) : (
+            allCourses.map((course, index) => {
+              // Get prerequisite status
+              const prereqStatus = "met" // Simplified for now
+
+              return (
+                <div
+                  key={index}
+                  className={`class-card status-${course.status}`}
+                  data-course-num={course.courseNum}
+                  data-crn={course.crn}
+                >
+                  <h3>{course.name}</h3>
+                  <p>Instructor: {course.instructor}</p>
+                  <p>
+                    Course Number: {course.category} {course.courseNum}
+                  </p>
+                  <p>CRN: {course.crn}</p>
+                  <p>Category: {course.category}</p>
+                  <p>Prerequisite: {course.prerequisite}</p>
+                  <p>
+                    Status: <span className="status-pill status-pending">Pending Approval</span>
+                  </p>
+                  <p>
+                    Enrollment: {course.enrollment_actual}/{course.enrollment_maximum}
+                  </p>
+
+                  {course.enrollment_actual >= course.enrollment_maximum && (
+                    <p className={styles.fullWarning}>⚠️ Course is full</p>
+                  )}
+
+                  {prereqStatus !== "met" && <p className={styles.prereqWarning}>⚠️ Prerequisite not completed</p>}
+
+                  <p className={styles.pendingNotice}>ℹ️ This course is pending approval</p>
+
+                  <div className="button-container">
+                    <button
+                      className="Register"
+                      disabled={course.enrollment_actual >= course.enrollment_maximum || prereqStatus !== "met"}
+                      onClick={() => addCourse(course)}
+                    >
+                      Register
+                    </button>
+                  </div>
+                </div>
+              )
+            })
+          )}
+        </div>
+      </div>
+
+      <div className={styles.walkingDog}>
+        <img
+          src="https://th.bing.com/th/id/R.d3ced9489ad92112ec192b9b0a157abb?rik=xS4EjY43yu7E5Q&riu=http%3A%2F%2F24.media.tumblr.com%2F25ec1da1ceb3d8c59ff61abda466e66d%2Ftumblr_ms7532YHD61sfs2qco1_500.gif&ehk=HXsgue0NnAnJ%2FFqo9x0PQo1zFBZD6czkgM4kaC78jkU%3D&risl=&pid=ImgRaw&r=0"
+          alt="Walking dog"
+        />
+      </div>
+
+      <footer className="banner">
+        &copy; Qatar University Group Project Collections of this magnificant Work 2025. All rights reserved
+      </footer>
+    </>
+  )
+}

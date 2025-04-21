@@ -1,0 +1,89 @@
+.coursesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0.5rem;
+  }
+  
+  .fullWarning {
+    color: red;
+    font-weight: bold;
+  }
+  
+  .prereqWarning {
+    color: orange;
+    font-weight: bold;
+  }
+  
+  .pendingNotice {
+    color: blue;
+    font-style: italic;
+  }
+  
+  .walkingDog {
+    position: fixed;
+    bottom: 0;
+    left: -200px;
+    width: 150px;
+    z-index: 1000;
+    animation: walkAcross 4.5s linear infinite, zoomEffect 4.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+  
+  .walkingDog img {
+    width: 100%;
+    height: auto;
+  }
+  
+  @keyframes walkAcross {
+    0% {
+      left: -200px;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+  
+  @keyframes zoomEffect {
+    0% {
+      transform: scale(1.5);
+    }
+    50% {
+      transform: scale(1);
+    }
+    75% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(0.75);
+    }
+  }
+  
+  @media (max-width: 992px) {
+    .coursesGrid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+  
+    .walkingDog {
+      width: 120px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .coursesGrid {
+      grid-template-columns: 1fr;
+    }
+  
+    .walkingDog {
+      width: 100px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .walkingDog {
+      display: none;
+    }
+  }
+  

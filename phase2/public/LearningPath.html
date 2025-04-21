@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Learning Path</title>
+    <link rel="stylesheet" href="css/learning_path.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="banner2"></div>
+      <div class="header">
+        <div>
+          <h1>Learning Path</h1>
+          <p>Track your academic progress</p>
+        </div>
+        <div class="student-info">
+          <h3 id="student-name">Loading...</h3>
+          <p id="student-id">Student ID: Loading...</p>
+        </div>
+        <div>
+          <button class="coursesBUT">Course Page</button>
+          <button class="lougBUT">Logout</button>
+        </div>
+      </div>
+
+      <h2>Completed Courses</h2>
+      <table class="courses-table" id="completed-courses">
+        <thead>
+          <tr>
+            <th>Course Number</th>
+            <th>Course Name</th>
+            <th>Grade</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Completed courses will be added here -->
+        </tbody>
+      </table>
+
+      <h2>In-Progress Courses</h2>
+      <table class="courses-table" id="in-progress-courses">
+        <thead>
+          <tr>
+            <th>Course Number</th>
+            <th>Course Name</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- In-progress courses will be added here -->
+        </tbody>
+      </table>
+
+      <h2>Pending Courses</h2>
+      <table class="courses-table" id="pending-courses">
+        <thead>
+          <tr>
+            <th>Course Number</th>
+            <th>Course Name</th>
+            <th>Start Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Pending courses will be added here -->
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="banner">
+      &copy; Qatar University Group Project Collections of this magnificant Work
+      2025. All rights reserved
+    </footer>
+
+    <script src="/js/learningpath.js"></script>
+  </body>
+</html>

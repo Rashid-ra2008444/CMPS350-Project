@@ -1,0 +1,199 @@
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border: 4px double black;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    flex: 1;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    border: 4px double black;
+  }
+  
+  .studentInfo {
+    margin: 0 15px;
+  }
+  
+  .banner2 {
+    width: 100%;
+    height: 120px;
+    background: url("https://i.gifer.com/origin/d2/d239082e1cb1c5e859df88766e18a6b0_w200.gif") repeat-x;
+    background-size: contain;
+    animation: scroll 10s linear infinite;
+  }
+  
+  @keyframes scroll {
+    from {
+      background-position: 0 0;
+    }
+    to {
+      background-position: -100% 0;
+    }
+  }
+  
+  .coursesTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    background-color: white;
+    border: 4px double black;
+  }
+  
+  .coursesTable th {
+    background-color: #f8f8f8;
+    padding: 12px;
+    text-align: left;
+    border-bottom: 2px solid #ddd;
+    font-size: 1rem;
+  }
+  
+  .coursesTable td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95rem;
+  }
+  
+  .noCourses {
+    text-align: center;
+    padding: 15px;
+    color: #777;
+    font-style: italic;
+    font-size: 0.9rem;
+  }
+  
+  .walkingDog {
+    position: fixed;
+    bottom: 0;
+    left: -200px;
+    width: 150px;
+    z-index: 1000;
+    animation: walkAcross 12s linear infinite, zoomEffect 12s ease-in-out infinite;
+    pointer-events: none;
+  }
+  
+  .walkingDog img {
+    width: 100%;
+    height: auto;
+  }
+  
+  @keyframes walkAcross {
+    0% {
+      left: -200px;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+  
+  @keyframes zoomEffect {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.3);
+    }
+  }
+  
+  @media (max-width: 992px) {
+    .container {
+      width: 95%;
+      padding: 15px;
+    }
+  
+    .banner2 {
+      height: 100px;
+    }
+  
+    .header {
+      padding: 12px;
+    }
+  
+    .walkingDog {
+      width: 120px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .container {
+      width: 100%;
+      padding: 10px;
+      margin: 10px auto;
+    }
+  
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 10px;
+    }
+  
+    .header > div:last-child {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+  
+    .studentInfo {
+      margin: 10px 0;
+    }
+  
+    .banner2 {
+      height: 80px;
+    }
+  
+    .coursesTable {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+  
+    .coursesTable th,
+    .coursesTable td {
+      padding: 8px 10px;
+      font-size: 0.9rem;
+    }
+  
+    .walkingDog {
+      width: 100px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .container {
+      padding: 8px;
+      margin: 5px auto;
+    }
+  
+    .header {
+      padding: 8px;
+    }
+  
+    .banner2 {
+      height: 60px;
+    }
+  
+    .coursesTable th,
+    .coursesTable td {
+      padding: 6px 8px;
+      font-size: 0.85rem;
+    }
+  
+    .walkingDog {
+      width: 80px;
+    }
+  }
+  

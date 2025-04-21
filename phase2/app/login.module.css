@@ -1,0 +1,135 @@
+.loginContainer {
+  background-color: var(--base-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: url("/img/fatih-emir-bg-design.gif");
+  background-size: cover;
+  background-position: center;
+}
+
+.loginContainer header {
+  width: 100%;
+  max-width: 500px;
+  place-items: center;
+  margin-left: 150px;
+}
+
+.loginContainer header h1 {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.loginContainer main {
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
+}
+
+.loginForm {
+  border-radius: 10px;
+  width: 600px;
+}
+
+.loginForm h2 {
+  margin: 15px;
+  text-align: center;
+  padding: 10px;
+  font-size: 1.75rem;
+}
+
+.loginForm form {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 0 0 8px 8px;
+}
+
+.loginForm label {
+  width: 100%;
+  margin-bottom: 5px;
+  size: 100px;
+}
+
+.loginForm input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+}
+
+.loginForm button {
+  border: none;
+  padding: .8em 2em;
+  background-color: #4a7baf;
+  color: white;
+  border-radius: 4px;
+  font: inherit;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 10px;
+  border: 1px solid #212121;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+}
+
+.loginForm button:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.errorMessage {
+  color: red;
+  margin-top: 10px;
+  text-align: center;
+}
+
+@media only screen and (max-width: 1024px) {
+  .loginContainer main {
+    padding: 10px;
+  }
+
+  .loginContainer header {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+  }
+
+  .loginContainer header h1 {
+    font-size: 2rem;
+  }
+
+  .loginForm {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .loginForm h2 {
+    font-size: 1.5rem;
+  }
+
+  .loginForm form {
+    padding: 15px;
+  }
+
+  .loginForm input {
+    padding: 10px;
+  }
+
+  .loginContainer {
+    background-size: auto;
+    background-position: 25%;
+    height: fit-content;
+    object-fit: cover;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-size: cover;
+    background-color: #020112;
+  }
+}

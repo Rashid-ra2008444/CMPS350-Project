@@ -1,0 +1,25 @@
+.classesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    gap: 1rem;
+  }
+  
+  .gradingNotice {
+    color: orange;
+    font-style: italic;
+    text-align: center;
+    margin-top: 10px;
+  }
+  
+  @media (max-width: 992px) {
+    .classesGrid {
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .classesGrid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
