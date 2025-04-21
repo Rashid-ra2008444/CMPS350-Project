@@ -1,0 +1,41 @@
+-- CreateTable
+CREATE TABLE "User" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "username" TEXT NOT NULL,
+    "password" INTEGER NOT NULL,
+    "status" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "Course" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL,
+    "courseNum" INTEGER NOT NULL,
+    "instructor" TEXT NOT NULL,
+    "prerequisite" TEXT NOT NULL DEFAULT 'none',
+    "enrollment_maximum" INTEGER NOT NULL DEFAULT 30,
+    "enrollment_actual" INTEGER NOT NULL DEFAULT 0,
+    "category" TEXT NOT NULL,
+    "status" TEXT NOT NULL,
+    "crn" INTEGER NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "Enrollment" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "studentId" TEXT NOT NULL,
+    "studentName" TEXT NOT NULL,
+    "courseNum" INTEGER NOT NULL,
+    "crn" INTEGER NOT NULL,
+    "instructor" TEXT NOT NULL,
+    "enrollmentDate" TEXT NOT NULL,
+    "grade" TEXT,
+    "courseStatus" TEXT,
+    CONSTRAINT "Enrollment_crn_fkey" FOREIGN KEY ("crn") REFERENCES "Course" ("crn") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Course_crn_key" ON "Course"("crn");
