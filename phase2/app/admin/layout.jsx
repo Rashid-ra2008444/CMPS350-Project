@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 
 export default function AdminLayout({ children }) {
   const [user, setUser] = useState(null)
+  const [category, setCategory] = useState("all")
   const router = useRouter()
 
   useEffect(() => {
@@ -29,6 +30,10 @@ export default function AdminLayout({ children }) {
     router.push("/")
   }
 
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value)
+  }
+
   if (!user) {
     return <div>Loading...</div>
   }
@@ -39,10 +44,12 @@ export default function AdminLayout({ children }) {
         <h2 className="title">CMPS 350</h2>
         <nav>
           <input type="text" id="searchInput" placeholder="Course Name" />
-          <select id="courseCategory">
-            <option value="all" selected>
-              All Category
-            </option>
+          <select 
+            id="courseCategory" 
+            value={category} 
+            onChange={handleCategoryChange}
+          >
+            <option value="all">All Category</option>
             <option value="CMPS">Computer Science</option>
             <option value="CMPE">Computer Engineering</option>
             <option value="MATH">Mathmatics</option>
