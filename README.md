@@ -39,10 +39,10 @@
 | *yousef*     | *27-03-2025* | *update and done the complete course in learning path*|
 | *yousef*     | *27-03-2025* | *add the vled for the student if full and if not completely Course*|
 | *Rashid*     | *08-04-2025* | *Managed the responsive on CSS , Adapted the CRN (I know its late) currently working in Create_course.Js also for the data*              |
-| *Rashid*       | *09-04-2025* | *Handling CRN to ALL JS files*              |
-| *Rashid*       | *20-04-2025* | *initial Phase 2*              |
-| *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
-| *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
+| *Rashid*     | *09-04-2025* | *Handling CRN to ALL JS files*              |
+| *Rashid*     | *20-04-2025* | *initial Phase 2*                           |
+| *yousef*     | *22-04-2025* | *Fix the admin Phase 2*                       |
+| *yousef*     | *26-04-2025* | *fix add course and fix prisma by AOT information in Prisma Studio and small thing in UI*|
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |

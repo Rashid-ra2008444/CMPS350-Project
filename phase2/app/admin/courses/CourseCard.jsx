@@ -22,7 +22,10 @@ const CourseCard = ({ course, onValidate, onInvalidate, onDelete, onEdit }) => {
             <span className={styles.label}>Prerequisite:</span> {course.prerequisite}
           </p>
           <p>
-            <span className={styles.label}>Enrollment:</span> {course.enrollment_actual}/{course.enrollment_maximum}
+            <span className={styles.label}>Enrollment Maximum:</span> {course.enrollment_maximum}
+          </p>
+          <p>
+            <span className={styles.label}>Enrollment Actual:</span> {course.enrollment_actual}/{course.enrollment_maximum}
           </p>
           <p>
             <span className={styles.label}>CRN:</span> {course.crn}

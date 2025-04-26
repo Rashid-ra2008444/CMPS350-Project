@@ -4,8 +4,6 @@ import { useState, useEffect } from "react"
 import styles from "./admin-courses.module.css"
 import CourseCard from "./CourseCard"
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || ""
-
 export default function AdminCourses() {
   const [courses, setCourses] = useState([])
   const [filteredCourses, setFilteredCourses] = useState([])
@@ -13,6 +11,8 @@ export default function AdminCourses() {
   const [categoryFilter, setCategoryFilter] = useState("all")
   const [showAddForm, setShowAddForm] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
   const [newCourse, setNewCourse] = useState({
     name: "",
     courseNum: "",
@@ -32,58 +32,38 @@ export default function AdminCourses() {
     // Add event listener for add course button
     const addCourseButton = document.querySelector(".add-course")
     if (addCourseButton) {
-      addCourseButton.addEventListener("click", () => {
-        setIsEditMode(false)
-        setNewCourse({
-          name: "",
-          courseNum: "",
-          instructor: "",
-          prerequisite: "none",
-          enrollment_maximum: 30,
-          enrollment_actual: 0,
-          category: "CMPS",
-          status: "pending",
-          crn: Math.floor(10000 + Math.random() * 90000),
-        })
-        setShowAddForm(true)
-      })
+      addCourseButton.addEventListener("click", handleAddCourseClick)
     }
 
-    return () => {
-      // Clean up event listener
-      if (addCourseButton) {
-        addCourseButton.removeEventListener("click", () => setShowAddForm(true))
-      }
-    }
-  }, [])
-
-  useEffect(() => {
     // Set up event listeners for search and filter
     const searchInput = document.getElementById("searchInput")
     if (searchInput) {
-      searchInput.addEventListener("input", (e) => {
-        setSearchTerm(e.target.value.toLowerCase().trim())
-      })
+      searchInput.addEventListener("input", handleSearchInput)
+      // Initialize with any existing value
+      if (searchInput.value) {
+        setSearchTerm(searchInput.value.toLowerCase().trim())
+      }
     }
 
     const categorySelect = document.getElementById("courseCategory")
     if (categorySelect) {
-      categorySelect.addEventListener("change", (e) => {
-        setCategoryFilter(e.target.value)
-      })
+      categorySelect.addEventListener("change", handleCategoryChange)
+      // Initialize with current selected value
+      if (categorySelect.value) {
+        setCategoryFilter(categorySelect.value)
+      }
     }
 
     return () => {
       // Clean up event listeners
+      if (addCourseButton) {
+        addCourseButton.removeEventListener("click", handleAddCourseClick)
+      }
       if (searchInput) {
-        searchInput.removeEventListener("input", (e) => {
-          setSearchTerm(e.target.value.toLowerCase().trim())
-        })
+        searchInput.removeEventListener("input", handleSearchInput)
       }
       if (categorySelect) {
-        categorySelect.removeEventListener("change", (e) => {
-          setCategoryFilter(e.target.value)
-        })
+        categorySelect.removeEventListener("change", handleCategoryChange)
       }
     }
   }, [])
@@ -93,45 +73,100 @@ export default function AdminCourses() {
     filterCourses()
   }, [searchTerm, categoryFilter, courses])
 
+  const handleAddCourseClick = () => {
+    setIsEditMode(false)
+    setNewCourse({
+      name: "",
+      courseNum: "",
+      instructor: "",
+      prerequisite: "none",
+      enrollment_maximum: 30,
+      enrollment_actual: 0,
+      category: "CMPS",
+      status: "pending",
+      crn: Math.floor(10000 + Math.random() * 90000),
+    })
+    setShowAddForm(true)
+  }
+
+  const handleSearchInput = (e) => {
+    setSearchTerm(e.target.value.toLowerCase().trim())
+  }
+
+  const handleCategoryChange = (e) => {
+    setCategoryFilter(e.target.value)
+  }
+
   async function loadCourses() {
+    setLoading(true)
+    setError("")
+    
     try {
-      const response = await fetch(`${BASE_URL}/api/courses`)
+      const response = await fetch("/api/courses")
+      
+      if (!response.ok) {
+        throw new Error("Failed to fetch courses")
+      }
+      
       const data = await response.json()
       setCourses(data)
     } catch (error) {
       console.error("Error loading courses:", error)
+      setError("Failed to load courses. Please try again.")
+    } finally {
+      setLoading(false)
     }
   }
 
   const filterCourses = () => {
+    if (!courses || courses.length === 0) {
+      setFilteredCourses([]);
+      return;
+    }
+    
     const filtered = courses.filter(course => {
+      // Make everything lowercase for case-insensitive search
+      const searchTermLower = searchTerm.toLowerCase();
+      
+      // Safe property access with fallbacks to empty strings
+      const courseName = (course.name || "").toLowerCase();
+      const courseNum = course.courseNum !== undefined ? course.courseNum.toString() : "";
+      const courseCategory = (course.category || "").toLowerCase();
+      const courseInstructor = (course.instructor || "").toLowerCase();
+      
       // Match by course name
-      const nameMatch = course.name.toLowerCase().includes(searchTerm)
+      const nameMatch = courseName.includes(searchTermLower);
       
       // Match by course number
-      const numMatch = course.courseNum.toString().includes(searchTerm)
+      const numMatch = courseNum.includes(searchTermLower);
       
       // Match by course code (e.g., "CMPS 350")
-      const codeMatch = `${course.category} ${course.courseNum}`.toLowerCase().includes(searchTerm)
+      const codeMatch = `${courseCategory} ${courseNum}`.includes(searchTermLower);
       
       // Match by instructor name
-      const instructorMatch = course.instructor.toLowerCase().includes(searchTerm)
+      const instructorMatch = courseInstructor.includes(searchTermLower);
       
       // Handle category filtering
-      const categoryMatch = categoryFilter === "all" || course.category === categoryFilter
+      const categoryMatch = categoryFilter === "all" || course.category === categoryFilter;
       
       // Return true if any of the search conditions match AND the category matches
-      return (nameMatch || numMatch || codeMatch || instructorMatch) && categoryMatch
-    })
+      return (nameMatch || numMatch || codeMatch || instructorMatch) && categoryMatch;
+    });
     
-    setFilteredCourses(filtered)
+    setFilteredCourses(filtered);
   }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
+    
+    // For number fields, convert the value to a number
+    const processedValue = ["courseNum", "enrollment_maximum", "enrollment_actual", "crn"].includes(name) 
+      ? Number(value) 
+      : value
+      
     setNewCourse({
       ...newCourse,
-      [name]: value,
+      [name]: processedValue,
     })
   }
 
@@ -143,7 +178,7 @@ export default function AdminCourses() {
 
   const handleSubmitCourse = async (e) => {
     e.preventDefault()
-
+    
     try {
       if (isEditMode) {
         // Update existing course
@@ -155,49 +190,58 @@ export default function AdminCourses() {
           body: JSON.stringify(newCourse),
         })
 
-        if (response.ok) {
-          setShowAddForm(false)
-          loadCourses()
-          alert("Course updated successfully!")
-        } else {
-          alert("Error updating course. Please try again.")
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.message || "Failed to update course")
         }
+
+        setShowAddForm(false)
+        await loadCourses()
+        alert("Course updated successfully!")
       } else {
-        // Add new course
+        // Add new course - ensure numeric fields are numbers
+        const courseToAdd = {
+          ...newCourse,
+          courseNum: Number(newCourse.courseNum),
+          enrollment_maximum: Number(newCourse.enrollment_maximum),
+          enrollment_actual: Number(newCourse.enrollment_actual),
+          crn: Number(newCourse.crn)
+        }
+        
         const response = await fetch("/api/courses", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(newCourse),
+          body: JSON.stringify(courseToAdd),
         })
 
-        if (response.ok) {
-          // Reset form and hide it
-          setNewCourse({
-            name: "",
-            courseNum: "",
-            instructor: "",
-            prerequisite: "none",
-            enrollment_maximum: 30,
-            enrollment_actual: 0,
-            category: "CMPS",
-            status: "pending",
-            crn: Math.floor(10000 + Math.random() * 90000),
-          })
-          setShowAddForm(false)
-
-          // Reload courses
-          loadCourses()
-
-          alert("Course added successfully!")
-        } else {
-          alert("Error adding course. Please try again.")
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.message || "Failed to add course")
         }
+
+        // Reset form and hide it
+        setNewCourse({
+          name: "",
+          courseNum: "",
+          instructor: "",
+          prerequisite: "none",
+          enrollment_maximum: 30,
+          enrollment_actual: 0,
+          category: "CMPS",
+          status: "pending",
+          crn: Math.floor(10000 + Math.random() * 90000),
+        })
+        setShowAddForm(false)
+
+        // Reload courses
+        await loadCourses()
+        alert("Course added successfully!")
       }
     } catch (error) {
       console.error("Error processing course:", error)
-      alert("Error processing course. Please try again.")
+      alert(`Error: ${error.message || "Failed to process course"}`)
     }
   }
 
@@ -213,16 +257,17 @@ export default function AdminCourses() {
         body: JSON.stringify(updatedCourse),
       })
 
-      if (response.ok) {
-        // Reload courses
-        loadCourses()
-        alert(`Course status updated to ${status}!`)
-      } else {
-        alert("Error updating course status. Please try again.")
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to update course status")
       }
+
+      // Reload courses
+      await loadCourses()
+      alert(`Course status updated to ${status}!`)
     } catch (error) {
       console.error("Error updating course status:", error)
-      alert("Error updating course status. Please try again.")
+      alert(`Error: ${error.message || "Failed to update course status"}`)
     }
   }
 
@@ -237,17 +282,17 @@ export default function AdminCourses() {
         method: "DELETE",
       });
 
-      if (response.ok) {
-        // Reload courses
-        loadCourses();
-        alert("Course deleted successfully!");
-      } else {
+      if (!response.ok) {
         const errorData = await response.json();
-        alert(`Error deleting course: ${errorData.message || "Please try again."}`);
+        throw new Error(errorData.message || "Failed to delete course")
       }
+
+      // Reload courses
+      await loadCourses();
+      alert("Course deleted successfully!");
     } catch (error) {
       console.error("Error deleting course:", error);
-      alert("Network error. Please try again later.");
+      alert(`Error: ${error.message || "Failed to delete course"}`);
     }
   }
 
@@ -256,11 +301,28 @@ export default function AdminCourses() {
   const validCourses = filteredCourses.filter((course) => course.status === "valid")
   const invalidCourses = filteredCourses.filter((course) => course.status === "invalid")
 
+  if (loading) {
+    return (
+      <section className="banner">
+        <h1>Loading courses...</h1>
+      </section>
+    )
+  }
+
+  if (error) {
+    return (
+      <section className="banner" style={{ color: "red" }}>
+        <h1>Error: {error}</h1>
+        <button onClick={loadCourses}>Retry</button>
+      </section>
+    )
+  }
+
   return (
     <>
       <section className="banner">
         <h1 className="title">Welcome Admin</h1>
-        <h2>Creating & Validation Courses</h2>
+        <h2>Creating & Validating Courses</h2>
       </section>
 
       <div className="course-box">
@@ -327,7 +389,13 @@ export default function AdminCourses() {
               <div className={styles.formBoxContainer}>
                 <label>
                   Name:
-                  <input type="text" name="name" value={newCourse.name} onChange={handleInputChange} required />
+                  <input 
+                    type="text" 
+                    name="name" 
+                    value={newCourse.name} 
+                    onChange={handleInputChange} 
+                    required 
+                  />
                 </label>
                 <label>
                   Course Number:
@@ -371,7 +439,11 @@ export default function AdminCourses() {
                 </label>
                 <label>
                   Category:
-                  <select name="category" value={newCourse.category} onChange={handleInputChange}>
+                  <select 
+                    name="category" 
+                    value={newCourse.category} 
+                    onChange={handleInputChange}
+                  >
                     <option value="CMPS">Computer Science</option>
                     <option value="CMPE">Computer Engineering</option>
                     <option value="MATH">Mathematics</option>
@@ -381,19 +453,34 @@ export default function AdminCourses() {
                 {isEditMode && (
                   <label>
                     Status:
-                    <select name="status" value={newCourse.status} onChange={handleInputChange}>
+                    <select 
+                      name="status" 
+                      value={newCourse.status} 
+                      onChange={handleInputChange}
+                    >
                       <option value="pending">Pending</option>
                       <option value="valid">Valid</option>
                       <option value="invalid">Invalid</option>
                     </select>
                   </label>
                 )}
+                <label>
+                  CRN:
+                  <input
+                    type="number"
+                    name="crn"
+                    value={newCourse.crn}
+                    onChange={handleInputChange}
+                    readOnly={isEditMode}
+                    required
+                  />
+                </label>
               </div>
               <div className={styles.formButtons}>
-                <button type="submit" className="pixel2">
+                <button type="submit">
                   {isEditMode ? "Update" : "Save"}
                 </button>
-                <button type="button" className="pixel2" onClick={() => setShowAddForm(false)}>
+                <button type="button" onClick={() => setShowAddForm(false)}>
                   Cancel
                 </button>
               </div>

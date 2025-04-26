@@ -121,6 +121,13 @@ body {
   font-size: 0.9rem;
 }
 
+.class-card p {
+  color: #000;
+}
+.class-card h3 {
+  color: #000;
+}
+
 .class-card > * {
   margin-bottom: 0.5rem;
 }

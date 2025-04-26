@@ -1,19 +1,46 @@
-import { NextResponse } from "next/server"
-import fs from "fs"
-import path from "path"
+// import { NextResponse } from "next/server"
+// import fs from "fs"
+// import path from "path"
+
+// export async function POST(request) {
+//   try {
+//     const { username, password } = await request.json()
+
+//     // Read users from the JSON file
+//     const usersPath = path.join(process.cwd(), "app/data", "login.json")
+//     const usersData = fs.readFileSync(usersPath, "utf8")
+//     const users = JSON.parse(usersData)
+
+//     // Find the user
+//     const user = users.find((user) => user.username === username && user.password === Number.parseInt(password, 10))
+
+//     if (user) {
+//       return NextResponse.json({
+//         success: true,
+//         user: {
+//           username: user.username,
+//           status: user.status,
+//           password: user.password, // Needed for student ID in the app
+//         },
+//       })
+//     } else {
+//       return NextResponse.json({ success: false, message: "Invalid username or password" }, { status: 401 })
+//     }
+//   } catch (error) {
+//     console.error("Login error:", error)
+//     return NextResponse.json({ success: false, message: "Server error" }, { status: 500 })
+//   }
+// }
+import { NextResponse } from "next/server";
+import { userRepo } from "@/repo/repository";
 
 export async function POST(request) {
   try {
-    const { username, password } = await request.json()
-
-    // Read users from the JSON file
-    const usersPath = path.join(process.cwd(), "app/data", "login.json")
-    const usersData = fs.readFileSync(usersPath, "utf8")
-    const users = JSON.parse(usersData)
-
-    // Find the user
-    const user = users.find((user) => user.username === username && user.password === Number.parseInt(password, 10))
-
+    const { username, password } = await request.json();
+    
+    // Authenticate user
+    const user = await userRepo.authenticate(username, password);
+    
     if (user) {
       return NextResponse.json({
         success: true,
@@ -22,12 +49,18 @@ export async function POST(request) {
           status: user.status,
           password: user.password, // Needed for student ID in the app
         },
-      })
+      });
     } else {
-      return NextResponse.json({ success: false, message: "Invalid username or password" }, { status: 401 })
+      return NextResponse.json(
+        { success: false, message: "Invalid username or password" },
+        { status: 401 }
+      );
     }
   } catch (error) {
-    console.error("Login error:", error)
-    return NextResponse.json({ success: false, message: "Server error" }, { status: 500 })
+    console.error("Login error:", error);
+    return NextResponse.json(
+      { success: false, message: error.message || "Server error" },
+      { status: 500 }
+    );
   }
 }

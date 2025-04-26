@@ -36,7 +36,10 @@
     width: 100%;
     height: auto;
   }
-  
+  .courNam{
+    color: #007bff;
+  }
+
   @keyframes walkAcross {
     0% {
       left: -200px;

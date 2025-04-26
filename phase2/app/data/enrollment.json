@@ -6,7 +6,7 @@
     "crn": 12345,
     "instructor": "Zeyad Ali",
     "enrollmentDate": "2024-01-15",
-    "grade": null
+    "grade": "A"
   },
   {
     "studentId": "2003047",
@@ -15,7 +15,7 @@
     "crn": 12345,
     "instructor": "Zeyad Ali",
     "enrollmentDate": "2024-01-15",
-    "grade": null
+    "grade": "C+"
   },
   {
     "studentId": "2008444",
@@ -42,7 +42,7 @@
     "crn": 12345,
     "instructor": "Zeyad Ali",
     "enrollmentDate": "2024-01-15",
-    "grade": null
+    "grade": "D+"
   },
   {
     "studentId": "2005789",
@@ -51,7 +51,7 @@
     "crn": 12345,
     "instructor": "Zeyad Ali",
     "enrollmentDate": "2024-01-16",
-    "grade": null
+    "grade": "F"
   },
   {
     "studentId": "2007456",
@@ -60,7 +60,7 @@
     "crn": 12345,
     "instructor": "Zeyad Ali",
     "enrollmentDate": "2024-01-17",
-    "grade": null
+    "grade": "F"
   },
   {
     "studentId": "2001234",
@@ -205,5 +205,16 @@
     "instructor": "Zeyad Ali",
     "enrollmentDate": "2024-01-17",
     "grade": null
+  },
+  {
+    "studentId": "2008444",
+    "studentName": "Rashid",
+    "courseNum": 251,
+    "crn": 23456,
+    "courseName": "Object-Oriented Programming",
+    "instructor": "Mohammed Saleh",
+    "enrollmentDate": "4/26/2025",
+    "grade": null,
+    "courseStatus": "pending"
   }
 ]

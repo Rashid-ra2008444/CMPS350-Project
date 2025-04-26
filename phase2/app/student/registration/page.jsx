@@ -8,6 +8,8 @@ export default function Registration() {
   const [allCourses, setAllCourses] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedSubject, setSelectedSubject] = useState("All")
+  const [completedCourses, setCompletedCourses] = useState([])
+  const [passedCourses, setPassedCourses] = useState([])
 
   useEffect(() => {
     // Get current user
@@ -15,64 +17,125 @@ export default function Registration() {
     if (!currentUser) return
     setUser(currentUser)
 
-    // Load available courses
-    loadAllCourses(currentUser)
+    // Load available courses and user's completed courses
+    loadUserData(currentUser)
   }, [])
 
-  const loadAllCourses = async (currentUser) => {
+  const loadUserData = async (currentUser) => {
     try {
-      // Fetch courses
-      const coursesResponse = await fetch("/api/courses")
-      const coursesData = await coursesResponse.json()
+      // Fetch all necessary data in parallel
+      const [coursesResponse, enrollmentsResponse] = await Promise.all([
+        fetch("/api/courses"),
+        fetch("/api/enrollments")
+      ]);
+      
+      const coursesData = await coursesResponse.json();
+      const enrollmentData = await enrollmentsResponse.json();
 
-      // Fetch enrollments
-      const enrollmentsResponse = await fetch("/api/enrollments")
-      const enrollmentData = await enrollmentsResponse.json()
-
-      // Filter courses to show ONLY pending ones not already enrolled in
+      // Get user's enrollments
       const userEnrollments = enrollmentData.filter(
-        (e) => e.studentName && e.studentName.toLowerCase() === currentUser.username.toLowerCase(),
-      )
+        e => e.studentName && e.studentName.toLowerCase() === currentUser.username.toLowerCase()
+      );
 
-      // Create sets of enrolled course identifiers
-      const enrolledCRNs = new Set()
-      const enrolledCourseNums = new Set()
+      // Find completed courses (courses with grades)
+      const userCompletedCourses = [];
+      const userPassedCourseNames = [];
 
-      userEnrollments.forEach((enrollment) => {
-        if (enrollment.crn) {
-          enrolledCRNs.add(Number.parseInt(enrollment.crn, 10))
+      userEnrollments.forEach(enrollment => {
+        if (enrollment.grade) {
+          const course = coursesData.find(c => 
+            Number.parseInt(c.courseNum, 10) === Number.parseInt(enrollment.courseNum, 10)
+          );
+          
+          if (course) {
+            userCompletedCourses.push({
+              ...course,
+              grade: enrollment.grade
+            });
+            
+            // Consider courses with passing grades (A, B, C, D)
+            const grade = enrollment.grade.toString().toUpperCase();
+            if (!grade.includes('F')) {
+              userPassedCourseNames.push(course.name);
+            }
+          }
         }
-        enrolledCourseNums.add(Number.parseInt(enrollment.courseNum, 10))
-      })
+      });
 
+      setCompletedCourses(userCompletedCourses);
+      setPassedCourses(userPassedCourseNames);
+      
       // Filter available courses
-      const availableCourses = coursesData.filter((course) => {
-        const courseNum = Number.parseInt(course.courseNum, 10)
-        const courseCRN = Number.parseInt(course.crn, 10)
-        const isPending = course.status === "pending"
-
-        // Check if student is already enrolled
-        const isAlreadyEnrolled = enrolledCRNs.has(courseCRN) || enrolledCourseNums.has(courseNum)
-
-        return isPending && !isAlreadyEnrolled
-      })
-
-      setAllCourses(availableCourses)
+      const availableCourses = getAvailableCourses(coursesData, userEnrollments);
+      setAllCourses(availableCourses);
+      
     } catch (error) {
-      console.error("Error loading courses:", error)
+      console.error("Error loading user data:", error);
     }
   }
 
+  const getAvailableCourses = (coursesData, userEnrollments) => {
+    // Create sets of enrolled course identifiers
+    const enrolledCRNs = new Set();
+    const enrolledCourseNums = new Set();
+    
+    userEnrollments.forEach(enrollment => {
+      if (enrollment.crn) {
+        enrolledCRNs.add(Number.parseInt(enrollment.crn, 10));
+      }
+      enrolledCourseNums.add(Number.parseInt(enrollment.courseNum, 10));
+    });
+    
+    // Filter available courses
+    return coursesData.filter(course => {
+      const courseCRN = Number.parseInt(course.crn, 10);
+      const courseNum = Number.parseInt(course.courseNum, 10);
+      
+      // Check if the course is valid (we only want pending courses for registration)
+      const isPending = course.status === "pending";
+      
+      // Check if student is already enrolled
+      const isAlreadyEnrolled = enrolledCRNs.has(courseCRN) || 
+                               enrolledCourseNums.has(courseNum);
+      
+      // Only show pending courses that the student is not already enrolled in
+      return isPending && !isAlreadyEnrolled;
+    });
+  }
+
   const filterCourses = () => {
-    // This will be implemented for filtering courses
+    // Filter the courses based on search term and subject
+    // This can be implemented if needed
+  }
+
+  const checkPrerequisiteMet = (course) => {
+    // If no prerequisite is required
+    if (!course.prerequisite || course.prerequisite === "none") {
+      return true;
+    }
+    
+    // Check if the student has passed the prerequisite course
+    return passedCourses.includes(course.prerequisite);
   }
 
   const addCourse = async (course) => {
     try {
       // Check if the course is pending
       if (course.status !== "pending") {
-        alert("Only pending courses can be registered.")
-        return
+        alert("Only pending courses can be registered.");
+        return;
+      }
+      
+      // Check if prerequisites are met
+      if (!checkPrerequisiteMet(course)) {
+        alert(`You must complete the prerequisite course "${course.prerequisite}" before registering for this course.`);
+        return;
+      }
+
+      // Check if the course is full
+      if (course.enrollment_actual >= course.enrollment_maximum) {
+        alert("This course is full. Please select another course.");
+        return;
       }
 
       // Create new enrollment
@@ -86,7 +149,7 @@ export default function Registration() {
         enrollmentDate: new Date().toLocaleDateString(),
         grade: null,
         courseStatus: "pending",
-      }
+      };
 
       // Send enrollment to API
       const response = await fetch("/api/enrollments", {
@@ -95,20 +158,32 @@ export default function Registration() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(enrollment),
-      })
+      });
 
       if (response.ok) {
-        alert("Course registered successfully! Note that this course is pending approval.")
+        alert("Course registered successfully! Note that this course is pending approval.");
         // Reload courses
-        loadAllCourses(user)
+        loadUserData(user);
       } else {
-        alert("Error registering for course. Please try again.")
+        alert("Error registering for course. Please try again.");
       }
     } catch (error) {
-      console.error("Error registering for course:", error)
-      alert("Error registering for course. Please try again.")
+      console.error("Error registering for course:", error);
+      alert("Error registering for course. Please try again.");
     }
-  }
+  };
+
+  // Filter courses based on search term and subject
+  const filteredCourses = allCourses.filter(course => {
+    const matchesSearch = searchTerm === "" || 
+      course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course.courseNum.toString().includes(searchTerm.toLowerCase());
+    
+    const matchesSubject = selectedSubject === "All" || 
+      course.category === selectedSubject;
+    
+    return matchesSearch && matchesSubject;
+  });
 
   return (
     <>
@@ -139,12 +214,13 @@ export default function Registration() {
       <div className="course-box">
         <h2>Register a Course</h2>
         <div id="pendingCourses" className={styles.coursesGrid}>
-          {allCourses.length === 0 ? (
+          {filteredCourses.length === 0 ? (
             <p>No pending courses available for registration.</p>
           ) : (
-            allCourses.map((course, index) => {
-              // Get prerequisite status
-              const prereqStatus = "met" // Simplified for now
+            filteredCourses.map((course, index) => {
+              // Check if prerequisites are met
+              const prereqMet = checkPrerequisiteMet(course);
+              const isFull = course.enrollment_actual >= course.enrollment_maximum;
 
               return (
                 <div
@@ -168,18 +244,22 @@ export default function Registration() {
                     Enrollment: {course.enrollment_actual}/{course.enrollment_maximum}
                   </p>
 
-                  {course.enrollment_actual >= course.enrollment_maximum && (
+                  {isFull && (
                     <p className={styles.fullWarning}>⚠️ Course is full</p>
                   )}
 
-                  {prereqStatus !== "met" && <p className={styles.prereqWarning}>⚠️ Prerequisite not completed</p>}
+                  {!prereqMet && (
+                    <p className={styles.prereqWarning}>
+                      ⚠️ Prerequisite "{course.prerequisite}" not completed
+                    </p>
+                  )}
 
                   <p className={styles.pendingNotice}>ℹ️ This course is pending approval</p>
 
                   <div className="button-container">
                     <button
                       className="Register"
-                      disabled={course.enrollment_actual >= course.enrollment_maximum || prereqStatus !== "met"}
+                      disabled={isFull || !prereqMet}
                       onClick={() => addCourse(course)}
                     >
                       Register
