@@ -16,16 +16,20 @@ const CourseCard = ({ course, onValidate, onInvalidate, onDelete, onEdit }) => {
       <div className={styles.cardContent}>
         <div className={styles.courseInfo}>
           <p>
-            <span className={styles.label}>Instructor:</span> {course.instructor}
+            <span className={styles.label}>Instructor:</span>{" "}
+            {course.instructor}
           </p>
           <p>
-            <span className={styles.label}>Prerequisite:</span> {course.prerequisite}
+            <span className={styles.label}>Prerequisite:</span>{" "}
+            {course.prerequisite}
           </p>
           <p>
-            <span className={styles.label}>Enrollment Maximum:</span> {course.enrollment_maximum}
+            <span className={styles.label}>Enrollment Maximum:</span>{" "}
+            {course.enrollment_maximum}
           </p>
           <p>
-            <span className={styles.label}>Enrollment Actual:</span> {course.enrollment_actual}/{course.enrollment_maximum}
+            <span className={styles.label}>Enrollment Actual:</span>{" "}
+            {course.enrollment_actual}/{course.enrollment_maximum}
           </p>
           <p>
             <span className={styles.label}>CRN:</span> {course.crn}
@@ -33,26 +37,42 @@ const CourseCard = ({ course, onValidate, onInvalidate, onDelete, onEdit }) => {
         </div>
       </div>
       <div className={styles.cardActions}>
-        <button className={`${styles.actionButton} ${styles.editButton}`} onClick={() => onEdit(course)}>
-          Edit
-        </button>
-        
+        {onEdit && (
+          <button
+            className={`${styles.actionButton} ${styles.editButton}`}
+            onClick={() => onEdit(course)}
+          >
+            Edit
+          </button>
+        )}
+
         {course.status === "pending" && (
           <>
-            <button className={`${styles.actionButton} ${styles.validateButton}`} onClick={() => onValidate(course)}>
+            <button
+              className={`${styles.actionButton} ${styles.validateButton}`}
+              onClick={() => onValidate(course)}
+            >
               Validate
             </button>
-            <button className={`${styles.actionButton} ${styles.invalidateButton}`} onClick={() => onInvalidate(course)}>
+            <button
+              className={`${styles.actionButton} ${styles.invalidateButton}`}
+              onClick={() => onInvalidate(course)}
+            >
               Invalidate
             </button>
           </>
         )}
-        <button className={`${styles.actionButton} ${styles.deleteButton}`} onClick={() => onDelete(course)}>
-          Delete
-        </button>
+        {onDelete && (
+          <button
+            className={`${styles.actionButton} ${styles.deleteButton}`}
+            onClick={() => onDelete(course)}
+          >
+            Delete
+          </button>
+        )}
       </div>
     </div>
-  )
+  );
 }
 
 export default CourseCard

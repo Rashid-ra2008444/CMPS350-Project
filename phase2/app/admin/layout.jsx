@@ -29,6 +29,12 @@ export default function AdminLayout({ children }) {
     localStorage.removeItem("currentUser")
     router.push("/")
   }
+  const handleST = () => {
+    router.push("/admin/statistics")
+  }
+  const handleHome = () => {
+    router.push("/admin/courses")
+  }
 
   const handleCategoryChange = (e) => {
     setCategory(e.target.value)
@@ -56,6 +62,9 @@ export default function AdminLayout({ children }) {
             <option value="GENG">General Engineering</option>
           </select>
           <button className="add-course">Add Course</button>
+          <button className="statistics-btn" onClick={handleHome}>Home</button>
+          <button className="statistics-btn" onClick={handleST}>View Statistics</button>
+         
           <button id="logout" onClick={handleLogout}>
             Logout
           </button>

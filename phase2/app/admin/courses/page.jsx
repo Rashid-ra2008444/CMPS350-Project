@@ -170,9 +170,9 @@ export default function AdminCourses() {
     })
   }
 
-  const handleEditCourse = (course) => {
+  const handleEditCourse = (course, isValidCourse = false) => {
     setIsEditMode(true)
-    setNewCourse({...course})
+    setNewCourse({...course, isValidCourse})
     setShowAddForm(true)
   }
 
@@ -338,7 +338,7 @@ export default function AdminCourses() {
                 onEdit={handleEditCourse}
                 onValidate={() => validateCourse(course, "valid")}
                 onInvalidate={() => validateCourse(course, "invalid")}
-                onDelete={() => deleteCourse(course)}
+                // onDelete={() => deleteCourse(course)}
               />
             ))
           )}
@@ -355,7 +355,7 @@ export default function AdminCourses() {
               <CourseCard
                 key={course.crn}
                 course={course}
-                onEdit={handleEditCourse}
+                onEdit={(course) => handleEditCourse(course, true)}
                 onDelete={() => deleteCourse(course)}
               />
             ))
@@ -373,7 +373,6 @@ export default function AdminCourses() {
               <CourseCard
                 key={course.crn}
                 course={course}
-                onEdit={handleEditCourse}
                 onDelete={() => deleteCourse(course)}
               />
             ))
@@ -384,16 +383,22 @@ export default function AdminCourses() {
       {showAddForm && (
         <div className={styles.formContainer}>
           <div className={styles.formBox}>
-            <h3>{isEditMode ? "Edit Course" : "Add New Course"}</h3>
+          <h3>
+              {isEditMode ? 
+                (newCourse.isValidCourse ? "Edit Instructor Name" : "Edit Course") : 
+                "Add New Course"
+              }
+            </h3>
             <form onSubmit={handleSubmitCourse}>
               <div className={styles.formBoxContainer}>
-                <label>
+              <label>
                   Name:
                   <input 
                     type="text" 
                     name="name" 
                     value={newCourse.name} 
                     onChange={handleInputChange} 
+                    readOnly={newCourse.isValidCourse}  
                     required 
                   />
                 </label>
@@ -404,6 +409,7 @@ export default function AdminCourses() {
                     name="courseNum"
                     value={newCourse.courseNum}
                     onChange={handleInputChange}
+                    readOnly={newCourse.isValidCourse}  
                     required
                   />
                 </label>
@@ -424,6 +430,7 @@ export default function AdminCourses() {
                     name="prerequisite"
                     value={newCourse.prerequisite}
                     onChange={handleInputChange}
+                    readOnly={newCourse.isValidCourse}  
                     placeholder="none"
                   />
                 </label>
@@ -434,6 +441,7 @@ export default function AdminCourses() {
                     name="enrollment_maximum"
                     value={newCourse.enrollment_maximum}
                     onChange={handleInputChange}
+                    readOnly={newCourse.isValidCourse}  
                     required
                   />
                 </label>
@@ -443,6 +451,7 @@ export default function AdminCourses() {
                     name="category" 
                     value={newCourse.category} 
                     onChange={handleInputChange}
+                    disabled={newCourse.isValidCourse}  
                   >
                     <option value="CMPS">Computer Science</option>
                     <option value="CMPE">Computer Engineering</option>
@@ -450,21 +459,23 @@ export default function AdminCourses() {
                     <option value="GENG">General Engineering</option>
                   </select>
                 </label>
-                {isEditMode && (
+                {/* {isEditMode && (
                   <label>
                     Status:
                     <select 
                       name="status" 
                       value={newCourse.status} 
                       onChange={handleInputChange}
+                      disabled={newCourse.isValidCourse}
+                      
                     >
                       <option value="pending">Pending</option>
                       <option value="valid">Valid</option>
                       <option value="invalid">Invalid</option>
                     </select>
-                  </label>
-                )}
-                <label>
+                  </label> */}
+                {/* )} */}
+                {/* <label>
                   CRN:
                   <input
                     type="number"
@@ -474,7 +485,7 @@ export default function AdminCourses() {
                     readOnly={isEditMode}
                     required
                   />
-                </label>
+                </label> */}
               </div>
               <div className={styles.formButtons}>
                 <button type="submit">
