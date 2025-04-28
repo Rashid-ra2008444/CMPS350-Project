@@ -39,7 +39,7 @@
 
 
 import { NextResponse } from "next/server";
-import { enrollmentRepo } from "@/repo/repository";
+import { enrollmentRepo } from "@/app/repo/repository.js";
 
 export async function GET() {
   try {

@@ -39,7 +39,7 @@
 //   }
 // }
 import { NextResponse } from "next/server";
-import { courseRepo } from "@/repo/repository";
+import { courseRepo } from "@/app/repo/repository.js";
 
 export async function GET() {
   try {

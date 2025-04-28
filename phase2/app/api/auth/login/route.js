@@ -32,7 +32,7 @@
 //   }
 // }
 import { NextResponse } from "next/server";
-import { userRepo } from "@/repo/repository";
+import { userRepo } from "@/app/repo/repository.js";
 
 export async function POST(request) {
   try {

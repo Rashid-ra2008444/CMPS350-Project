@@ -93,7 +93,7 @@
 //   }
 // }
 import { NextResponse } from "next/server";
-import { courseRepo, enrollmentRepo } from "@/repo/repository";
+import { courseRepo, enrollmentRepo } from "@/app/repo/repository.js";
 
 export async function PUT(request, { params }) {
   try {
