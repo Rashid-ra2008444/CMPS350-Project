@@ -1,0 +1,29 @@
+.notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #fff;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    z-index: 1000;
+    opacity: 0.95;
+    animation: fadeInOut 3s ease-in-out forwards;
+  }
+  
+  .success {
+    background-color: #4caf50;
+  }
+  
+  .error {
+    background-color: #f44336;
+  }
+  
+  @keyframes fadeInOut {
+    0% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+    10% { opacity: 0.95; transform: translateX(-50%) translateY(0); }
+    90% { opacity: 0.95; }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+  }
+  

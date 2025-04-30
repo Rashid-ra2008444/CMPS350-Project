@@ -1,4 +1,3 @@
-// app/api/statistics/route.js
 import { NextResponse } from "next/server";
 import { PrismaClient } from '@prisma/client';
 
@@ -126,7 +125,7 @@ export async function GET() {
     const passingGrades = await prisma.enrollment.count({
       where: {
         grade: {
-          in: ['A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D']
+          in: ['A', 'B+', 'B','C+', 'C','D']
         }
       }
     });

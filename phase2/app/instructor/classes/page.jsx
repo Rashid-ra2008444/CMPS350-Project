@@ -74,6 +74,8 @@ export default function InstructorClasses() {
     }
   }
 
+  
+
   const handleViewGrades = (course) => {
     // Store selected course for grading page
     localStorage.setItem("selectedCourse", course.courseNum)

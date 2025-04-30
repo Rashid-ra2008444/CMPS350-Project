@@ -3,8 +3,8 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import styles from "./statistics.module.css"
-import { CourseDistributionChart, EnrollmentBarChart, GradeDistributionChart } from "./StatisticsCharts"
+import styles from "../../components/css/statistics.module.css"
+import { CourseDistributionChart, EnrollmentBarChart, GradeDistributionChart } from "../../components/StatisticsCharts"
 
 export default function AdminStatistics() {
   const [stats, setStats] = useState(null)

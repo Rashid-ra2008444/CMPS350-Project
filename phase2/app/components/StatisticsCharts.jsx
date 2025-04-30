@@ -1,6 +1,4 @@
-// app/admin/statistics/StatisticsCharts.jsx
-"use client"
-
+'use client';
 import { useEffect, useRef } from 'react';
 import { Chart, registerables } from 'chart.js';
 

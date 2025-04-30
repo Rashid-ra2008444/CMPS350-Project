@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import styles from "./registration.module.css"
+import Notification from "@/app/components/Notification"
 
 export default function Registration() {
   const [user, setUser] = useState(null)
@@ -10,6 +11,7 @@ export default function Registration() {
   const [selectedSubject, setSelectedSubject] = useState("All")
   const [completedCourses, setCompletedCourses] = useState([])
   const [passedCourses, setPassedCourses] = useState([])
+  const [notification, setNotification] = useState({message: "", type: ""})
 
   useEffect(() => {
     // Get current user
@@ -73,6 +75,10 @@ export default function Registration() {
       console.error("Error loading user data:", error);
     }
   }
+  const showNotification = (message, type = "success") => {
+    setNotification({ message, type })
+    setTimeout(() => setNotification({ message: "", type: "" }),4000)
+  }
 
   const getAvailableCourses = (coursesData, userEnrollments) => {
     // Create sets of enrolled course identifiers
@@ -122,19 +128,19 @@ export default function Registration() {
     try {
       // Check if the course is pending
       if (course.status !== "pending") {
-        alert("Only pending courses can be registered.");
+        showNotification("Only pending courses can be registered.", "error");
         return;
       }
       
       // Check if prerequisites are met
       if (!checkPrerequisiteMet(course)) {
-        alert(`You must complete the prerequisite course "${course.prerequisite}" before registering for this course.`);
+        showNotification(`You must complete the prerequisite course "${course.prerequisite}" before registering for this course.`, "error");
         return;
       }
 
       // Check if the course is full
       if (course.enrollment_actual >= course.enrollment_maximum) {
-        alert("This course is full. Please select another course.");
+        showNotification("This course is full. Please select another course.", "error");
         return;
       }
 
@@ -161,15 +167,15 @@ export default function Registration() {
       });
 
       if (response.ok) {
-        alert("Course registered successfully! Note that this course is pending approval.");
+        showNotification("Course registered successfully! Note that this course is pending approval.", "success");
         // Reload courses
         loadUserData(user);
       } else {
-        alert("Error registering for course. Please try again.");
+        showNotification("Error registering for course. Please try again.", "error");
       }
     } catch (error) {
       console.error("Error registering for course:", error);
-      alert("Error registering for course. Please try again.");
+      showNotification("Error registering for course. Please try again.", "error");
     }
   };
 
@@ -190,6 +196,9 @@ export default function Registration() {
       <section className="banner">
         <h1 className="title">Welcome {user?.username}</h1>
       </section>
+      {notification.message && (
+        <Notification message={notification.message} type={notification.type} />
+      )}
 
       <div className="course-box">
         <div className="search-bar">

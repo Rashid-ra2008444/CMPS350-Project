@@ -1,6 +1,5 @@
-"use client"
-
-import styles from "./admin-course-card.module.css"
+'use client'
+import styles from "./css/admin-course-card.module.css"
 
 const CourseCard = ({ course, onValidate, onInvalidate, onDelete, onEdit }) => {
   return (

@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react"
 import styles from "./admin-courses.module.css"
-import CourseCard from "./CourseCard"
+import CourseCard from "../../components/CourseCard"
+import ConfirmModel from "../../components/ConfirmModel"
+import Notification from "../../components/Notification"
 
 export default function AdminCourses() {
   const [courses, setCourses] = useState([])
@@ -13,6 +15,8 @@ export default function AdminCourses() {
   const [isEditMode, setIsEditMode] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const [confirmDelete, setConfirmDelete] = useState({ show: false, course: null })
+  const [notification, setNotification] = useState({message: "", type: ""})
   const [newCourse, setNewCourse] = useState({
     name: "",
     courseNum: "",
@@ -34,6 +38,8 @@ export default function AdminCourses() {
     if (addCourseButton) {
       addCourseButton.addEventListener("click", handleAddCourseClick)
     }
+
+    
 
     // Set up event listeners for search and filter
     const searchInput = document.getElementById("searchInput")
@@ -155,6 +161,37 @@ export default function AdminCourses() {
     
     setFilteredCourses(filtered);
   }
+  const showNotification = (message, type = "success") => {
+    setNotification({ message, type })
+    setTimeout(() => setNotification({ message: "", type: "" }),4000)
+  }
+
+  const askToDeleteCourse = (course) => {
+    setConfirmDelete({ show: true, course })
+  }
+  
+  const confirmDeleteCourse = async () => {
+    const course = confirmDelete.course
+    setConfirmDelete({ show: false, course: null })
+  
+    try {
+      const response = await fetch(`/api/courses/${course.crn}`, {
+        method: "DELETE",
+      })
+  
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to delete course")
+      }
+  
+      await loadCourses()
+      showNotification("Course deleted successfully!", "success")
+    } catch (error) {
+      console.error("Error deleting course:", error)
+      showNotification(`Error: ${error.message || "Failed to delete course"}`, "error")
+    }
+  }
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -197,7 +234,7 @@ export default function AdminCourses() {
 
         setShowAddForm(false)
         await loadCourses()
-        alert("Course updated successfully!")
+        showNotification("Course updated successfully!", "success")
       } else {
         // Add new course - ensure numeric fields are numbers
         const courseToAdd = {
@@ -237,11 +274,11 @@ export default function AdminCourses() {
 
         // Reload courses
         await loadCourses()
-        alert("Course added successfully!")
+        showNotification("Course added successfully!", "success")
       }
     } catch (error) {
       console.error("Error processing course:", error)
-      alert(`Error: ${error.message || "Failed to process course"}`)
+      showNotification(`Error: ${error.message || "Failed to process course"}`,"error")
     }
   }
 
@@ -264,10 +301,10 @@ export default function AdminCourses() {
 
       // Reload courses
       await loadCourses()
-      alert(`Course status updated to ${status}!`)
+      showNotification(`Course status updated to ${status}!`, "success")
     } catch (error) {
       console.error("Error updating course status:", error)
-      alert(`Error: ${error.message || "Failed to update course status"}`)
+      showNotification(`Error: ${error.message || "Failed to update course status"}`, "error")
     }
   }
 
@@ -289,10 +326,10 @@ export default function AdminCourses() {
 
       // Reload courses
       await loadCourses();
-      alert("Course deleted successfully!");
+      showNotification("Course deleted successfully!", "success");
     } catch (error) {
       console.error("Error deleting course:", error);
-      alert(`Error: ${error.message || "Failed to delete course"}`);
+      showNotification(`Error: ${error.message || "Failed to delete course"}`, "error");
     }
   }
 
@@ -324,7 +361,9 @@ export default function AdminCourses() {
         <h1 className="title">Welcome Admin</h1>
         <h2>Creating & Validating Courses</h2>
       </section>
-
+      {notification.message && (
+        <Notification message={notification.message} type={notification.type} />
+      )}  
       <div className="course-box">
         <h2>Pending Courses</h2>
         <div className={styles.coursesGrid}>
@@ -338,7 +377,7 @@ export default function AdminCourses() {
                 onEdit={handleEditCourse}
                 onValidate={() => validateCourse(course, "valid")}
                 onInvalidate={() => validateCourse(course, "invalid")}
-                // onDelete={() => deleteCourse(course)}
+                // onDelete={() => askToDeleteCourse(course)}
               />
             ))
           )}
@@ -356,7 +395,7 @@ export default function AdminCourses() {
                 key={course.crn}
                 course={course}
                 onEdit={(course) => handleEditCourse(course, true)}
-                onDelete={() => deleteCourse(course)}
+                onDelete={() => askToDeleteCourse(course)}
               />
             ))
           )}
@@ -373,7 +412,7 @@ export default function AdminCourses() {
               <CourseCard
                 key={course.crn}
                 course={course}
-                onDelete={() => deleteCourse(course)}
+                onDelete={() => askToDeleteCourse(course)}
               />
             ))
           )}
@@ -498,6 +537,14 @@ export default function AdminCourses() {
             </form>
           </div>
         </div>
+      )}
+
+      {confirmDelete.show && (
+        <ConfirmModel
+          message={`Are you sure you want to delete "${confirmDelete.course.name}"?`}
+          onConfirm={confirmDeleteCourse}
+          onCancel={() => setConfirmDelete({ show: false, course: null })}
+        />
       )}
 
       <footer className="banner">

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import styles from "./grading.module.css"
+import Notification from "@/app/components/Notification"
 
 export default function InstructorGrading() {
   const [user, setUser] = useState(null)
@@ -10,6 +11,7 @@ export default function InstructorGrading() {
   const [students, setStudents] = useState([])
   const [grades, setGrades] = useState({})
   const [successMessage, setSuccessMessage] = useState(false)
+  const [notification, setNotification] = useState({message: "", type: ""})
   const router = useRouter()
 
   useEffect(() => {
@@ -57,7 +59,7 @@ export default function InstructorGrading() {
       }
 
       if (!selectedCourse) {
-        alert("Course not found or you do not have permission to grade this course.")
+        showNotification("Course not found or you do not have permission to grade this course.", "error")
         router.push("/instructor/classes")
         return
       }
@@ -92,6 +94,11 @@ export default function InstructorGrading() {
     }
   }
 
+  const showNotification = (message, type = "success") => {
+    setNotification({ message, type })
+    setTimeout(() => setNotification({ message: "", type: "" }),4000)
+  }
+
   const getNumericEquivalent = (letterGrade) => {
     if (!letterGrade) return ""
 
@@ -122,7 +129,7 @@ export default function InstructorGrading() {
   const handleGradeChange = (studentId, value) => {
     const numericValue = parseInt(value, 10);
     if (isNaN(numericValue) || numericValue < 0 || numericValue > 100) {
-      alert("Grade must be a number between 0 and 100.");
+      showNotification("Grade must be a number between 0 and 100.", "error");
       return;
     }
 
@@ -133,57 +140,53 @@ export default function InstructorGrading() {
   };
 
   const handleSubmitGrades = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     try {
       // Fetch current enrollments
-      const enrollmentsResponse = await fetch("/api/enrollments")
-      const allEnrollments = await enrollmentsResponse.json()
+      const enrollmentsResponse = await fetch("/api/enrollments");
+      const allEnrollments = await enrollmentsResponse.json();
 
       // Update grades
       const updatedEnrollments = allEnrollments.map((enrollment) => {
-        // Check if this enrollment matches our course and has a grade update
-        const matchesByCRN = enrollment.crn && Number.parseInt(enrollment.crn, 10) === Number.parseInt(course.crn, 10)
-
-        const matchesByCourseNum = Number.parseInt(enrollment.courseNum, 10) === Number.parseInt(course.courseNum, 10)
+        const matchesByCRN = enrollment.crn && Number.parseInt(enrollment.crn, 10) === Number.parseInt(course.crn, 10);
+        const matchesByCourseNum = Number.parseInt(enrollment.courseNum, 10) === Number.parseInt(course.courseNum, 10);
 
         if (
           (matchesByCRN || matchesByCourseNum) &&
           enrollment.instructor === user.username &&
           grades[enrollment.studentId] !== undefined
         ) {
-          // Convert numeric grade to letter grade
-          const numericGrade = Number.parseInt(grades[enrollment.studentId], 10)
-          let letterGrade
+          const numericGrade = Number.parseInt(grades[enrollment.studentId], 10);
+          let letterGrade;
 
           if (numericGrade >= 90) {
-            letterGrade = "A"
+            letterGrade = "A";
           } else if (numericGrade >= 85) {
-            letterGrade = "B+"
+            letterGrade = "B+";
           } else if (numericGrade >= 80) {
-            letterGrade = "B"
+            letterGrade = "B";
           } else if (numericGrade >= 75) {
-            letterGrade = "C+"
+            letterGrade = "C+";
           } else if (numericGrade >= 70) {
-            letterGrade = "C"
+            letterGrade = "C";
           } else if (numericGrade >= 65) {
-            letterGrade = "D+"
+            letterGrade = "D+";
           } else if (numericGrade >= 60) {
-            letterGrade = "D"
+            letterGrade = "D";
           } else {
-            letterGrade = "F"
+            letterGrade = "F";
           }
 
-          // Return updated enrollment
           return {
             ...enrollment,
             grade: letterGrade,
-            crn: enrollment.crn || course.crn, // Ensure CRN is preserved or added
-          }
+            crn: enrollment.crn || course.crn,
+          };
         }
 
-        return enrollment
-      })
+        return enrollment;
+      });
 
       // Save updated enrollments
       const response = await fetch("/api/enrollments/update", {
@@ -192,26 +195,23 @@ export default function InstructorGrading() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(updatedEnrollments),
-      })
+      });
 
       if (response.ok) {
-        // Show success message
-        setSuccessMessage(true)
+        showNotification("Grades saved successfully. Students can now see their grades in Learning Path.", "success");
 
-        // Hide message after 3 seconds
+        // Redirect to the previous page after a short delay
         setTimeout(() => {
-          setSuccessMessage(false)
-        }, 3000)
-
-        alert("Grades saved successfully. Students can now see their grades in Learning Path.")
+          router.push("/instructor/classes");
+        }, 2000);
       } else {
-        alert("Error submitting grades. Please try again.")
+        showNotification("Error submitting grades. Please try again.", "error");
       }
     } catch (error) {
-      console.error("Error submitting grades:", error)
-      alert("Error submitting grades. Please try again.")
+      console.error("Error submitting grades:", error);
+      showNotification("Error submitting grades. Please try again.", "error");
     }
-  }
+  };
 
   const handleBackToClasses = () => {
     router.push("/instructor/classes")
@@ -236,7 +236,9 @@ export default function InstructorGrading() {
           {course.courseNum})
         </h2>
       </section>
-
+          {notification.message && (
+            <Notification message={notification.message} type={notification.type} onClose={() => setNotification({message: "", type: ""})}/> 
+        )}
       <div className="course-box">
         <h2>Course Details</h2>
         <div id="course-details" className={styles.courseDetails}>
