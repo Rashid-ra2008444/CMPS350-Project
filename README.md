@@ -43,7 +43,8 @@
 | *Rashid*     | *09-04-2025* | *Handling CRN to ALL JS files*              |
 
 ### Phase 2
-
+| Member       | Date       | Description                                      |
+| ------------ | ---------- | ------------------------------------------------ |
 | *Rashid*     | *20-04-2025* | *initial Phase 2*                           |
 | *yousef*     | *22-04-2025* | *Fix the admin Phase 2*                       |
 | *yousef*     | *26-04-2025* | *fix add course and fix prisma by AOT information in Prisma Studio and small thing in UI*|
