@@ -50,9 +50,9 @@ export default function AdminLayout({ children }) {
         <h2 className="title">CMPS 350</h2>
         <nav>
           <input type="text" id="searchInput" placeholder="Course Name" />
-          <select 
-            id="courseCategory" 
-            value={category} 
+          <select
+            id="courseCategory"
+            value={category}
             onChange={handleCategoryChange}
           >
             <option value="all">All Category</option>
@@ -61,10 +61,19 @@ export default function AdminLayout({ children }) {
             <option value="MATH">Mathmatics</option>
             <option value="GENG">General Engineering</option>
           </select>
-          <button className="add-course">Add Course</button>
-          <button className="statistics-btn" onClick={handleHome}>Home</button>
-          <button className="statistics-btn" onClick={handleST}>View Statistics</button>
-         
+          <button
+            className="add-course"
+            onClick={() => router.push("/admin/courses/form")}
+          >
+            Add Course
+          </button>
+          <button className="statistics-btn" onClick={handleHome}>
+            Home
+          </button>
+          <button className="statistics-btn" onClick={handleST}>
+            View Statistics
+          </button>
+
           <button id="logout" onClick={handleLogout}>
             Logout
           </button>
@@ -84,5 +93,5 @@ export default function AdminLayout({ children }) {
         {children}
       </main>
     </div>
-  )
+  );
 }

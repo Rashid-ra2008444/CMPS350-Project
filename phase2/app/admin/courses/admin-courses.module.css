@@ -106,6 +106,74 @@
   color: white;
 }
 
+.serverForm {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.serverForm label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.serverForm input,
+.serverForm select,
+.serverForm textarea {
+  padding: 0.75rem;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.serverForm input:focus,
+.serverForm select:focus,
+.serverForm textarea:focus {
+  border-color: #666;
+  outline: none;
+}
+
+.submitButton {
+  padding: 0.75rem 1.5rem;
+  background-color: white;
+  border: 3px solid black;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submitButton:hover {
+  background-color: black;
+  color: white;
+}
+
+.cancelButton {
+  padding: 0.75rem 1.5rem;
+  background-color: white;
+  border: 3px solid black;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: black;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+  background-color: black;
+  color: white;
+}
+
 @media (max-width: 992px) {
   .coursesGrid {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
