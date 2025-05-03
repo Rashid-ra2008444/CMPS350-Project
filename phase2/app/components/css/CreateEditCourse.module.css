@@ -1,0 +1,108 @@
+.formContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+}
+
+.formBox {
+  position: relative;
+  background-color: white;
+  padding: 2rem;
+  border: 3px solid black;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.formBox h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  text-align: center;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 0.75rem;
+}
+
+.formBoxContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.formBox label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.formBox input,
+.formBox select {
+  padding: 0.75rem;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.formBox input:focus,
+.formBox select:focus {
+  border-color: #666;
+  outline: none;
+}
+
+.formButtons {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.formButtons button {
+  padding: 0.75rem 1.5rem;
+  background-color: white;
+  border: 3px solid black;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.formButtons button:hover {
+  background-color: black;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .formBoxContainer {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .formBox {
+    padding: 1.5rem;
+    width: 95%;
+  }
+
+  .formButtons {
+    flex-direction: column;
+  }
+
+  .formButtons button {
+    width: 100%;
+  }
+}
