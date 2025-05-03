@@ -80,8 +80,9 @@ export async function processCourseFormActions(formData) {
 }
 
 export default async function CourseFormPageActions({ searchParams }) {
-  const crn = searchParams?.crn;
-  const isValidCourse = searchParams?.isValidCourse === "true";
+  const params = await searchParams;
+  const crn = params?.crn;
+  const isValidCourse = params?.isValidCourse === "true";
   const isEdit = !!crn;
   
   const defaultCourse = {
