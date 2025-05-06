@@ -1,6 +1,6 @@
 // app/admin/statistics/page.jsx
 "use client"
-
+import { getSession } from "next-auth/react"; 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import styles from "../../components/css/statistics.module.css"
@@ -13,20 +13,32 @@ export default function AdminStatistics() {
   const router = useRouter()
 
   useEffect(() => {
-    // Check if user is admin
-    const storedUser = localStorage.getItem("currentUser")
-    if (!storedUser) {
-      router.push("/")
-      return
-    }
+      // Check if user is admin
+    //   const storedUser = localStorage.getItem("currentUser")
+    //   if (!storedUser) {
+    //     router.push("/")
+    //     return
+    //   }
 
-    const userData = JSON.parse(storedUser)
-    if (userData.status !== "admin") {
-      router.push("/")
-      return
-    }
+    //   const userData = JSON.parse(storedUser)
+    //   if (userData.status !== "admin") {
+    //     router.push("/")
+    //     return
+    //   }
 
-    fetchStatistics()
+    // fetchStatistics()
+    const checkAccessAndFetch = async () => {
+      const session = await getSession(); // ✅ Fetch session
+      
+      if (!session || session.user.role !== "admin") {
+        router.push("/login"); // ✅ Not an admin? Redirect
+        return;
+      }
+
+      fetchStatistics(); // ✅ Valid session? Fetch stats
+    };
+
+    checkAccessAndFetch();
   }, [router])
 
   const fetchStatistics = async () => {

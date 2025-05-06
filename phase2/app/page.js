@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import styles from "./login.module.css"
+import {signIn} from "next-auth/react"
 
 export default function Login() {
   const [username, setUsername] = useState("")
@@ -14,27 +15,43 @@ export default function Login() {
     e.preventDefault()
     setError("")
 
+    const result = await signIn("credentials", {
+      redirect: false, // handle redirection manually
+      username,
+      password,
+      status,
+    });
+
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      })
+      // const response = await fetch("/api/auth/login", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({ username, password }),
+      // })
 
-      const data = await response.json()
+      // const data = await response.json()
 
-      if (response.ok) {
+      if (result.ok) {
+        const sessionRes = await fetch("/api/auth/session");
+        const session = await sessionRes.json();
+
+        const role = session.user.role;
         // Store user info in localStorage for persistence
-        localStorage.setItem("currentUser", JSON.stringify(data.user))
+        const currentUser = {
+          username: session.user.name,
+          password: Number(session.user.password), // cast to number if needed
+          status: session.user.role,
+        };
 
+        localStorage.setItem("currentUser", JSON.stringify(currentUser));
         // Redirect based on user role
-        if (data.user.status === "admin") {
+        if (role === "admin") {
           router.push("/admin/courses")
-        } else if (data.user.status === "student") {
+        } else if (role === "student") {
           router.push("/student/courses")
-        } else if (data.user.status === "instructor") {
+        } else if (role === "instructor") {
           router.push("/instructor/classes")
         }
       } else {

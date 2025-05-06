@@ -21,7 +21,7 @@ export default function AdminLayout({ children }) {
       router.push("/")
       return
     }
-
+    
     setUser(userData)
   }, [router])
 
