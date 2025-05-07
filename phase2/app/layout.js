@@ -1,5 +1,6 @@
 import { Inter } from "next/font/google"
 import "./globals.css"
+import { NextAuthSessionProvider } from "./providers/SessionProviderClient";
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -8,7 +9,7 @@ export const metadata = {
   description: "Course management system for Qatar University",
 }
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children,session }) {
   return (
     <html lang="en">
       <head>
@@ -18,7 +19,11 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <NextAuthSessionProvider session={session}>
+          {children}
+        </NextAuthSessionProvider>
+        </body>
     </html>
   )
 }

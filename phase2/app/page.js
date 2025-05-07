@@ -15,53 +15,68 @@ export default function Login() {
     e.preventDefault()
     setError("")
 
-    const result = await signIn("credentials", {
-      redirect: false, // handle redirection manually
-      username,
-      password,
-      status,
-    });
-
     try {
-      // const response = await fetch("/api/auth/login", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({ username, password }),
-      // })
+      const result = await signIn("credentials", {
+        redirect: false,
+        username,
+        password,
+      })
 
-      // const data = await response.json()
-
-      if (result.ok) {
-        const sessionRes = await fetch("/api/auth/session");
-        const session = await sessionRes.json();
-
-        const role = session.user.role;
-        // Store user info in localStorage for persistence
-        const currentUser = {
-          username: session.user.name,
-          password: Number(session.user.password), // cast to number if needed
-          status: session.user.role,
-        };
-
-        localStorage.setItem("currentUser", JSON.stringify(currentUser));
-        // Redirect based on user role
-        if (role === "admin") {
-          router.push("/admin/courses")
-        } else if (role === "student") {
-          router.push("/student/courses")
-        } else if (role === "instructor") {
-          router.push("/instructor/classes")
-        }
-      } else {
-        setError(data.message || "Invalid username or password")
+      if (result.error) {
+        setError(result.error)
+        return
       }
-    } catch (error) {
-      console.error("Login error:", error)
+
+      // Fetch fresh session data
+      const sessionRes = await fetch("/api/auth/session")
+      const session = await sessionRes.json()
+      const role = session.user.role
+
+      // Persist user info
+      const currentUser = {
+        username: session.user.name,
+        password: Number(session.user.password),
+        status: session.user.role,
+      }
+      localStorage.setItem("currentUser", JSON.stringify(currentUser))
+
+      // Redirect based on role
+      if (role === "admin") {
+        router.push("/admin/courses")
+      } else if (role === "student") {
+        router.push("/student/courses")
+      } else if (role === "instructor") {
+        router.push("/instructor/classes")
+      }
+    } catch (err) {
+      console.error("Login error:", err)
       setError("Error logging in. Please try again.")
     }
   }
+  const handleGithubSignIn = async () => {
+    setError("")
+    try {
+      // Initiate GitHub OAuth without automatic redirect
+      const result = await signIn("github", {
+        redirect:false,
+        callbackUrl: "/student/courses",
+      })
+      console.log(result);
+      if (result.error) {
+        setError(result.error)
+        return
+      }
+
+      // Manually navigate to callback URL to complete OAuth flow
+      // router.push(result.url)
+
+      // After redirect back to /student/courses, StudentCourses page will persist to localStorage
+    } catch (err) {
+      console.error("GitHub login error:", err)
+      setError("Error logging in with GitHub. Please try again.")
+    }
+  }
+
 
   return (
     <div className={styles.loginContainer}>
@@ -103,6 +118,14 @@ export default function Login() {
           {error && <div className={styles.errorMessage}>{error}</div>}
         </div>
       </main>
+      <button
+        type="button"
+        // className={styles.githubButton}
+        id="sub"
+        onClick={handleGithubSignIn}
+      >
+        Sign in with GitHub
+      </button>
     </div>
   )
 }
