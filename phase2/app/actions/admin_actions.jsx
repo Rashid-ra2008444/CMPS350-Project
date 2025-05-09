@@ -46,6 +46,12 @@ async function updateCourseActions(crn, data) {
   });
 }
 
+export async function authenticateActions(username,password){
+  return await  prisma.user.findUnique({
+        where: { username: username, password: password },
+      });
+}
+
 export default async function CourseFormPageActions({ searchParams }) {
   const { crn, isValidCourse } = searchParams;
   const isEdit = !!crn;

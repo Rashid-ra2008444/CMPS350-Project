@@ -17,7 +17,7 @@ export default function LearningPath() {
     // Set student info
     setStudent({
       name: currentUser.username,
-      id: currentUser.password.toString(),
+      id: currentUser.password ? currentUser.password.toString() : "N/A", // Handle null/undefined password
     })
 
     // Load learning path data

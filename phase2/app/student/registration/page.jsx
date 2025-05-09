@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import styles from "./registration.module.css"
 import Notification from "@/app/components/Notification"
+import { authenticateActions } from "@/app/actions/admin_actions"
 
 export default function Registration() {
   const [user, setUser] = useState(null)
@@ -126,12 +127,18 @@ export default function Registration() {
 
   const addCourse = async (course) => {
     try {
+      // Ensure user is defined
+      if (!user || !user.password || !user.username) {
+        showNotification("User information is missing. Please refresh the page and try again.", "error");
+        return;
+      }
+
       // Check if the course is pending
       if (course.status !== "pending") {
         showNotification("Only pending courses can be registered.", "error");
         return;
       }
-      
+
       // Check if prerequisites are met
       if (!checkPrerequisiteMet(course)) {
         showNotification(`You must complete the prerequisite course "${course.prerequisite}" before registering for this course.`, "error");
