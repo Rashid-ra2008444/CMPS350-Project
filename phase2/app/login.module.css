@@ -144,3 +144,42 @@
 .githubIconButton:hover {
   color: #dddddd; /* light gray on hover */
 }
+
+/* container for the two buttons */
+.buttonGroup {
+  display: flex;
+  align-items: center;
+  /* vertical center */
+  justify-content: center;
+  /* center them horizontally (or space-between) */
+  gap: 1rem;
+  /* space between the buttons */
+  margin-top: 1rem;
+  /* some breathing room above */
+}
+
+/* style the regular submit button to flex evenly if you like */
+.buttonGroup #sub {
+  flex: 1;
+  /* grow to fill available space */
+  max-width: 200px;
+  /* optional cap on how wide it gets */
+}
+
+/* align the GitHub icon button next to it */
+.buttonGroup .githubIconButton {
+  flex: 0;
+  /* only as big as its content */
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.buttonGroup .githubIconButton:hover {
+  color: lightgray;
+}

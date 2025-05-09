@@ -148,21 +148,24 @@ export default function Login() {
               required
             />
             <br />
+            <div className={styles.buttonGroup}>
             <button type="submit" id="sub">
               Submit
             </button>
+            <button
+              type="button"
+              onClick={handleGithubSignIn}
+              className={styles.githubIconButton}
+              title="Sign in with GitHub"
+            >
+              <i className="fab fa-github fa-2x"></i>
+            </button>
+            </div>
           </form>
           {error && <div className={styles.errorMessage}>{error}</div>}
         </div>
       </main>
-      <button
-  type="button"
-  onClick={handleGithubSignIn}
-  className={styles.githubIconButton}
-  title="Sign in with GitHub"
->
-  <i className="fab fa-github fa-2x"></i>
-</button>
+      
     </div>
   )
 }
