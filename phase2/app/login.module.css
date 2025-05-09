@@ -133,3 +133,14 @@
     background-color: #020112;
   }
 }
+.githubIconButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white; /* makes the icon white */
+  padding: 10px;
+}
+
+.githubIconButton:hover {
+  color: #dddddd; /* light gray on hover */
+}

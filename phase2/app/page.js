@@ -156,11 +156,13 @@ export default function Login() {
         </div>
       </main>
       <button
-        type="button"
-        onClick={handleGithubSignIn}
-      >
-        Sign in with GitHub
-      </button>
+  type="button"
+  onClick={handleGithubSignIn}
+  className={styles.githubIconButton}
+  title="Sign in with GitHub"
+>
+  <i className="fab fa-github fa-2x"></i>
+</button>
     </div>
   )
 }
