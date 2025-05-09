@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import styles from "./login.module.css"
-import {signIn} from "next-auth/react"
+import {signIn,getSession,signOut} from "next-auth/react"
 
 export default function Login() {
   const [username, setUsername] = useState("")
@@ -17,35 +17,64 @@ export default function Login() {
 
     try {
       // 1) Call your custom login API
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+      // const res = await fetch("/api/auth/login", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ username, password }),
+      // });
+
+      // const data = await res.json();
+
+      // // 2) Handle errors from the server
+      // if (!data.success) {
+      //   setError(data.message || "Invalid username or password");
+      //   return;
+      // }
+
+      // // 3) Persist user info into localStorage
+      // const { username: u, status, password: pwd } = data.user;
+      // const currentUser = {
+      //   username: u,
+      //   password: Number(pwd),
+      //   status,
+      // };
+      // localStorage.setItem("currentUser", JSON.stringify(currentUser));
+      // 1) Sign in via NextAuth's credentials provider
+      const result = await signIn("credentials", {
+        redirect: false,
+        username,
+        password,
       });
 
-      const data = await res.json();
-
-      // 2) Handle errors from the server
-      if (!data.success) {
-        setError(data.message || "Invalid username or password");
+      if (result.error) {
+        setError(result.error);
         return;
       }
 
-      // 3) Persist user info into localStorage
-      const { username: u, status, password: pwd } = data.user;
-      const currentUser = {
-        username: u,
-        password: Number(pwd),
-        status,
-      };
-      localStorage.setItem("currentUser", JSON.stringify(currentUser));
+      // 2) Grab the freshly issued session
+      const nextSession = await getSession();
+      if (!nextSession) {
+        setError("Could not get session after login");
+        return;
+      }
+
+      // 3) Optionally persist to localStorage still, using the SAME data:
+      const { user } = nextSession;
+      localStorage.setItem(
+        "currentUser",
+        JSON.stringify({
+          username: user.name,
+          password: Number(user.password),
+          status: user.role,
+        })
+      );
 
       // 4) Redirect based on role
-      if (status === "admin") {
+      if (user.role === "admin") {
         router.push("/admin/courses");
-      } else if (status === "student") {
+      } else if (user.role === "student") {
         router.push("/student/courses");
-      } else if (status === "instructor") {
+      } else if (user.role === "instructor") {
         router.push("/instructor/classes");
       }
     } catch (err) {

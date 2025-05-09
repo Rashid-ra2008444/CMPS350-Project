@@ -7,8 +7,8 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   const session = await getServerSession(authOptions);
-
   // 🔐 Strictly check for admin role
+  console.log(session);
   if (!session || session.user.role !== "admin") {
     return NextResponse.json(
       { success: false, message: "Unauthorized: Please log in as admin." },

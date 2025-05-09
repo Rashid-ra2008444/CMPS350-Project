@@ -13,7 +13,7 @@ export default function AdminStatistics() {
   const router = useRouter()
 
   useEffect(() => {
-      // Check if user is admin
+    //   // Check if user is admin
     //   const storedUser = localStorage.getItem("currentUser")
     //   if (!storedUser) {
     //     router.push("/")
@@ -29,9 +29,9 @@ export default function AdminStatistics() {
     // fetchStatistics()
     const checkAccessAndFetch = async () => {
       const session = await getSession(); // ✅ Fetch session
-      
+      console.log(session);
       if (!session || session.user.role !== "admin") {
-        router.push("/login"); // ✅ Not an admin? Redirect
+        router.push("/"); // ✅ Not an admin? Redirect
         return;
       }
 

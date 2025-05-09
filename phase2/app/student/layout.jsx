@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
+import {signOut} from "next-auth/react"
 
 export default function StudentLayout({ children }) {
   const [user, setUser] = useState(null)
@@ -28,7 +29,8 @@ export default function StudentLayout({ children }) {
     setUser(userData)
   }, [router])
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // await signOut({ redirect: false });
     localStorage.removeItem("currentUser")
     router.push("/")
   }
