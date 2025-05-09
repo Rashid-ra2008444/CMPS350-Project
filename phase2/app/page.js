@@ -12,71 +12,80 @@ export default function Login() {
   const router = useRouter()
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError("")
+    e.preventDefault();
+    setError("");
 
     try {
-      const result = await signIn("credentials", {
-        redirect: false,
-        username,
-        password,
-      })
+      // 1) Call your custom login API
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-      if (result.error) {
-        setError(result.error)
-        return
+      const data = await res.json();
+
+      // 2) Handle errors from the server
+      if (!data.success) {
+        setError(data.message || "Invalid username or password");
+        return;
       }
 
-      // Fetch fresh session data
-      const sessionRes = await fetch("/api/auth/session")
-      const session = await sessionRes.json()
-      const role = session.user.role
-
-      // Persist user info
+      // 3) Persist user info into localStorage
+      const { username: u, status, password: pwd } = data.user;
       const currentUser = {
-        username: session.user.name,
-        password: Number(session.user.password),
-        status: session.user.role,
-      }
-      localStorage.setItem("currentUser", JSON.stringify(currentUser))
+        username: u,
+        password: Number(pwd),
+        status,
+      };
+      localStorage.setItem("currentUser", JSON.stringify(currentUser));
 
-      // Redirect based on role
-      if (role === "admin") {
-        router.push("/admin/courses")
-      } else if (role === "student") {
-        router.push("/student/courses")
-      } else if (role === "instructor") {
-        router.push("/instructor/classes")
+      // 4) Redirect based on role
+      if (status === "admin") {
+        router.push("/admin/courses");
+      } else if (status === "student") {
+        router.push("/student/courses");
+      } else if (status === "instructor") {
+        router.push("/instructor/classes");
       }
     } catch (err) {
-      console.error("Login error:", err)
-      setError("Error logging in. Please try again.")
+      console.error("Login error:", err);
+      setError("Error logging in. Please try again.");
     }
-  }
+  };
+
   const handleGithubSignIn = async () => {
-    setError("")
+    setError("");
     try {
-      // Initiate GitHub OAuth without automatic redirect
-      const result = await signIn("github", {
-        redirect:false,
-        callbackUrl: "/student/courses",
-      })
-      console.log(result);
-      if (result.error) {
-        setError(result.error)
-        return
+      // 1) Kick off the OAuth flow without auto-redirect
+      const result = await signIn("github");
+
+      // 2) If GitHub errored out, show it
+      if (result?.error) {
+        setError(result.error);
+        return;
       }
 
-      // Manually navigate to callback URL to complete OAuth flow
-      // router.push(result.url)
+      // 3) Otherwise, fetch the new session
+      const sessionRes = await fetch("/api/auth/session");
+      const session = await sessionRes.json();
 
-      // After redirect back to /student/courses, StudentCourses page will persist to localStorage
+      // 4) Pull out the fields you need
+      const { name: username, password, role } = session.user;
+      const currentUser = {
+        username,
+        password: Number(password),
+        status: role,
+      };
+
+      // 5) Persist & redirect to the student dashboard
+      localStorage.setItem("currentUser", JSON.stringify(currentUser));
+      router.push("/student/courses");
     } catch (err) {
-      console.error("GitHub login error:", err)
-      setError("Error logging in with GitHub. Please try again.")
+      console.error("GitHub sign in error:", err);
+      setError("Could not start GitHub sign in");
     }
-  }
-
+  };
 
   return (
     <div className={styles.loginContainer}>
@@ -120,8 +129,6 @@ export default function Login() {
       </main>
       <button
         type="button"
-        // className={styles.githubButton}
-        id="sub"
         onClick={handleGithubSignIn}
       >
         Sign in with GitHub
