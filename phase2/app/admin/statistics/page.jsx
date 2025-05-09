@@ -31,7 +31,7 @@ export default function AdminStatistics() {
       const session = await getSession(); // ✅ Fetch session
       
       if (!session || session.user.role !== "admin") {
-        router.push("/login"); // ✅ Not an admin? Redirect
+        router.push("/"); // ✅ Not an admin? Redirect
         return;
       }
 

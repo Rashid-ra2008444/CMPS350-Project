@@ -16,30 +16,58 @@ export default function Login() {
     setError("");
 
     try {
-      // 1) Call your custom login API
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+      // // 1) Call your custom login API
+      // const res = await fetch("/api/auth/login", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ username, password }),
+      // });
+
+      // const data = await res.json();
+
+      // // 2) Handle errors from the server
+      // if (!data.success) {
+      //   setError(data.message || "Invalid username or password");
+      //   return;
+      // }
+
+      // // 3) Persist user info into localStorage
+      // const { username: u, status, password: pwd } = data.user;
+      // const currentUser = {
+      //   username: u,
+      //   password: Number(pwd),
+      //   status,
+      // };
+      // localStorage.setItem("currentUser", JSON.stringify(currentUser));
+      // 1) Sign in via NextAuth Credentials provider
+      const result = await signIn("credentials", {
+        redirect: false,
+        username,
+        password,
       });
 
-      const data = await res.json();
-
-      // 2) Handle errors from the server
-      if (!data.success) {
-        setError(data.message || "Invalid username or password");
+      // 2) If auth failed, show the error
+      if (result?.error) {
+        setError(result.error);
         return;
       }
 
-      // 3) Persist user info into localStorage
-      const { username: u, status, password: pwd } = data.user;
+      // 3) Grab the newly‐issued NextAuth session
+      const session = await getSession();
+      if (!session?.user) {
+        setError("Failed to retrieve session after login.");
+        return;
+      }
+
+      // 4) Mirror into localStorage.currentUser
+      const { name: userName, password: sessPwd, role } = session.user;
       const currentUser = {
-        username: u,
-        password: Number(pwd),
-        status,
+        username: userName,
+        password: Number(sessPwd),
+        status: role,
       };
       localStorage.setItem("currentUser", JSON.stringify(currentUser));
-
+      
       // 4) Redirect based on role
       if (status === "admin") {
         router.push("/admin/courses");
