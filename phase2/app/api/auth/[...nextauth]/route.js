@@ -6,6 +6,26 @@ import { userRepo } from "@/app/repo/repository";
 
 export const authOptions = {
   providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" },
+        status: { label: "status", type: "status" },
+      },
+      async authorize(credentials) {
+        const user = await userRepo.authenticate(credentials.username, credentials.password);
+        if (user) {
+          return {
+            id: user.id,
+            name: user.username,
+            password: user.password,
+            role: user.status,
+          };
+        }
+        return null; // Login failed
+      },
+    }),
     GithubProvider({
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET,

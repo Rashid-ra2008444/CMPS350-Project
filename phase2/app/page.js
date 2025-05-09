@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import styles from "./login.module.css"
-import {signIn} from "next-auth/react"
+import {signIn,getSession} from "next-auth/react"
 
 export default function Login() {
   const [username, setUsername] = useState("")
@@ -67,13 +67,13 @@ export default function Login() {
         status: role,
       };
       localStorage.setItem("currentUser", JSON.stringify(currentUser));
-      
+
       // 4) Redirect based on role
-      if (status === "admin") {
+      if (role === "admin") {
         router.push("/admin/courses");
-      } else if (status === "student") {
+      } else if (role === "student") {
         router.push("/student/courses");
-      } else if (status === "instructor") {
+      } else if (role === "instructor") {
         router.push("/instructor/classes");
       }
     } catch (err) {
