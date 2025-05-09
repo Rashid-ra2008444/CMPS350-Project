@@ -58,7 +58,7 @@ export default function Login() {
     setError("");
     try {
       // 1) Kick off the OAuth flow without auto-redirect
-      const result = await signIn("github");
+      const result = await signIn("github", { callbackUrl: "/student/courses" });
 
       // 2) If GitHub errored out, show it
       if (result?.error) {
@@ -80,7 +80,7 @@ export default function Login() {
 
       // 5) Persist & redirect to the student dashboard
       localStorage.setItem("currentUser", JSON.stringify(currentUser));
-      router.push("/student/courses");
+      // router.push("/student/courses");
     } catch (err) {
       console.error("GitHub sign in error:", err);
       setError("Could not start GitHub sign in");

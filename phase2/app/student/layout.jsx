@@ -12,7 +12,9 @@ export default function StudentLayout({ children }) {
   useEffect(() => {
     // Check if user is logged in and is a student
     const storedUser = localStorage.getItem("currentUser")
+    console.log(storedUser);
     if (!storedUser) {
+      console.log("pushing back");
       router.push("/")
       return
     }
