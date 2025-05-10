@@ -1,13 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GithubProvider from "next-auth/providers/github";
-import { userRepository } from "@/app/repo/repository";
-
- function randomNumberPassword() {
-      const min = 100000; // Minimum 6-digit number
-      const max = 999999; // Maximum 6-digit number
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+import { userRepo } from "@/app/repo/repository";
 
 export const authOptions = {
   providers: [
@@ -16,47 +10,41 @@ export const authOptions = {
       credentials: {
         username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
-        status: { label: "status", type: "status" },
       },
       async authorize(credentials) {
-        const user = await userRepository.authenticate(credentials.username, credentials.password);
+        const user = await userRepo.authenticate(credentials.username, credentials.password);
         if (user) {
           return {
-            id: user.id,
+            id: user.id.toString(),
             name: user.username,
-            password: user.password,
-            role: user.status,
+            email: user.username,
+            role: user.status, 
+            studentId: user.password.toString(),
           };
         }
-        return null; // Login failed
+        return null;
       },
     }),
-
-   
-
     GithubProvider({
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET,
       async profile(profile) {
         const username = profile.login;
-        let user = await userRepository.findByUsername(username);
+        let user = await userRepo.findByUsername(username);
         if (!user) {
-          user = await userRepository.create({
+          user = await userRepo.create({
             username,
-            password: randomNumberPassword(),
+            password: Math.floor(Math.random() * 9000000) + 1000000,
             status: "student",
           });
-        }
-        if(user.studentId === null && user.status === "student") {
-          await userRepository.assignStudentIdIfMissing(user.username);
         }
         return {
           id: user.id.toString(),
           name: user.username,
           email: profile.email,
           image: profile.avatar_url,
-          role: user.status,
-          password: user.password,
+          role: user.status, 
+          studentId: user.password.toString(),
         };
       },
     }),
@@ -65,21 +53,26 @@ export const authOptions = {
     async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
-        token.password = user.password;
-        token.role = account?.provider === "github" ? "student" : user.role;
+        token.role = user.role; 
+        token.studentId = user.studentId;
       }
       return token;
     },
     async session({ session, token }) {
-      session.user.id = token.id;
-      session.user.password = token.password;
-      session.user.role = token.role;
+      if (session.user) {
+        session.user.id = token.id;
+        session.user.role = token.role; 
+        session.user.studentId = token.studentId;
+      }
       return session;
     },
   },
+  pages: {
+    signIn: '/auth/signin',
+  },
   secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === 'development', 
 };
 
-// ✅ THIS is the fix — export GET and POST functions from NextAuth
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };

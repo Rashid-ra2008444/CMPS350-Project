@@ -30,7 +30,7 @@ model Course {
   courseNum          Int
   instructor         String
   prerequisite       String       @default("none")
-  enrollment_maximum Int          @default(30)
+  enrollment_maximum Int          @default(30)  
   enrollment_actual  Int          @default(0)
   category           String // "CMPS", "CMPE", "MATH", "GENG"
   status             String // "valid", "pending", "invalid"

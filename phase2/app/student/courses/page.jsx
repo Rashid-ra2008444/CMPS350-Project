@@ -1,41 +1,45 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import styles from "./courses.module.css"
 
 export default function StudentCourses() {
-  const [user, setUser] = useState(null)
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [pendingCourses, setPendingCourses] = useState([])
   const [validCourses, setValidCourses] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedSubject, setSelectedSubject] = useState("All")
 
   useEffect(() => {
-    // Get current user
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"))
-    if (!currentUser) return
-    setUser(currentUser)
+    if (status === "loading") return
+    
+    if (!session) {
+      router.push("/auth/login")
+      return
+    }
+    
+    if (session.user.role !== "student") {
+      router.push("/auth/login")
+      return
+    }
 
-    // Load courses
-    loadAllCourses(currentUser)
-  }, [])
+    loadAllCourses()
+  }, [session, status, router])
 
-  const loadAllCourses = async (currentUser) => {
+  const loadAllCourses = async () => {
     try {
       // Fetch courses
       const coursesResponse = await fetch("/api/courses")
       const coursesData = await coursesResponse.json()
 
-      // Fetch enrollments
-      const enrollmentsResponse = await fetch("/api/enrollments")
+      // Fetch enrollments for current student
+      const enrollmentsResponse = await fetch(`/api/enrollments?studentId=${session.user.studentId}`)
       const enrollmentData = await enrollmentsResponse.json()
 
-      // Find student enrollments
-      const studentCourses = enrollmentData.filter(
-        (enrollment) => enrollment.studentName.toLowerCase() === currentUser.username.toLowerCase(),
-      )
-
-      if (studentCourses.length === 0) {
+      if (enrollmentData.length === 0) {
         setPendingCourses([])
         setValidCourses([])
         return
@@ -45,7 +49,7 @@ export default function StudentCourses() {
       const pending = []
       const valid = []
 
-      studentCourses.forEach((enrollment) => {
+      enrollmentData.forEach((enrollment) => {
         // Find course details
         const course = coursesData.find(
           (c) =>
@@ -82,6 +86,10 @@ export default function StudentCourses() {
     }
   }
 
+  if (status === "loading") {
+    return <div>Loading...</div>
+  }
+
   const filterCourses = () => {
     // Filter logic will be implemented here
   }
@@ -89,7 +97,7 @@ export default function StudentCourses() {
   return (
     <>
       <section className="banner">
-        <h1 className="title">Welcome {user?.username}</h1>
+        <h1 className="title">Welcome {session?.user?.name}</h1>
       </section>
 
       <div className="course-box">

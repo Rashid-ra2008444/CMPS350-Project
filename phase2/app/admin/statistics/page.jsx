@@ -1,63 +1,67 @@
-// app/admin/statistics/page.jsx
 "use client"
-import { getSession } from "next-auth/react"; 
+
+import { useSession } from "next-auth/react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import styles from "../../components/css/statistics.module.css"
 import { CourseDistributionChart, EnrollmentBarChart, GradeDistributionChart } from "../../components/StatisticsCharts"
 
 export default function AdminStatistics() {
+  const { data: session, status } = useSession()
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const router = useRouter()
 
   useEffect(() => {
-      // Check if user is admin
-    //   const storedUser = localStorage.getItem("currentUser")
-    //   if (!storedUser) {
-    //     router.push("/")
-    //     return
-    //   }
+    if (status === "loading") return
 
-    //   const userData = JSON.parse(storedUser)
-    //   if (userData.status !== "admin") {
-    //     router.push("/")
-    //     return
-    //   }
+    // Debug logging
+    console.log("Client session in statistics page:", session);
+    console.log("User role:", session?.user?.role);
+    
+    if (!session || session.user?.role !== "admin") {
+      console.log("Not admin, redirecting... Role:", session?.user?.role);
+      router.push("/auth/signin")
+      return
+    }
 
-    // fetchStatistics()
-    const checkAccessAndFetch = async () => {
-      const session = await getSession(); // ✅ Fetch session
-      
-      if (!session || session.user.role !== "admin") {
-        router.push("/"); // ✅ Not an admin? Redirect
-        return;
-      }
-
-      fetchStatistics(); // ✅ Valid session? Fetch stats
-    };
-
-    checkAccessAndFetch();
-  }, [router])
+    fetchStatistics()
+  }, [session, status, router])
 
   const fetchStatistics = async () => {
     try {
-      const response = await fetch('/api/statistics')
+      console.log("Fetching statistics from API...");
+      console.log("Current session:", session);
+      
+      const response = await fetch('/api/statistics', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Include cookies
+      })
+      
+      console.log("API Response status:", response.status);
+      
       if (!response.ok) {
-        throw new Error('Failed to fetch statistics')
+        const errorData = await response.json()
+        console.error("API Error response:", errorData);
+        throw new Error(errorData.message || 'Failed to fetch statistics')
       }
+      
       const data = await response.json()
+      console.log("Statistics data received:", data);
       setStats(data)
       setLoading(false)
     } catch (error) {
       console.error('Error fetching statistics:', error)
-      setError('Failed to load statistics. Please try again.')
+      setError('Failed to load statistics: ' + error.message)
       setLoading(false)
     }
   }
 
-  if (loading) {
+  if (status === "loading" || loading) {
     return (
       <section className="banner">
         <h1>Loading statistics...</h1>
@@ -135,16 +139,10 @@ export default function AdminStatistics() {
             <EnrollmentBarChart topCourses={stats.topCourses} />
           </div>
           <div className={`${styles.chartContainer} ${styles.gradeChartFull}`}>
-          <GradeDistributionChart gradeDistribution={stats.gradeDistribution} />
-            </div>
+            <GradeDistributionChart gradeDistribution={stats.gradeDistribution} />
+          </div>
         </div>
       </div>
-
-      {/* <div className="course-box">
-        <div className={styles.chartContainer}>
-          <GradeDistributionChart gradeDistribution={stats.gradeDistribution} />
-        </div>
-      </div> */}
 
       {/* Top Courses */}
       <div className="course-box">

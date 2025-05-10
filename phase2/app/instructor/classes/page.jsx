@@ -1,23 +1,31 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import styles from "./instructor-classes.module.css"
 
 export default function InstructorClasses() {
-  const [user, setUser] = useState(null)
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [classes, setClasses] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
-  const router = useRouter()
 
   useEffect(() => {
-    // Get current user
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"))
-    if (!currentUser) return
-    setUser(currentUser)
+    if (status === "loading") return
+    
+    if (!session) {
+      router.push("/auth/signin")
+      return
+    }
+    
+    if (session.user.role !== "instructor") {
+      router.push("/auth/signin")
+      return
+    }
 
     // Load instructor classes
-    loadInstructorClasses(currentUser.username)
+    loadInstructorClasses(session.user.name)
 
     // Add search input event listener
     const searchInput = document.getElementById("searchInput")
@@ -31,7 +39,7 @@ export default function InstructorClasses() {
         searchInput.removeEventListener("input", (e) => setSearchTerm(e.target.value))
       }
     }
-  }, [])
+  }, [session, status, router])
 
   const loadInstructorClasses = async (instructorName) => {
     try {
@@ -39,8 +47,8 @@ export default function InstructorClasses() {
       const coursesResponse = await fetch("/api/courses")
       const coursesData = await coursesResponse.json()
 
-      // Fetch enrollments
-      const enrollmentsResponse = await fetch("/api/enrollments")
+      // Fetch enrollments for this instructor
+      const enrollmentsResponse = await fetch(`/api/enrollments?instructor=${encodeURIComponent(instructorName)}`)
       const enrollmentData = await enrollmentsResponse.json()
 
       // Find courses taught by the instructor
@@ -74,13 +82,9 @@ export default function InstructorClasses() {
     }
   }
 
-  
-
   const handleViewGrades = (course) => {
-    // Store selected course for grading page
-    localStorage.setItem("selectedCourse", course.courseNum)
-    localStorage.setItem("selectedCRN", course.crn)
-    router.push("/instructor/grading")
+    // Pass course data through URL parameters
+    router.push(`/instructor/grading?courseNum=${course.courseNum}&crn=${course.crn}`)
   }
 
   // Filter classes by search term
@@ -91,11 +95,15 @@ export default function InstructorClasses() {
       course.courseNum.toString().includes(searchTerm),
   )
 
+  if (status === "loading") {
+    return <div>Loading...</div>
+  }
+
   return (
     <>
       <section className="banner">
         <h1 className="title">
-          Welcome <span id="instructor-name">{user?.username}</span>
+          Welcome <span id="instructor-name">{session?.user?.name}</span>
         </h1>
         <h2>My Classes</h2>
       </section>
