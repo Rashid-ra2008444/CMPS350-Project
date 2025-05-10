@@ -1,40 +1,46 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
+import { useRouter, useSearchParams } from "next/navigation"
 import styles from "./grading.module.css"
 import Notification from "@/app/components/Notification"
 
 export default function InstructorGrading() {
-  const [user, setUser] = useState(null)
+  const { data: session, status } = useSession()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  
   const [course, setCourse] = useState(null)
   const [students, setStudents] = useState([])
   const [grades, setGrades] = useState({})
-  const [successMessage, setSuccessMessage] = useState(false)
   const [notification, setNotification] = useState({message: "", type: ""})
-  const router = useRouter()
 
   useEffect(() => {
-    // Get current user
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"))
-    if (!currentUser) {
-      router.push("/")
+    if (status === "loading") return
+    
+    if (!session) {
+      router.push("/auth/signin")
       return
     }
-    setUser(currentUser)
+    
+    if (session.user.role !== "instructor") {
+      router.push("/auth/signin")
+      return
+    }
 
-    // Get the selected course number and CRN
-    const selectedCourseNum = Number.parseInt(localStorage.getItem("selectedCourse"), 10)
-    const selectedCRN = Number.parseInt(localStorage.getItem("selectedCRN"), 10)
+    // Get course parameters from URL
+    const courseNum = searchParams.get('courseNum')
+    const crn = searchParams.get('crn')
 
-    if (!selectedCourseNum && !selectedCRN) {
+    if (!courseNum && !crn) {
       router.push("/instructor/classes")
       return
     }
 
     // Load course data for grading
-    loadCourseForGrading(currentUser.username, selectedCourseNum, selectedCRN)
-  }, [router])
+    loadCourseForGrading(session.user.name, courseNum, crn)
+  }, [session, status, router, searchParams])
 
   const loadCourseForGrading = async (instructorName, courseNum, courseCRN) => {
     try {
@@ -47,14 +53,14 @@ export default function InstructorGrading() {
 
       if (courseCRN) {
         selectedCourse = coursesData.find(
-          (c) => Number.parseInt(c.crn, 10) === courseCRN && c.instructor === instructorName,
+          (c) => Number.parseInt(c.crn, 10) === Number.parseInt(courseCRN, 10) && c.instructor === instructorName,
         )
       }
 
       // If no course found by CRN, try by courseNum
       if (!selectedCourse && courseNum) {
         selectedCourse = coursesData.find(
-          (c) => Number.parseInt(c.courseNum, 10) === courseNum && c.instructor === instructorName,
+          (c) => Number.parseInt(c.courseNum, 10) === Number.parseInt(courseNum, 10) && c.instructor === instructorName,
         )
       }
 
@@ -66,19 +72,16 @@ export default function InstructorGrading() {
 
       setCourse(selectedCourse)
 
-      // Fetch enrollments
-      const enrollmentsResponse = await fetch("/api/enrollments")
+      // Fetch enrollments for this instructor
+      const enrollmentsResponse = await fetch(`/api/enrollments?instructor=${encodeURIComponent(instructorName)}`)
       const enrollmentData = await enrollmentsResponse.json()
 
       // Find students enrolled in the course
       const enrolledStudents = enrollmentData.filter((enrollment) => {
         if (enrollment.crn && courseCRN) {
-          return Number.parseInt(enrollment.crn, 10) === courseCRN && enrollment.instructor === instructorName
+          return Number.parseInt(enrollment.crn, 10) === Number.parseInt(courseCRN, 10)
         }
-        return (
-          Number.parseInt(enrollment.courseNum, 10) === Number.parseInt(selectedCourse.courseNum, 10) &&
-          enrollment.instructor === instructorName
-        )
+        return Number.parseInt(enrollment.courseNum, 10) === Number.parseInt(selectedCourse.courseNum, 10)
       })
 
       setStudents(enrolledStudents)
@@ -96,7 +99,7 @@ export default function InstructorGrading() {
 
   const showNotification = (message, type = "success") => {
     setNotification({ message, type })
-    setTimeout(() => setNotification({ message: "", type: "" }),4000)
+    setTimeout(() => setNotification({ message: "", type: "" }), 4000)
   }
 
   const getNumericEquivalent = (letterGrade) => {
@@ -143,7 +146,7 @@ export default function InstructorGrading() {
     e.preventDefault();
 
     try {
-      // Fetch current enrollments
+      // Fetch all enrollments
       const enrollmentsResponse = await fetch("/api/enrollments");
       const allEnrollments = await enrollmentsResponse.json();
 
@@ -154,7 +157,7 @@ export default function InstructorGrading() {
 
         if (
           (matchesByCRN || matchesByCourseNum) &&
-          enrollment.instructor === user.username &&
+          enrollment.instructor === session.user.name &&
           grades[enrollment.studentId] !== undefined
         ) {
           const numericGrade = Number.parseInt(grades[enrollment.studentId], 10);
@@ -217,7 +220,7 @@ export default function InstructorGrading() {
     router.push("/instructor/classes")
   }
 
-  if (!course) {
+  if (status === "loading" || !course) {
     return <div>Loading course data...</div>
   }
 
@@ -229,16 +232,17 @@ export default function InstructorGrading() {
     <>
       <section className="banner">
         <h1 className="title">
-          Course Grading - <span id="instructor-name">{user?.username}</span>
+          Course Grading - <span id="instructor-name">{session?.user?.name}</span>
         </h1>
         <h2 id="course-title">
-          Course: {course.name} ({course.category}
-          {course.courseNum})
+          Course: {course.name} ({course.category} {course.courseNum})
         </h2>
       </section>
-          {notification.message && (
-            <Notification message={notification.message} type={notification.type} onClose={() => setNotification({message: "", type: ""})}/> 
-        )}
+      
+      {notification.message && (
+        <Notification message={notification.message} type={notification.type} onClose={() => setNotification({message: "", type: ""})}/> 
+      )}
+      
       <div className="course-box">
         <h2>Course Details</h2>
         <div id="course-details" className={styles.courseDetails}>
@@ -281,7 +285,6 @@ export default function InstructorGrading() {
                 <button type="submit" className={styles.submitBtn}>
                   Submit Grades
                 </button>
-                {successMessage && <p className={styles.successMessage}>Grades submitted successfully!</p>}
               </form>
             ) : (
               <p>No students enrolled in this course.</p>

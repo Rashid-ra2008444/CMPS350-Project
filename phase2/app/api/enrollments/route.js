@@ -1,9 +1,21 @@
 import { NextResponse } from "next/server";
 import { enrollmentRepo } from "@/app/repo/repository.js";
 
-export async function GET() {
+export async function GET(request) {
   try {
-    const enrollments = await enrollmentRepo.findAll();
+    const { searchParams } = new URL(request.url);
+    const studentId = searchParams.get('studentId');
+    const instructor = searchParams.get('instructor');
+    
+    let enrollments;
+    if (studentId) {
+      enrollments = await enrollmentRepo.findByStudentId(studentId);
+    } else if (instructor) {
+      enrollments = await enrollmentRepo.findByInstructor(instructor);
+    } else {
+      enrollments = await enrollmentRepo.findAll();
+    }
+    
     return NextResponse.json(enrollments);
   } catch (error) {
     console.error("Error fetching enrollments:", error);

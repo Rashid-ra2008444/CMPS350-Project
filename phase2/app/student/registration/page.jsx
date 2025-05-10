@@ -1,12 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import styles from "./registration.module.css"
 import Notification from "@/app/components/Notification"
-import { authenticateActions } from "@/app/actions/admin_actions"
 
 export default function Registration() {
-  const [user, setUser] = useState(null)
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [allCourses, setAllCourses] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedSubject, setSelectedSubject] = useState("All")
@@ -15,36 +17,38 @@ export default function Registration() {
   const [notification, setNotification] = useState({message: "", type: ""})
 
   useEffect(() => {
-    // Get current user
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"))
-    if (!currentUser) return
-    setUser(currentUser)
+    if (status === "loading") return
+    
+    if (!session) {
+      router.push("/auth/login")
+      return
+    }
+    
+    if (session.user.role !== "student") {
+      router.push("/auth/login")
+      return
+    }
 
     // Load available courses and user's completed courses
-    loadUserData(currentUser)
-  }, [])
+    loadUserData()
+  }, [session, status, router])
 
-  const loadUserData = async (currentUser) => {
+  const loadUserData = async () => {
     try {
       // Fetch all necessary data in parallel
       const [coursesResponse, enrollmentsResponse] = await Promise.all([
         fetch("/api/courses"),
-        fetch("/api/enrollments")
+        fetch(`/api/enrollments?studentId=${session.user.studentId}`)
       ]);
       
       const coursesData = await coursesResponse.json();
       const enrollmentData = await enrollmentsResponse.json();
 
-      // Get user's enrollments
-      const userEnrollments = enrollmentData.filter(
-        e => e.studentName && e.studentName.toLowerCase() === currentUser.username.toLowerCase()
-      );
-
       // Find completed courses (courses with grades)
       const userCompletedCourses = [];
       const userPassedCourseNames = [];
 
-      userEnrollments.forEach(enrollment => {
+      enrollmentData.forEach(enrollment => {
         if (enrollment.grade) {
           const course = coursesData.find(c => 
             Number.parseInt(c.courseNum, 10) === Number.parseInt(enrollment.courseNum, 10)
@@ -69,16 +73,17 @@ export default function Registration() {
       setPassedCourses(userPassedCourseNames);
       
       // Filter available courses
-      const availableCourses = getAvailableCourses(coursesData, userEnrollments);
+      const availableCourses = getAvailableCourses(coursesData, enrollmentData);
       setAllCourses(availableCourses);
       
     } catch (error) {
       console.error("Error loading user data:", error);
     }
   }
+
   const showNotification = (message, type = "success") => {
     setNotification({ message, type })
-    setTimeout(() => setNotification({ message: "", type: "" }),4000)
+    setTimeout(() => setNotification({ message: "", type: "" }), 4000)
   }
 
   const getAvailableCourses = (coursesData, userEnrollments) => {
@@ -110,11 +115,6 @@ export default function Registration() {
     });
   }
 
-  const filterCourses = () => {
-    // Filter the courses based on search term and subject
-    // This can be implemented if needed
-  }
-
   const checkPrerequisiteMet = (course) => {
     // If no prerequisite is required
     if (!course.prerequisite || course.prerequisite === "none") {
@@ -127,12 +127,6 @@ export default function Registration() {
 
   const addCourse = async (course) => {
     try {
-      // Ensure user is defined
-      if (!user || !user.password || !user.username) {
-        showNotification("User information is missing. Please refresh the page and try again.", "error");
-        return;
-      }
-
       // Check if the course is pending
       if (course.status !== "pending") {
         showNotification("Only pending courses can be registered.", "error");
@@ -153,8 +147,8 @@ export default function Registration() {
 
       // Create new enrollment
       const enrollment = {
-        studentId: user.password.toString(),
-        studentName: user.username,
+        studentId: session.user.studentId,
+        studentName: session.user.name,
         courseNum: Number.parseInt(course.courseNum, 10),
         crn: Number.parseInt(course.crn, 10),
         courseName: course.name,
@@ -176,7 +170,7 @@ export default function Registration() {
       if (response.ok) {
         showNotification("Course registered successfully! Note that this course is pending approval.", "success");
         // Reload courses
-        loadUserData(user);
+        loadUserData();
       } else {
         showNotification("Error registering for course. Please try again.", "error");
       }
@@ -185,6 +179,10 @@ export default function Registration() {
       showNotification("Error registering for course. Please try again.", "error");
     }
   };
+
+  if (status === "loading") {
+    return <div>Loading...</div>
+  }
 
   // Filter courses based on search term and subject
   const filteredCourses = allCourses.filter(course => {
@@ -201,7 +199,7 @@ export default function Registration() {
   return (
     <>
       <section className="banner">
-        <h1 className="title">Welcome {user?.username}</h1>
+        <h1 className="title">Welcome {session?.user?.name}</h1>
       </section>
       {notification.message && (
         <Notification message={notification.message} type={notification.type} />
