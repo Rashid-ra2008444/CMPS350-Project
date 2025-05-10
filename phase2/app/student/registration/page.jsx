@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import styles from "./registration.module.css"
 import Notification from "@/app/components/Notification"
-import { authenticateActions } from "@/app/actions/admin_actions"
+
 
 export default function Registration() {
   const [user, setUser] = useState(null)

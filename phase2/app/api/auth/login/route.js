@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { userRepo } from "@/app/repo/repository.js";
+import { userRepository } from "@/app/repo/repository";
 
 export async function POST(request) {
   try {
     const { username, password } = await request.json();
     
     // Authenticate user
-    const user = await userRepo.authenticate(username, password);
+    const user = await userRepository.authenticate(username, password);
     
     if (user) {
       return NextResponse.json({

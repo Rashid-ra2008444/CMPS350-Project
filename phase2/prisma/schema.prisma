@@ -11,10 +11,17 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  username String @unique
-  password Int
-  status   String // "admin", "student", or "instructor"
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  studentId Int?     @unique
+  password  Int
+  status    String // "admin", "student", or "instructor"
+  student   Student?
+}
+
+model Student {
+  studentId Int   @id @default(autoincrement())
+  user      User? @relation(fields: [studentId], references: [studentId])
 }
 
 model Course {
@@ -33,7 +40,7 @@ model Course {
 
 model Enrollment {
   id             Int     @id @default(autoincrement())
-  studentId      String
+  studentId      Int
   studentName    String
   courseNum      Int
   crn            Int

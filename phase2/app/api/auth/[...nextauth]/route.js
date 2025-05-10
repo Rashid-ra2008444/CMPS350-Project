@@ -1,8 +1,13 @@
-// /app/api/auth/[...nextauth]/route.js
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GithubProvider from "next-auth/providers/github";
-import { userRepo } from "@/app/repo/repository";
+import { userRepository } from "@/app/repo/repository";
+
+ function randomNumberPassword() {
+      const min = 100000; // Minimum 6-digit number
+      const max = 999999; // Maximum 6-digit number
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
 
 export const authOptions = {
   providers: [
@@ -14,7 +19,7 @@ export const authOptions = {
         status: { label: "status", type: "status" },
       },
       async authorize(credentials) {
-        const user = await userRepo.authenticate(credentials.username, credentials.password);
+        const user = await userRepository.authenticate(credentials.username, credentials.password);
         if (user) {
           return {
             id: user.id,
@@ -26,18 +31,24 @@ export const authOptions = {
         return null; // Login failed
       },
     }),
+
+   
+
     GithubProvider({
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET,
       async profile(profile) {
         const username = profile.login;
-        let user = await userRepo.findByUsername(username);
+        let user = await userRepository.findByUsername(username);
         if (!user) {
-          user = await userRepo.create({
+          user = await userRepository.create({
             username,
-            password: 111,
+            password: randomNumberPassword(),
             status: "student",
           });
+        }
+        if(user.studentId === null && user.status === "student") {
+          await userRepository.assignStudentIdIfMissing(user.username);
         }
         return {
           id: user.id.toString(),

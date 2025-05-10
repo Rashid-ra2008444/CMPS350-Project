@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { courseRepo, enrollmentRepo } from "@/app/repo/repository.js";
+import {courseRepository} from "@/app/repo/repository";
+import {enrollmentRepository} from "@/app/repo/repository";
 
 export async function PUT(request, { params }) {
   try {
@@ -7,7 +8,7 @@ export async function PUT(request, { params }) {
     const updatedCourse = await request.json();
     
     // First, get the existing course to check if status changed
-    const existingCourse = await courseRepo.findByCRN(crn);
+    const existingCourse = await courseRepository.findByCRN(crn);
     
     if (!existingCourse) {
       return NextResponse.json(
@@ -17,11 +18,11 @@ export async function PUT(request, { params }) {
     }
     
     // Update the course
-    const result = await courseRepo.update("crn", crn, updatedCourse);
+    const result = await courseRepository.update("crn", crn, updatedCourse);
     
     // If status changed, update enrollments
     if (existingCourse.status !== updatedCourse.status) {
-      await enrollmentRepo.updateCourseStatus(crn, updatedCourse.status);
+      await enrollmentRepository.updateCourseStatus(crn, updatedCourse.status);
     }
     
     return NextResponse.json({ success: true, course: result });
@@ -38,7 +39,7 @@ export async function DELETE(request, { params }) {
   try {
     const { crn } = await params;
     
-    await courseRepo.delete("crn", crn);
+    await CourseRepository.delete("crn", crn);
     
     return NextResponse.json({ success: true });
   } catch (error) {

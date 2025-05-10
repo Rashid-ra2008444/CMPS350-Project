@@ -122,30 +122,24 @@ async function main() {
     // Add users
     for (const user of usersData) {
       await prisma.user.create({
-        data: {
-          username: user.username,
-          password: Number(user.password),
-          status: user.status
-        }
+        data: user
       });
+      if(user.status === 'student') {
+        await prisma.student.create({
+          data: {
+            studentId: user.studentId
+          }
+        })
+      }
     }
+    
 
     console.log(`Adding ${coursesData.length} courses...`);
     
     // Add courses
     for (const course of coursesData) {
       await prisma.course.create({
-        data: {
-          name: course.name,
-          courseNum: Number(course.courseNum),
-          instructor: course.instructor,
-          prerequisite: course.prerequisite || "none",
-          enrollment_maximum: Number(course.enrollment_maximum),
-          enrollment_actual: Number(course.enrollment_actual),
-          category: course.category,
-          status: course.status,
-          crn: Number(course.crn)
-        }
+        data: course  
       });
     }
 
@@ -154,16 +148,7 @@ async function main() {
     // Add enrollments
     for (const enrollment of enrollmentsData) {
       await prisma.enrollment.create({
-        data: {
-          studentId: enrollment.studentId,
-          studentName: enrollment.studentName,
-          courseNum: Number(enrollment.courseNum),
-          crn: Number(enrollment.crn),
-          instructor: enrollment.instructor,
-          enrollmentDate: enrollment.enrollmentDate,
-          grade: enrollment.grade || null,
-          courseStatus: enrollment.courseStatus || null
-        }
+        data:enrollment
       });
     }
 

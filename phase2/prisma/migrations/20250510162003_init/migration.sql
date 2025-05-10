@@ -2,8 +2,15 @@
 CREATE TABLE "User" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "username" TEXT NOT NULL,
+    "studentId" INTEGER,
     "password" INTEGER NOT NULL,
     "status" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "Student" (
+    "studentId" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    CONSTRAINT "Student_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "User" ("studentId") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -23,7 +30,7 @@ CREATE TABLE "Course" (
 -- CreateTable
 CREATE TABLE "Enrollment" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "studentId" TEXT NOT NULL,
+    "studentId" INTEGER NOT NULL,
     "studentName" TEXT NOT NULL,
     "courseNum" INTEGER NOT NULL,
     "crn" INTEGER NOT NULL,
@@ -36,6 +43,9 @@ CREATE TABLE "Enrollment" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_studentId_key" ON "User"("studentId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Course_crn_key" ON "Course"("crn");

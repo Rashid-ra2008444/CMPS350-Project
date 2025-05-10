@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { enrollmentRepo } from "@/app/repo/repository.js";
+import { enrollmentRepository } from "@/app/repo/repository.js";
 
 export async function POST(request) {
   try {
     const updatedEnrollments = await request.json();
-    await enrollmentRepo.saveAll(updatedEnrollments);
+    await enrollmentRepository.saveAll(updatedEnrollments);
     
     return NextResponse.json({ success: true });
   } catch (error) {

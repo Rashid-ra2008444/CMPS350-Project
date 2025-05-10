@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { enrollmentRepo } from "@/app/repo/repository.js";
+import {enrollmentRepository} from "@/app/repo/repository";
+
 
 export async function GET() {
   try {
-    const enrollments = await enrollmentRepo.findAll();
+    const enrollments = await enrollmentRepository.findAll();
     return NextResponse.json(enrollments);
   } catch (error) {
     console.error("Error fetching enrollments:", error);
@@ -17,7 +18,7 @@ export async function GET() {
 export async function POST(request) {
   try {
     const newEnrollment = await request.json();
-    const result = await enrollmentRepo.create(newEnrollment);
+    const result = await enrollmentRepository.create(newEnrollment);
     
     return NextResponse.json({ success: true, enrollment: result });
   } catch (error) {
