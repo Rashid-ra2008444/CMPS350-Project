@@ -50,7 +50,7 @@
 | *yousef*     | *26-04-2025* | *fix add course and fix prisma by AOT information in Prisma Studio and small thing in UI*|
 | *yousef*     | *28-04-2025* | *I installed the chart.js library and also added a simple demo for statistics and information, along with some fixes on the admin page and the addition of a lot of data*|
 | *Rashid*       | *30-04-2025* | *Cleaning code and minor enhance in UI*              |
-| *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
+| *Rashid*       | *10-05-2025* | *Overhaul fixing and fix any logical errors*              |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
 | *Name*       | *DD-MM-YYYY* | *Description of the contribution*              |
