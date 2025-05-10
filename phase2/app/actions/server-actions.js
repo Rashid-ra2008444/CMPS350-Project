@@ -1,76 +1,77 @@
 "use server"
-import { CourseRepository } from "../repo/repository"
-import { UserRepository } from "../repo/repository"
-import { EnrollmentRepository } from "../repo/repository"
+
+import {courseRepository } from "../repo/repository"
+import {userRepository } from "../repo/repository"
+import {enrollmentRepository } from "../repo/repository"
 
 export async function findByUsernameActions(username) {
-  return await UserRepository.findByUsername(username);
+  return await userRepository.findByUsername(username);
 }
 
 export async function authenticateActions(username, password) {
-  return await UserRepository.authenticate(username, password);
+  return await userRepository.authenticate(username, password);
 }
 
 export async function createUserActions(userData) {
-  return await UserRepository.create(userData);
+  return await userRepository.create(userData);
 }
 
 export async function findAllCoursesActions() {
-    return await CourseRepository.findAll();
+    return await courseRepository.findAll();
 }
 
 export async function findCourseByCRNActions(crn) {
-    return await CourseRepository.findByCRN(crn);
+    return await courseRepository.findByCRN(crn);
 }
 
 export async function findByStatusActions(status) {
-    return await UserRepository.findByStatus(status);
+    return await userRepository.findByStatus(status);
 }
 
 export async function createCourseActions(courseData) {
-    return await CourseRepository.create(courseData);
+    return await courseRepository.create(courseData);
 }
 
 export async function updateCourseActions(field,value, courseData) {
-    return await CourseRepository.update(field,value, courseData);
+    return await courseRepository.update(field,value, courseData);
 }
 
 export async function updateStatusActions(crn, status) {
-    return await CourseRepository.updateStatus(crn, status);
+    return await courseRepository.updateStatus(crn, status);
 }
 
 export async function deleteCourseActions(field, value) {
-    return await CourseRepository.delete(field, value);
+    return await courseRepository.delete(field, value);
 }
 
 export async function findAllEnrollmentsActions() {
-    return await EnrollmentRepository.findAll();
+    return await enrollmentRepository.findAll();
 }
 
 export async function findByStudentIdActions(studentId) {
-    return await EnrollmentRepository.findByStudentId(studentId);
+    return await enrollmentRepository.findByStudentId(studentId);
 }
 
 export async function findEnrollmentByCRNActions(crn) {
-    return await EnrollmentRepository.findByCRN(crn);
+    return await enrollmentRepository.findByCRN(crn);
 }
 
 export async function createEnrollmentActions(enrollmentData) {
-    return await EnrollmentRepository.create(enrollmentData);
+    return await enrollmentRepository.create(enrollmentData);
 }
 
 export async function updateGradeActions(studentId, crn, grade) {
-    return await EnrollmentRepository.updateGrade(studentId, crn, grade);
+    return await enrollmentRepository.updateGrade(studentId, crn, grade);
 }
 
 export async function updateCourseStatusActions(crn, status) {
-    return await EnrollmentRepository.updateCourseStatus(crn, status);
+    return await enrollmentRepository.updateCourseStatus(crn, status);
 }
 
 export async function saveAllActions(enrollmentData) {
-    return await EnrollmentRepository.saveAll(enrollmentData);
+    return await enrollmentRepository.saveAll(enrollmentData);
 }
 
 export async function deleteEnrollmentByIdActions(id){
-    return await EnrollmentRepository.delete(id);
+    return await enrollmentRepository.delete(id);
 }

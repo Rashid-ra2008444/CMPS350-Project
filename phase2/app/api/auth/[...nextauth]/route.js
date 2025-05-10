@@ -26,6 +26,7 @@ export const authOptions = {
             name: user.username,
             password: user.password,
             role: user.status,
+            studentId: user.studentId,
           };
         }
         return null; // Login failed
@@ -53,10 +54,10 @@ export const authOptions = {
         return {
           id: user.id.toString(),
           name: user.username,
-          email: profile.email,
-          image: profile.avatar_url,
-          role: user.status,
+          username: user.username,
           password: user.password,
+          role: user.status,
+          studentId: user.studentId,
         };
       },
     }),
@@ -67,13 +68,17 @@ export const authOptions = {
         token.id = user.id;
         token.password = user.password;
         token.role = account?.provider === "github" ? "student" : user.role;
+        token.username = user.username || user.name;
+        token.studentId = user?.studentId;
       }
       return token;
     },
     async session({ session, token }) {
-      session.user.id = token.id;
-      session.user.password = token.password;
-      session.user.role = token.role;
+        session.user.id = token.id;
+        session.user.password = token.password;
+        session.user.role = token.role;
+        session.user.username = token.name || token.username;
+        session.user.studentId = token.studentId;
       return session;
     },
   },

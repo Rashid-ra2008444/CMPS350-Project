@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import styles from "./grading.module.css"
 import Notification from "@/app/components/Notification"
+import { findAllCoursesActions, findAllEnrollmentsActions, saveAllActions } from "@/app/actions/server-actions"
 
 export default function InstructorGrading() {
   const { data: session, status } = useSession()
@@ -14,7 +15,7 @@ export default function InstructorGrading() {
   const [course, setCourse] = useState(null)
   const [students, setStudents] = useState([])
   const [grades, setGrades] = useState({})
-  const [notification, setNotification] = useState({message: "", type: ""})
+  const [notification, setNotification] = useState({ message: "", type: "" })
 
   useEffect(() => {
     if (status === "loading") return
@@ -29,7 +30,6 @@ export default function InstructorGrading() {
       return
     }
 
-    // Get course parameters from URL
     const courseNum = searchParams.get('courseNum')
     const crn = searchParams.get('crn')
 
@@ -38,17 +38,12 @@ export default function InstructorGrading() {
       return
     }
 
-    // Load course data for grading
     loadCourseForGrading(session.user.name, courseNum, crn)
   }, [session, status, router, searchParams])
 
   const loadCourseForGrading = async (instructorName, courseNum, courseCRN) => {
     try {
-      // Fetch courses
-      const coursesResponse = await fetch("/api/courses")
-      const coursesData = await coursesResponse.json()
-
-      // Find the selected course
+      const coursesData = await findAllCoursesActions()
       let selectedCourse = null
 
       if (courseCRN) {
@@ -57,7 +52,6 @@ export default function InstructorGrading() {
         )
       }
 
-      // If no course found by CRN, try by courseNum
       if (!selectedCourse && courseNum) {
         selectedCourse = coursesData.find(
           (c) => Number.parseInt(c.courseNum, 10) === Number.parseInt(courseNum, 10) && c.instructor === instructorName,
@@ -71,12 +65,8 @@ export default function InstructorGrading() {
       }
 
       setCourse(selectedCourse)
+      const enrollmentData = await findAllEnrollmentsActions()
 
-      // Fetch enrollments for this instructor
-      const enrollmentsResponse = await fetch(`/api/enrollments?instructor=${encodeURIComponent(instructorName)}`)
-      const enrollmentData = await enrollmentsResponse.json()
-
-      // Find students enrolled in the course
       const enrolledStudents = enrollmentData.filter((enrollment) => {
         if (enrollment.crn && courseCRN) {
           return Number.parseInt(enrollment.crn, 10) === Number.parseInt(courseCRN, 10)
@@ -86,7 +76,6 @@ export default function InstructorGrading() {
 
       setStudents(enrolledStudents)
 
-      // Initialize grades state
       const initialGrades = {}
       enrolledStudents.forEach((student) => {
         initialGrades[student.studentId] = student.grade ? getNumericEquivalent(student.grade) : ""
@@ -146,69 +135,44 @@ export default function InstructorGrading() {
     e.preventDefault();
 
     try {
-      // Fetch all enrollments
-      const enrollmentsResponse = await fetch("/api/enrollments");
-      const allEnrollments = await enrollmentsResponse.json();
+      const updatedEnrollments = students.map((student) => {
+        const numericGrade = grades[student.studentId];
+        let letterGrade;
 
-      // Update grades
-      const updatedEnrollments = allEnrollments.map((enrollment) => {
-        const matchesByCRN = enrollment.crn && Number.parseInt(enrollment.crn, 10) === Number.parseInt(course.crn, 10);
-        const matchesByCourseNum = Number.parseInt(enrollment.courseNum, 10) === Number.parseInt(course.courseNum, 10);
-
-        if (
-          (matchesByCRN || matchesByCourseNum) &&
-          enrollment.instructor === session.user.name &&
-          grades[enrollment.studentId] !== undefined
-        ) {
-          const numericGrade = Number.parseInt(grades[enrollment.studentId], 10);
-          let letterGrade;
-
-          if (numericGrade >= 90) {
-            letterGrade = "A";
-          } else if (numericGrade >= 85) {
-            letterGrade = "B+";
-          } else if (numericGrade >= 80) {
-            letterGrade = "B";
-          } else if (numericGrade >= 75) {
-            letterGrade = "C+";
-          } else if (numericGrade >= 70) {
-            letterGrade = "C";
-          } else if (numericGrade >= 65) {
-            letterGrade = "D+";
-          } else if (numericGrade >= 60) {
-            letterGrade = "D";
-          } else {
-            letterGrade = "F";
-          }
-
-          return {
-            ...enrollment,
-            grade: letterGrade,
-            crn: enrollment.crn || course.crn,
-          };
+        if (numericGrade >= 90) {
+          letterGrade = "A";
+        } else if (numericGrade >= 85) {
+          letterGrade = "B+";
+        } else if (numericGrade >= 80) {
+          letterGrade = "B";
+        } else if (numericGrade >= 75) {
+          letterGrade = "C+";
+        } else if (numericGrade >= 70) {
+          letterGrade = "C";
+        } else if (numericGrade >= 65) {
+          letterGrade = "D+";
+        } else if (numericGrade >= 60) {
+          letterGrade = "D";
+        } else {
+          letterGrade = "F";
         }
 
-        return enrollment;
+        return {
+          ...student,
+          grade: letterGrade,
+          crn: student.crn || course.crn,
+        };
       });
 
-      // Save updated enrollments
-      const response = await fetch("/api/enrollments/update", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedEnrollments),
-      });
+      const result = await saveAllActions(updatedEnrollments)
 
-      if (response.ok) {
+      if (result) {
         showNotification("Grades saved successfully. Students can now see their grades in Learning Path.", "success");
-
-        // Redirect to the previous page after a short delay
         setTimeout(() => {
           router.push("/instructor/classes");
         }, 2000);
       } else {
-        showNotification("Error submitting grades. Please try again.", "error");
+        showNotification("Failed to save grades.", "error");
       }
     } catch (error) {
       console.error("Error submitting grades:", error);
@@ -224,7 +188,6 @@ export default function InstructorGrading() {
     return <div>Loading course data...</div>
   }
 
-  // Format course status class
   const statusClass =
     course.status === "valid" ? "status-valid" : course.status === "pending" ? "status-pending" : "status-invalid"
 
@@ -306,7 +269,7 @@ export default function InstructorGrading() {
       </button>
 
       <footer className="banner">
-        &copy; Qatar University Group Project Collections of this magnificant Work 2025. All rights reserved
+        &copy; Qatar University Group Project Collections of this magnificent Work 2025. All rights reserved
       </footer>
     </>
   )

@@ -16,10 +16,18 @@ class UserRepository {
     try {
       const user = await prisma.user.findUnique({
         where: { username },
+        include: {
+          student: true,
+        }
       });
 
       if (user && user.password === Number(password)) {
-        return user;
+        return {
+          id: user.id,
+          username: user.username,
+          status: user.status,
+          studentId: user.student?.studentId || null, 
+        };
       }
       return null;
     } catch (error) {
@@ -37,12 +45,22 @@ class UserRepository {
         status: userData.status,
       },
     });
-    if(user.status === "student") {
+    if (user.status === "student") {
+      const lastStudent = await prisma.student.findFirst({
+        orderBy: { studentId: "desc" },
+      });
+      const newStudentId = lastStudent ? lastStudent.studentId + 1 : 2000001;
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { studentId: newStudentId },
+      });
+
       await prisma.student.create({
-        data: {
-          studentId: user.studentId,
-        }
-      })
+        data: { studentId: newStudentId },
+      });
+
+      user.studentId = newStudentId;
     }
     return user;
   }
@@ -223,7 +241,7 @@ class EnrollmentRepository {
 
     return await prisma.enrollment.create({
       data: {
-        studentId: enrollmentData.studentId,
+        studentId: Number(enrollmentData.studentId),
         studentName: enrollmentData.studentName,
         courseNum: Number(enrollmentData.courseNum),
         crn: Number(enrollmentData.crn),

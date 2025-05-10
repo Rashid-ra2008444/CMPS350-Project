@@ -1,54 +1,44 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
 import styles from "./registration.module.css"
 import Notification from "@/app/components/Notification"
+import {findAllCoursesActions,findAllEnrollmentsActions } from "@/app/actions/server-actions"
+import { useSession } from "next-auth/react"
+
 
 export default function Registration() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
+  const { data: session, status } = useSession()  // Get session data from next-auth
+  const [user, setUser] = useState(null)
   const [allCourses, setAllCourses] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedSubject, setSelectedSubject] = useState("All")
   const [completedCourses, setCompletedCourses] = useState([])
   const [passedCourses, setPassedCourses] = useState([])
-  const [notification, setNotification] = useState({message: "", type: ""})
+  const [notification, setNotification] = useState({ message: "", type: "" })
 
   useEffect(() => {
-    if (status === "loading") return
-    
-    if (!session) {
-      router.push("/auth/login")
-      return
+    if (session) {
+      setUser(session.user)  // Set user from the session data
+      loadUserData(session.user)  // Fetch user data
     }
-    
-    if (session.user.role !== "student") {
-      router.push("/auth/login")
-      return
-    }
+  }, [session])  // Run when session changes (e.g., after login)
 
-    // Load available courses and user's completed courses
-    loadUserData()
-  }, [session, status, router])
-
-  const loadUserData = async () => {
+  const loadUserData = async (currentUser) => {
     try {
-      // Fetch all necessary data in parallel
-      const [coursesResponse, enrollmentsResponse] = await Promise.all([
-        fetch("/api/courses"),
-        fetch(`/api/enrollments?studentId=${session.user.studentId}`)
-      ]);
-      
-      const coursesData = await coursesResponse.json();
-      const enrollmentData = await enrollmentsResponse.json();
+      const coursesData = await findAllCoursesActions()
+      const enrollmentData =  await findAllEnrollmentsActions()
+
+      // Get user's enrollments
+      const userEnrollments = enrollmentData.filter(
+        e => e.studentName && e.studentName.toLowerCase() === currentUser.username.toLowerCase()
+      );
 
       // Find completed courses (courses with grades)
       const userCompletedCourses = [];
       const userPassedCourseNames = [];
 
-      enrollmentData.forEach(enrollment => {
+      userEnrollments.forEach(enrollment => {
         if (enrollment.grade) {
           const course = coursesData.find(c => 
             Number.parseInt(c.courseNum, 10) === Number.parseInt(enrollment.courseNum, 10)
@@ -73,7 +63,7 @@ export default function Registration() {
       setPassedCourses(userPassedCourseNames);
       
       // Filter available courses
-      const availableCourses = getAvailableCourses(coursesData, enrollmentData);
+      const availableCourses = getAvailableCourses(coursesData, userEnrollments);
       setAllCourses(availableCourses);
       
     } catch (error) {
@@ -127,6 +117,12 @@ export default function Registration() {
 
   const addCourse = async (course) => {
     try {
+      // Ensure user is defined
+      if (!user || !user.password || !user.username) {
+        showNotification("User information is missing. Please refresh the page and try again.", "error");
+        return;
+      }
+
       // Check if the course is pending
       if (course.status !== "pending") {
         showNotification("Only pending courses can be registered.", "error");
@@ -147,8 +143,8 @@ export default function Registration() {
 
       // Create new enrollment
       const enrollment = {
-        studentId: session.user.studentId,
-        studentName: session.user.name,
+        studentId: user.password.toString(),
+        studentName: user.username,
         courseNum: Number.parseInt(course.courseNum, 10),
         crn: Number.parseInt(course.crn, 10),
         courseName: course.name,
@@ -170,7 +166,7 @@ export default function Registration() {
       if (response.ok) {
         showNotification("Course registered successfully! Note that this course is pending approval.", "success");
         // Reload courses
-        loadUserData();
+        loadUserData(user);
       } else {
         showNotification("Error registering for course. Please try again.", "error");
       }
@@ -179,10 +175,6 @@ export default function Registration() {
       showNotification("Error registering for course. Please try again.", "error");
     }
   };
-
-  if (status === "loading") {
-    return <div>Loading...</div>
-  }
 
   // Filter courses based on search term and subject
   const filteredCourses = allCourses.filter(course => {
@@ -199,7 +191,7 @@ export default function Registration() {
   return (
     <>
       <section className="banner">
-        <h1 className="title">Welcome {session?.user?.name}</h1>
+        <h1 className="title">Welcome {user?.username}</h1>
       </section>
       {notification.message && (
         <Notification message={notification.message} type={notification.type} />
@@ -294,8 +286,8 @@ export default function Registration() {
       </div>
 
       <footer className="banner">
-        &copy; Qatar University Group Project Collections of this magnificant Work 2025. All rights reserved
+        &copy; Qatar University Group Project Collections of this magnificent Work 2025. All rights reserved
       </footer>
     </>
-  )
+  );
 }

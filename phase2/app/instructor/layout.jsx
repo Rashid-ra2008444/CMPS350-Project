@@ -2,30 +2,25 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 
 export default function InstructorLayout({ children }) {
+  const { data: session, status } = useSession()
   const [user, setUser] = useState(null)
   const router = useRouter()
 
   useEffect(() => {
     // Check if user is logged in and is an instructor
-    const storedUser = localStorage.getItem("currentUser")
-    if (!storedUser) {
-      router.push("/")
-      return
+    if(session) {
+      if(session.user.role !== "instructor") {
+        router.push("/")
+        return
+      }
+      setUser(session.user)
     }
-
-    const userData = JSON.parse(storedUser)
-    if (userData.status !== "instructor") {
-      router.push("/")
-      return
-    }
-
-    setUser(userData)
-  }, [router])
+  }, [session])
 
   const handleLogout = () => {
-    localStorage.removeItem("currentUser")
     router.push("/")
   }
 

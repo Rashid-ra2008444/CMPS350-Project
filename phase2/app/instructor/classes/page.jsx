@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import styles from "./instructor-classes.module.css"
+import { findAllCoursesActions, findAllEnrollmentsActions } from "@/app/actions/server-actions"
 
 export default function InstructorClasses() {
   const { data: session, status } = useSession()
@@ -44,12 +45,11 @@ export default function InstructorClasses() {
   const loadInstructorClasses = async (instructorName) => {
     try {
       // Fetch courses
-      const coursesResponse = await fetch("/api/courses")
-      const coursesData = await coursesResponse.json()
+      const coursesData = await findAllCoursesActions()
 
       // Fetch enrollments for this instructor
-      const enrollmentsResponse = await fetch(`/api/enrollments?instructor=${encodeURIComponent(instructorName)}`)
-      const enrollmentData = await enrollmentsResponse.json()
+      // const enrollmentsResponse = await fetch(`/api/enrollments?instructor=${encodeURIComponent(instructorName)}`)
+      const enrollmentData = await findAllEnrollmentsActions()
 
       // Find courses taught by the instructor
       const instructorCourses = coursesData.filter((course) => course.instructor === instructorName)

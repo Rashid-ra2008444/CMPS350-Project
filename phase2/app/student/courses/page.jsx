@@ -1,45 +1,36 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
 import styles from "./courses.module.css"
+import { useSession } from "next-auth/react"
+import { findAllCoursesActions, findAllEnrollmentsActions} from "@/app/actions/server-actions"
 
 export default function StudentCourses() {
   const { data: session, status } = useSession()
-  const router = useRouter()
+  const [user, setUser] = useState(null)
   const [pendingCourses, setPendingCourses] = useState([])
   const [validCourses, setValidCourses] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedSubject, setSelectedSubject] = useState("All")
 
   useEffect(() => {
-    if (status === "loading") return
-    
-    if (!session) {
-      router.push("/auth/login")
-      return
-    }
-    
-    if (session.user.role !== "student") {
-      router.push("/auth/login")
-      return
-    }
+   if(session){
+    setUser(session.user)
+    loadAllCourses(session.user)
+   }
+  }, [session])
 
-    loadAllCourses()
-  }, [session, status, router])
-
-  const loadAllCourses = async () => {
+  const loadAllCourses = async (currentUser) => {
     try {
-      // Fetch courses
-      const coursesResponse = await fetch("/api/courses")
-      const coursesData = await coursesResponse.json()
+      const coursesData = await findAllCoursesActions()
+      const enrollmentData = await findAllEnrollmentsActions()
 
-      // Fetch enrollments for current student
-      const enrollmentsResponse = await fetch(`/api/enrollments?studentId=${session.user.studentId}`)
-      const enrollmentData = await enrollmentsResponse.json()
+      // Find student enrollments
+      const studentCourses = enrollmentData.filter(
+        (enrollment) => enrollment.studentName.toLowerCase() === currentUser.username.toLowerCase(),
+      )
 
-      if (enrollmentData.length === 0) {
+      if (studentCourses.length === 0) {
         setPendingCourses([])
         setValidCourses([])
         return
@@ -49,7 +40,7 @@ export default function StudentCourses() {
       const pending = []
       const valid = []
 
-      enrollmentData.forEach((enrollment) => {
+      studentCourses.forEach((enrollment) => {
         // Find course details
         const course = coursesData.find(
           (c) =>
@@ -86,10 +77,6 @@ export default function StudentCourses() {
     }
   }
 
-  if (status === "loading") {
-    return <div>Loading...</div>
-  }
-
   const filterCourses = () => {
     // Filter logic will be implemented here
   }
@@ -97,7 +84,7 @@ export default function StudentCourses() {
   return (
     <>
       <section className="banner">
-        <h1 className="title">Welcome {session?.user?.name}</h1>
+        <h1 className="title">Welcome {user?.username}</h1>
       </section>
 
       <div className="course-box">

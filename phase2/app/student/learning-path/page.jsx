@@ -1,52 +1,33 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
 import styles from "./learning-path.module.css"
+import { useSession } from "next-auth/react"
+import {findAllCoursesActions,findAllEnrollmentsActions } from "@/app/actions/server-actions"
 
 export default function LearningPath() {
   const { data: session, status } = useSession()
-  const router = useRouter()
-  const [student, setStudent] = useState({ name: "", id: "" })
+  const [student, setStudent] = useState({ name: "", id: "" ,studentId: 0})
   const [completedCourses, setCompletedCourses] = useState([])
   const [inProgressCourses, setInProgressCourses] = useState([])
   const [pendingCourses, setPendingCourses] = useState([])
 
-  useEffect(() => {
-    if (status === "loading") return
-    
-    if (!session) {
-      router.push("/auth/login")
-      return
-    }
-    
-    if (session.user.role !== "student") {
-      router.push("/auth/login")
-      return
-    }
+ useEffect(() => {
+  if (session) {
+    setStudent(session.user);
+    loadLearningPathData(session.user);
+  }
+}, [session, status]);
 
-    // Set student info from session
-    setStudent({
-      name: session.user.name,
-      id: session.user.studentId,
-    })
-
-    // Load learning path data
-    loadLearningPathData()
-  }, [session, status, router])
-
-  const loadLearningPathData = async () => {
+  const loadLearningPathData = async (user) => {
     try {
-      // Fetch courses
-      const coursesResponse = await fetch("/api/courses")
-      const coursesData = await coursesResponse.json()
+      const coursesData = await findAllCoursesActions()
+      const enrollmentData = await findAllEnrollmentsActions()
 
-      // Fetch enrollments for current student
-      const enrollmentsResponse = await fetch(`/api/enrollments?studentId=${session.user.studentId}`)
-      const enrollmentData = await enrollmentsResponse.json()
+      // Find student enrollments
+      const studentEnrollments = enrollmentData.filter((enrollment) => enrollment.studentName === user.username)
 
-      if (enrollmentData.length === 0) {
+      if (studentEnrollments.length === 0) {
         return
       }
 
@@ -55,7 +36,7 @@ export default function LearningPath() {
       const inProgress = []
       const pending = []
 
-      enrollmentData.forEach((enrollment) => {
+      studentEnrollments.forEach((enrollment) => {
         // Find course info
         const course = coursesData.find(
           (c) => Number.parseInt(c.courseNum, 10) === Number.parseInt(enrollment.courseNum, 10),
@@ -82,10 +63,6 @@ export default function LearningPath() {
     } catch (error) {
       console.error("Error loading learning path data:", error)
     }
-  }
-
-  if (status === "loading") {
-    return <div>Loading...</div>
   }
 
   const getGradeClass = (grade) => {
@@ -119,7 +96,7 @@ export default function LearningPath() {
         </div>
         <div className={styles.studentInfo}>
           <h3 id="student-name">{student.name}</h3>
-          <p id="student-id">Student ID: {student.id}</p>
+          <p id="student-id">Student ID: {student.studentId}</p>
         </div>
       </div>
 
