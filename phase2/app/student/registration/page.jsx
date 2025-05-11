@@ -178,16 +178,16 @@ export default function Registration() {
       // Send enrollment to API
       const response = await createEnrollmentActions(enrollment);
 
-      if (response.ok) {
+      if (response && response.success) {
         showNotification(
           "Course registered successfully! Note that this course is pending approval.",
           "success"
         );
-        // Reload courses
         loadUserData(user);
       } else {
         showNotification(
-          "Error registering for course. Please try again.",
+          response?.message ||
+            "Error registering for course. Please try again.",
           "error"
         );
       }

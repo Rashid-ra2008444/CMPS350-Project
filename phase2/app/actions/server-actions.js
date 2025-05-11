@@ -57,7 +57,13 @@ export async function findEnrollmentByCRNActions(crn) {
 }
 
 export async function createEnrollmentActions(enrollmentData) {
-    return await enrollmentRepository.create(enrollmentData);
+  try {
+    const result = await enrollmentRepository.create(enrollmentData);
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("Enrollment creation failed:", error);
+    return { success: false, message: error.message || "Unknown error" };
+  }
 }
 
 export async function updateGradeActions(studentId, crn, grade) {
