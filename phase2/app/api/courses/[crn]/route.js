@@ -39,7 +39,7 @@ export async function DELETE(request, { params }) {
   try {
     const { crn } = await params;
     
-    await CourseRepository.delete("crn", crn);
+    await courseRepository.delete("crn", crn);
     
     return NextResponse.json({ success: true });
   } catch (error) {
