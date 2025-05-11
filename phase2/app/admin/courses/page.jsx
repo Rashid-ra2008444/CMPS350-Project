@@ -1,188 +1,221 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import styles from "./admin-courses.module.css"
-import CourseCard from "../../components/CourseCard"
-import ConfirmModel from "../../components/ConfirmModel"
-import Notification from "../../components/Notification"
-import CreateEditCourse from "../../components/CreateEditCourse"
-import { useRouter } from "next/navigation"
-import { findAllCoursesActions ,deleteCourseActions , updateCourseActions , updateStatusActions} from "@/app/actions/server-actions"
+import { useState, useEffect } from "react";
+import styles from "./admin-courses.module.css";
+import CourseCard from "../../components/CourseCard";
+import ConfirmModel from "../../components/ConfirmModel";
+import Notification from "../../components/Notification";
+import CreateEditCourse from "../../components/CreateEditCourse";
+import { useRouter } from "next/navigation";
+import {
+  findAllCoursesActions,
+  deleteCourseActions,
+  updateCourseActions,
+  updateStatusActions,
+} from "@/app/actions/server-actions";
 
 function AdminCourses() {
-  const [courses, setCourses] = useState([])
-  const [filteredCourses, setFilteredCourses] = useState([])
-  const [searchTerm, setSearchTerm] = useState("")
-  const [categoryFilter, setCategoryFilter] = useState("all")
-  const [showEditForm, setShowEditForm] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
-  const [confirmDelete, setConfirmDelete] = useState({ show: false, course: null })
-  const [notification, setNotification] = useState({message: "", type: ""})
-  const [courseToEdit, setCourseToEdit] = useState(null)
-  const router = useRouter()
+  const [courses, setCourses] = useState([]);
+  const [filteredCourses, setFilteredCourses] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState({
+    show: false,
+    course: null,
+  });
+  const [notification, setNotification] = useState({ message: "", type: "" });
+  const [courseToEdit, setCourseToEdit] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
-    loadCourses()
+    loadCourses();
 
-    const searchInput = document.getElementById("searchInput")
+    const searchInput = document.getElementById("searchInput");
     if (searchInput) {
-      searchInput.addEventListener("input", handleSearchInput)
+      searchInput.addEventListener("input", handleSearchInput);
       if (searchInput.value) {
-        setSearchTerm(searchInput.value.toLowerCase().trim())
+        setSearchTerm(searchInput.value.toLowerCase().trim());
       }
     }
 
-    const categorySelect = document.getElementById("courseCategory")
+    const categorySelect = document.getElementById("courseCategory");
     if (categorySelect) {
-      categorySelect.addEventListener("change", handleCategoryChange)
+      categorySelect.addEventListener("change", handleCategoryChange);
       if (categorySelect.value) {
-        setCategoryFilter(categorySelect.value)
+        setCategoryFilter(categorySelect.value);
       }
     }
 
     return () => {
       if (searchInput) {
-        searchInput.removeEventListener("input", handleSearchInput)
+        searchInput.removeEventListener("input", handleSearchInput);
       }
       if (categorySelect) {
-        categorySelect.removeEventListener("change", handleCategoryChange)
+        categorySelect.removeEventListener("change", handleCategoryChange);
       }
-    }
-  }, [])
+    };
+  }, []);
 
   useEffect(() => {
-    filterCourses()
-  }, [searchTerm, categoryFilter, courses])
+    filterCourses();
+  }, [searchTerm, categoryFilter, courses]);
 
   const handleSearchInput = (e) => {
-    setSearchTerm(e.target.value.toLowerCase().trim())
-  }
+    setSearchTerm(e.target.value.toLowerCase().trim());
+  };
 
   const handleCategoryChange = (e) => {
-    setCategoryFilter(e.target.value)
-  }
+    setCategoryFilter(e.target.value);
+  };
 
- async function loadCourses() {
-  setLoading(true);
-  setError("");
+  async function loadCourses() {
+    setLoading(true);
+    setError("");
 
-  try {
-    const data = await findAllCoursesActions(); // This is already the course list
-    console.log("Courses loaded:", data);
-    setCourses(data); // Set directly
-  } catch (error) {
-    console.error("Error loading courses:", error);
-    setError("Failed to load courses. Please try again.");
-  } finally {
-    setLoading(false);
+    try {
+      const data = await findAllCoursesActions(); // This is already the course list
+      console.log("Courses loaded:", data);
+      setCourses(data); // Set directly
+    } catch (error) {
+      console.error("Error loading courses:", error);
+      setError("Failed to load courses. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
-}
 
   const filterCourses = () => {
     if (!courses || courses.length === 0) {
       setFilteredCourses([]);
       return;
     }
-    
-    const filtered = courses.filter(course => {
+
+    const filtered = courses.filter((course) => {
       const searchTermLower = searchTerm.toLowerCase();
-      
+
       const courseName = (course.name || "").toLowerCase();
-      const courseNum = course.courseNum !== undefined ? course.courseNum.toString() : "";
+      const courseNum =
+        course.courseNum !== undefined ? course.courseNum.toString() : "";
       const courseCategory = (course.category || "").toLowerCase();
       const courseInstructor = (course.instructor || "").toLowerCase();
-      
+
       const nameMatch = courseName.includes(searchTermLower);
-      
+
       const numMatch = courseNum.includes(searchTermLower);
-      
-      const codeMatch = `${courseCategory} ${courseNum}`.includes(searchTermLower);
-      
+
+      const codeMatch = `${courseCategory} ${courseNum}`.includes(
+        searchTermLower
+      );
+
       const instructorMatch = courseInstructor.includes(searchTermLower);
-      
-      const categoryMatch = categoryFilter === "all" || course.category === categoryFilter;
-      
-      return (nameMatch || numMatch || codeMatch || instructorMatch) && categoryMatch;
+
+      const categoryMatch =
+        categoryFilter === "all" || course.category === categoryFilter;
+
+      return (
+        (nameMatch || numMatch || codeMatch || instructorMatch) && categoryMatch
+      );
     });
-    
+
     setFilteredCourses(filtered);
-  }
-  
+  };
+
   const showNotification = (message, type = "success") => {
-    setNotification({ message, type })
-    setTimeout(() => setNotification({ message: "", type: "" }),4000)
-  }
+    setNotification({ message, type });
+    setTimeout(() => setNotification({ message: "", type: "" }), 4000);
+  };
 
   const askToDeleteCourse = (course) => {
-    setConfirmDelete({ show: true, course })
-  }
-  
-const confirmDeleteCourse = async () => {
-  const course = confirmDelete.course;
-  setConfirmDelete({ show: false, course: null });
+    setConfirmDelete({ show: true, course });
+  };
 
-  try {
-    const response = await deleteCourseActions(course.crn);
-    
-    if (response?.ok === false) {
-      const errorData = await response.json?.();
-      throw new Error(errorData?.message || "Failed to delete course");
+  const confirmDeleteCourse = async () => {
+    const course = confirmDelete.course;
+    setConfirmDelete({ show: false, course: null });
+
+    try {
+      const response = await deleteCourseActions(course.crn);
+
+      if (response?.ok === false) {
+        const errorData = response;
+        throw new Error(errorData?.message || "Failed to delete course");
+      }
+      await loadCourses();
+
+      showNotification("Course deleted successfully!", "success");
+    } catch (error) {
+      console.error("Error deleting course:", error);
+      showNotification(
+        `Error: ${error.message || "Failed to delete course"}`,
+        "error"
+      );
     }
-    await loadCourses();
-
-    showNotification("Course deleted successfully!", "success");
-  } catch (error) {
-    console.error("Error deleting course:", error);
-    showNotification(`Error: ${error.message || "Failed to delete course"}`, "error");
-  }
-};
+  };
 
   const handleEditCourse = (course, isValidCourse = false) => {
-    setCourseToEdit({...course, isValidCourse})
-    setShowEditForm(true)
-  }
+    setCourseToEdit({ ...course, isValidCourse });
+    setShowEditForm(true);
+  };
 
   const handleUpdateCourse = async (courseData) => {
-  try {
-    const response = await updateCourseActions(courseData.crn,courseData);
+    try {
+      const updatedCourse = await updateCourseActions(
+        courseData.crn,
+        courseData
+      );
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to update course");
+      setCourses((prevCourses) =>
+        prevCourses.map((course) =>
+          course.crn === updatedCourse.crn ? updatedCourse : course
+        )
+      );
+
+      showNotification("Course updated successfully!", "success");
+      setShowEditForm(false); // optionally close form
+    } catch (error) {
+      console.error("Error updating course:", error);
+      showNotification(
+        `Error: ${error.message || "Failed to update course"}`,
+        "error"
+      );
     }
-
-    await loadCourses();
-    showNotification("Course updated successfully!", "success");
-  } catch (error) {
-    console.error("Error updating course:", error);
-    showNotification(`Error: ${error.message || "Failed to update course"}`, "error");
-  }
-};
+  };
 
   const validateCourse = async (course, status) => {
-  try {
-    const updatedCourse = await updateStatusActions(course.crn, status);
-    // Reload courses
-    await loadCourses();
-    showNotification(`Course status updated to ${status}!`, "success");
-  } catch (error) {
-    console.error("Error updating course status:", error);
-    showNotification(`Error: ${error.message || "Failed to update course status"}`, "error");
-  }
-};
+    try {
+      const updatedCourse = await updateStatusActions(course.crn, status);
+      // Reload courses
+      await loadCourses();
+      showNotification(`Course status updated to ${status}!`, "success");
+    } catch (error) {
+      console.error("Error updating course status:", error);
+      showNotification(
+        `Error: ${error.message || "Failed to update course status"}`,
+        "error"
+      );
+    }
+  };
 
   // Filter courses by status
-  const pendingCourses = filteredCourses.filter((course) => course.status === "pending")
-  const validCourses = filteredCourses.filter((course) => course.status === "valid")
-  const invalidCourses = filteredCourses.filter((course) => course.status === "invalid")
+  const pendingCourses = filteredCourses.filter(
+    (course) => course.status === "pending"
+  );
+  const validCourses = filteredCourses.filter(
+    (course) => course.status === "valid"
+  );
+  const invalidCourses = filteredCourses.filter(
+    (course) => course.status === "invalid"
+  );
 
   if (loading) {
     return (
       <section className="banner">
         <h1>Loading courses...</h1>
       </section>
-    )
+    );
   }
 
   if (error) {
@@ -191,7 +224,7 @@ const confirmDeleteCourse = async () => {
         <h1>Error: {error}</h1>
         <button onClick={loadCourses}>Retry</button>
       </section>
-    )
+    );
   }
 
   return (
@@ -202,7 +235,7 @@ const confirmDeleteCourse = async () => {
       </section>
       {notification.message && (
         <Notification message={notification.message} type={notification.type} />
-      )}  
+      )}
       <div className="course-box">
         <h2>Pending Courses</h2>
         <div className={styles.coursesGrid}>
@@ -263,8 +296,8 @@ const confirmDeleteCourse = async () => {
           initialCourseData={courseToEdit}
           onSubmit={handleUpdateCourse}
           onCancel={() => {
-            setShowEditForm(false)
-            setCourseToEdit(null)
+            setShowEditForm(false);
+            setCourseToEdit(null);
           }}
         />
       )}
@@ -278,10 +311,11 @@ const confirmDeleteCourse = async () => {
       )}
 
       <footer className="banner">
-        &copy; Qatar University Group Project Collections of this magnificant Work 2025. All rights reserved
+        &copy; Qatar University Group Project Collections of this magnificant
+        Work 2025. All rights reserved
       </footer>
     </>
-  )
+  );
 }
 
 export default AdminCourses;

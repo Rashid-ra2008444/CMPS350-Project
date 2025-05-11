@@ -1,90 +1,100 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import styles from "./learning-path.module.css"
-import { useSession } from "next-auth/react"
-import {findAllCoursesActions,findAllEnrollmentsActions } from "@/app/actions/server-actions"
+import { useState, useEffect } from "react";
+import styles from "./learning-path.module.css";
+import { useSession } from "next-auth/react";
+import {
+  findAllCoursesActions,
+  findAllEnrollmentsActions,
+} from "@/app/actions/server-actions";
 
 export default function LearningPath() {
-  const { data: session, status } = useSession()
-  const [student, setStudent] = useState({ name: "", id: "" ,studentId: 0})
-  const [completedCourses, setCompletedCourses] = useState([])
-  const [inProgressCourses, setInProgressCourses] = useState([])
-  const [pendingCourses, setPendingCourses] = useState([])
+  const { data: session, status } = useSession();
+  const [student, setStudent] = useState({ name: "", id: "", studentId: 0 });
+  const [completedCourses, setCompletedCourses] = useState([]);
+  const [inProgressCourses, setInProgressCourses] = useState([]);
+  const [pendingCourses, setPendingCourses] = useState([]);
 
- useEffect(() => {
-  if (session) {
-    setStudent(session.user);
-    loadLearningPathData(session.user);
-  }
-}, [session, status]);
+  useEffect(() => {
+    if (session) {
+      setStudent(session.user);
+      loadLearningPathData(session.user);
+    }
+  }, [session, status]);
 
   const loadLearningPathData = async (user) => {
     try {
-      const coursesData = await findAllCoursesActions()
-      const enrollmentData = await findAllEnrollmentsActions()
+      const coursesData = await findAllCoursesActions();
+      const enrollmentData = await findAllEnrollmentsActions();
 
       // Find student enrollments
-      const studentEnrollments = enrollmentData.filter((enrollment) => enrollment.studentName === user.username)
+      const studentEnrollments = enrollmentData.filter(
+        (enrollment) => enrollment.studentName === user.username
+      );
 
       if (studentEnrollments.length === 0) {
-        return
+        return;
       }
 
       // Process enrollments
-      const completed = []
-      const inProgress = []
-      const pending = []
+      const completed = [];
+      const inProgress = [];
+      const pending = [];
 
       studentEnrollments.forEach((enrollment) => {
         // Find course info
         const course = coursesData.find(
-          (c) => Number.parseInt(c.courseNum, 10) === Number.parseInt(enrollment.courseNum, 10),
-        )
+          (c) =>
+            Number.parseInt(c.courseNum, 10) ===
+            Number.parseInt(enrollment.courseNum, 10)
+        );
 
-        if (!course) return
+        if (!course) return;
 
         // Check course status and grade
         if (enrollment.grade) {
           // Completed course (has a grade)
-          completed.push({ course, enrollment })
-        } else if (enrollment.courseStatus === "pending" || course.status === "pending") {
+          completed.push({ course, enrollment });
+        } else if (
+          enrollment.courseStatus === "pending" ||
+          course.status === "pending"
+        ) {
           // Pending course
-          pending.push({ course, enrollment })
+          pending.push({ course, enrollment });
         } else {
           // In-progress course (not pending and no grade)
-          inProgress.push({ course, enrollment })
+          inProgress.push({ course, enrollment });
         }
-      })
+      });
 
-      setCompletedCourses(completed)
-      setInProgressCourses(inProgress)
-      setPendingCourses(pending)
+      setCompletedCourses(completed);
+      setInProgressCourses(inProgress);
+      setPendingCourses(pending);
     } catch (error) {
-      console.error("Error loading learning path data:", error)
+      console.error("Error loading learning path data:", error);
     }
-  }
+  };
 
   const getGradeClass = (grade) => {
-    if (!grade) return ""
+    if (!grade) return "";
 
     // Convert grade to uppercase to handle case differences
-    const upperGrade = grade.toString().toUpperCase()
+    const upperGrade = grade.toString().toUpperCase();
 
     if (upperGrade === "A") {
-      return "grade-a"
+      return "grade-a";
     } else if (upperGrade === "B+" || upperGrade === "B") {
-      return "grade-b"
+      return "grade-b";
     } else if (upperGrade === "C+" || upperGrade === "C") {
-      return "grade-c"
+      return "grade-c";
     } else if (upperGrade === "D+" || upperGrade === "D") {
-      return "grade-d"
+      return "grade-d";
     } else if (upperGrade === "F") {
-      return "grade-f"
+      return "grade-f";
     } else {
-      return ""
+      return "";
     }
-  }
+  };
 
   return (
     <div className={styles.container}>
@@ -95,7 +105,7 @@ export default function LearningPath() {
           <p>Track your academic progress</p>
         </div>
         <div className={styles.studentInfo}>
-          <h3 id="student-name">{student.name}</h3>
+          <h3 id="student-name">{student.username}</h3>
           <p id="student-id">Student ID: {student.studentId}</p>
         </div>
       </div>
@@ -124,9 +134,13 @@ export default function LearningPath() {
                   {item.course.category} {item.course.courseNum}
                 </td>
                 <td>{item.course.name}</td>
-                <td className={getGradeClass(item.enrollment.grade)}>{item.enrollment.grade}</td>
+                <td className={getGradeClass(item.enrollment.grade)}>
+                  {item.enrollment.grade}
+                </td>
                 <td>
-                  <span className="status-pill status-completed">Completed</span>
+                  <span className="status-pill status-completed">
+                    Completed
+                  </span>
                 </td>
               </tr>
             ))
@@ -158,7 +172,9 @@ export default function LearningPath() {
                 </td>
                 <td>{item.course.name}</td>
                 <td>
-                  <span className="status-pill status-in-progress">In Progress</span>
+                  <span className="status-pill status-in-progress">
+                    In Progress
+                  </span>
                 </td>
               </tr>
             ))
@@ -190,9 +206,14 @@ export default function LearningPath() {
                   {item.course.category} {item.course.courseNum}
                 </td>
                 <td>{item.course.name}</td>
-                <td>{item.enrollment.enrollmentDate || new Date().toLocaleDateString()}</td>
                 <td>
-                  <span className="status-pill status-pending">Pending Approval</span>
+                  {item.enrollment.enrollmentDate ||
+                    new Date().toLocaleDateString()}
+                </td>
+                <td>
+                  <span className="status-pill status-pending">
+                    Pending Approval
+                  </span>
                 </td>
               </tr>
             ))
@@ -207,5 +228,5 @@ export default function LearningPath() {
         />
       </div>
     </div>
-  )
+  );
 }

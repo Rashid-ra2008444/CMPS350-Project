@@ -165,7 +165,6 @@ export default function Registration() {
         studentName: user.username,
         courseNum: Number(course.courseNum),
         crn: Number(course.crn),
-        courseName: course.name,
         instructor: course.instructor,
         enrollmentDate: new Date().toLocaleDateString(),
         grade: null,

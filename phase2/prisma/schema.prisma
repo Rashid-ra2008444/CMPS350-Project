@@ -51,12 +51,8 @@
 //   course  Course  @relation(fields: [courseId], references: [id])
 // }
 
-
-
-
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 
 generator client {
   provider = "prisma-client-js"
@@ -78,7 +74,7 @@ model User {
 
 model Student {
   studentId   Int          @id @default(autoincrement())
-  user        User?        @relation(fields: [studentId], references: [studentId])
+  user        User?        @relation(fields: [studentId], references: [studentId], onUpdate: Cascade, onDelete: Cascade)
   enrollments Enrollment[] // One Student can have Many Enrollments
 }
 
@@ -97,7 +93,7 @@ model Course {
 }
 
 model Enrollment {
-  id             Int      @id @default(autoincrement())
+  id             Int     @id @default(autoincrement())
   studentId      Int
   studentName    String
   courseNum      Int
@@ -106,8 +102,8 @@ model Enrollment {
   enrollmentDate String
   grade          String?
   courseStatus   String?
-  
+
   // Relations
-  course         Course   @relation(fields: [crn], references: [crn])
-  student        Student  @relation(fields: [studentId], references: [studentId])
+  course  Course  @relation(fields: [crn], references: [crn], onUpdate: Cascade, onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [studentId], onUpdate: Cascade, onDelete: Cascade)
 }

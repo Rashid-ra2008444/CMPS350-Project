@@ -2,15 +2,15 @@
 CREATE TABLE "User" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "username" TEXT NOT NULL,
-    "studentId" INTEGER,
     "password" INTEGER NOT NULL,
-    "status" TEXT NOT NULL
+    "status" TEXT NOT NULL,
+    "studentId" INTEGER
 );
 
 -- CreateTable
 CREATE TABLE "Student" (
     "studentId" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    CONSTRAINT "Student_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "User" ("studentId") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "Student_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "User" ("studentId") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -38,8 +38,8 @@ CREATE TABLE "Enrollment" (
     "enrollmentDate" TEXT NOT NULL,
     "grade" TEXT,
     "courseStatus" TEXT,
-    CONSTRAINT "Enrollment_crn_fkey" FOREIGN KEY ("crn") REFERENCES "Course" ("crn") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "Enrollment_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student" ("studentId") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "Enrollment_crn_fkey" FOREIGN KEY ("crn") REFERENCES "Course" ("crn") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "Enrollment_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student" ("studentId") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateIndex
