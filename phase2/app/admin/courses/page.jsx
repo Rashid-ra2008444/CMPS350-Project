@@ -7,6 +7,7 @@ import ConfirmModel from "../../components/ConfirmModel"
 import Notification from "../../components/Notification"
 import CreateEditCourse from "../../components/CreateEditCourse"
 import { useRouter } from "next/navigation"
+import { findAllCoursesActions ,deleteCourseActions , updateCourseActions , updateStatusActions} from "@/app/actions/server-actions"
 
 function AdminCourses() {
   const [courses, setCourses] = useState([])
@@ -62,26 +63,21 @@ function AdminCourses() {
     setCategoryFilter(e.target.value)
   }
 
-  async function loadCourses() {
-    setLoading(true)
-    setError("")
-    
-    try {
-      const response = await fetch("/api/courses")
-      
-      if (!response.ok) {
-        throw new Error("Failed to fetch courses")
-      }
-      
-      const data = await response.json()
-      setCourses(data)
-    } catch (error) {
-      console.error("Error loading courses:", error)
-      setError("Failed to load courses. Please try again.")
-    } finally {
-      setLoading(false)
-    }
+ async function loadCourses() {
+  setLoading(true);
+  setError("");
+
+  try {
+    const data = await findAllCoursesActions(); // This is already the course list
+    console.log("Courses loaded:", data);
+    setCourses(data); // Set directly
+  } catch (error) {
+    console.error("Error loading courses:", error);
+    setError("Failed to load courses. Please try again.");
+  } finally {
+    setLoading(false);
   }
+}
 
   const filterCourses = () => {
     if (!courses || courses.length === 0) {
@@ -122,27 +118,25 @@ function AdminCourses() {
     setConfirmDelete({ show: true, course })
   }
   
-  const confirmDeleteCourse = async () => {
-    const course = confirmDelete.course
-    setConfirmDelete({ show: false, course: null })
-  
-    try {
-      const response = await fetch(`/api/courses/${course.crn}`, {
-        method: "DELETE",
-      })
-  
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Failed to delete course")
-      }
-  
-      await loadCourses()
-      showNotification("Course deleted successfully!", "success")
-    } catch (error) {
-      console.error("Error deleting course:", error)
-      showNotification(`Error: ${error.message || "Failed to delete course"}`, "error")
+const confirmDeleteCourse = async () => {
+  const course = confirmDelete.course;
+  setConfirmDelete({ show: false, course: null });
+
+  try {
+    const response = await deleteCourseActions(course.crn);
+    
+    if (response?.ok === false) {
+      const errorData = await response.json?.();
+      throw new Error(errorData?.message || "Failed to delete course");
     }
+    await loadCourses();
+
+    showNotification("Course deleted successfully!", "success");
+  } catch (error) {
+    console.error("Error deleting course:", error);
+    showNotification(`Error: ${error.message || "Failed to delete course"}`, "error");
   }
+};
 
   const handleEditCourse = (course, isValidCourse = false) => {
     setCourseToEdit({...course, isValidCourse})
@@ -150,39 +144,33 @@ function AdminCourses() {
   }
 
   const handleUpdateCourse = async (courseData) => {
-    try {
-      router.push(`/admin/courses/form?crn=${courseData.crn}&isValidCourse=${courseData.isValidCourse || false}`)
-    } catch (error) {
-      console.error("Error redirecting to update page:", error)
-      showNotification(`Error: ${error.message || "Failed to update course"}`,"error")
+  try {
+    const response = await updateCourseActions(courseData.crn,courseData);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update course");
     }
+
+    await loadCourses();
+    showNotification("Course updated successfully!", "success");
+  } catch (error) {
+    console.error("Error updating course:", error);
+    showNotification(`Error: ${error.message || "Failed to update course"}`, "error");
   }
+};
 
   const validateCourse = async (course, status) => {
-    try {
-      const updatedCourse = { ...course, status }
-
-      const response = await fetch(`/api/courses/${course.crn}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedCourse),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Failed to update course status")
-      }
-
-      // Reload courses
-      await loadCourses()
-      showNotification(`Course status updated to ${status}!`, "success")
-    } catch (error) {
-      console.error("Error updating course status:", error)
-      showNotification(`Error: ${error.message || "Failed to update course status"}`, "error")
-    }
+  try {
+    const updatedCourse = await updateStatusActions(course.crn, status);
+    // Reload courses
+    await loadCourses();
+    showNotification(`Course status updated to ${status}!`, "success");
+  } catch (error) {
+    console.error("Error updating course status:", error);
+    showNotification(`Error: ${error.message || "Failed to update course status"}`, "error");
   }
+};
 
   // Filter courses by status
   const pendingCourses = filteredCourses.filter((course) => course.status === "pending")

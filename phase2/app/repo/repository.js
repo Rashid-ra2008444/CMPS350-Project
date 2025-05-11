@@ -158,23 +158,27 @@ class CourseRepository {
   }
 
   // Update a course
-  async update(field, value, courseData) {
-    const whereClause = {};
-    whereClause[field] = field === "crn" ? Number(value) : value;
+  async update(crn, courseData) {
+    // const whereClause = {};
+    // whereClause[field] = field === "crn" ? Number(value) : value;
+
+    // return await prisma.course.update({
+    //   where: whereClause,
+    //   data: {
+    //     name: courseData.name,
+    //     courseNum: Number(courseData.courseNum),
+    //     instructor: courseData.instructor,
+    //     prerequisite: courseData.prerequisite || "none",
+    //     enrollment_maximum: Number(courseData.enrollment_maximum) || 30,
+    //     enrollment_actual: Number(courseData.enrollment_actual) || 0,
+    //     category: courseData.category,
+    //     status: courseData.status || "pending",
+    //   },
+    // });
 
     return await prisma.course.update({
-      where: whereClause,
-      data: {
-        name: courseData.name,
-        courseNum: Number(courseData.courseNum),
-        instructor: courseData.instructor,
-        prerequisite: courseData.prerequisite || "none",
-        enrollment_maximum: Number(courseData.enrollment_maximum) || 30,
-        enrollment_actual: Number(courseData.enrollment_actual) || 0,
-        category: courseData.category,
-        status: courseData.status || "pending",
-      },
-    });
+      where: { crn: Number(crn) },
+      data: courseData});
   }
 
   // Update course status
@@ -185,19 +189,25 @@ class CourseRepository {
     });
   }
 
-  // Delete a course
-  async delete(field, value) {
-    const whereClause = {};
-    whereClause[field] = field === "crn" ? Number(value) : value;
+  // Delete a course by crn
+    async delete(crn) {
+    const crnNumber = Number(crn);
 
-    if (field === "crn") {
-      await prisma.enrollment.deleteMany({
-        where: { crn: Number(value) },
-      });
+    const course = await prisma.course.findUnique({
+      where: { crn: crnNumber },
+    });
+
+    if (!course) {
+      throw new Error(`Course with CRN ${crnNumber} does not exist.`);
     }
 
-    return await prisma.course.delete({
-      where: whereClause,
+    // Remove dependent enrollments
+    await prisma.enrollment.deleteMany({
+      where: { crn: crnNumber },
+    });
+
+    return prisma.course.delete({
+      where: { crn: crnNumber },
     });
   }
 }

@@ -32,16 +32,16 @@ export async function createCourseActions(courseData) {
     return await courseRepository.create(courseData);
 }
 
-export async function updateCourseActions(field,value, courseData) {
-    return await courseRepository.update(field,value, courseData);
+export async function updateCourseActions(crn, courseData) {
+    return await courseRepository.update(crn, courseData);
 }
 
 export async function updateStatusActions(crn, status) {
     return await courseRepository.updateStatus(crn, status);
 }
 
-export async function deleteCourseActions(field, value) {
-    return await courseRepository.delete(field, value);
+export async function deleteCourseActions(crn) {
+    return await courseRepository.delete(crn);
 }
 
 export async function findAllEnrollmentsActions() {
