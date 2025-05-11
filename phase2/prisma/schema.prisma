@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,45 +11,42 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  username String @unique
-  password Int
-  status   String // "admin", "student", or "instructor"
-
-  student Student?
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  studentId Int?     @unique
+  password  Int
+  status    String // "admin", "student", or "instructor"
+  student   Student?
 }
 
 model Student {
-  id        Int  @id @default(autoincrement())
-  studentId Int  @unique
-  user      User @relation(fields: [studentId], references: [id])
-
-  enrollments Enrollment[]
+  studentId Int   @id @default(autoincrement())
+  user      User? @relation(fields: [studentId], references: [studentId])
 }
 
 model Course {
-  id                 Int    @id @default(autoincrement())
+  id                 Int          @id @default(autoincrement())
   name               String
   courseNum          Int
   instructor         String
-  prerequisite       String @default("none")
-  enrollment_maximum Int    @default(30)
-  enrollment_actual  Int    @default(0)
+  prerequisite       String       @default("none")
+  enrollment_maximum Int          @default(30)
+  enrollment_actual  Int          @default(0)
   category           String // "CMPS", "CMPE", "MATH", "GENG"
   status             String // "valid", "pending", "invalid"
-  crn                Int    @unique
-
-  enrollments Enrollment[]
+  crn                Int          @unique
+  enrollments        Enrollment[]
 }
 
 model Enrollment {
   id             Int     @id @default(autoincrement())
   studentId      Int
-  courseId       Int
+  studentName    String
+  courseNum      Int
+  crn            Int
+  instructor     String
   enrollmentDate String
   grade          String?
   courseStatus   String?
-
-  student Student @relation(fields: [studentId], references: [id])
-  course  Course  @relation(fields: [courseId], references: [id])
+  course         Course  @relation(fields: [crn], references: [crn])
 }
