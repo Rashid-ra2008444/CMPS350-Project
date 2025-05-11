@@ -75,3 +75,7 @@ export async function saveAllActions(enrollmentData) {
 export async function deleteEnrollmentByIdActions(id){
     return await enrollmentRepository.delete(id);
 }
+
+export async function findAllCategoriesActions() {
+  return await courseRepository.findAllCategories();
+}

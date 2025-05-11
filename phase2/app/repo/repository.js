@@ -227,6 +227,17 @@ async update(crn, courseData) {
       where: { crn: crnNumber },
     });
   }
+
+  async findAllCategories() {
+  const categories = await prisma.course.findMany({
+    select: {
+      category: true,
+    },
+    distinct: ['category'],
+  });
+
+  return categories.map(c => c.category);
+}
 }
 
 class EnrollmentRepository {

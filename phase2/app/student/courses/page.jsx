@@ -1,85 +1,111 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import styles from "./courses.module.css"
-import { useSession } from "next-auth/react"
-import { findAllCoursesActions, findAllEnrollmentsActions} from "@/app/actions/server-actions"
+import { useState, useEffect } from "react";
+import styles from "./courses.module.css";
+import { useSession } from "next-auth/react";
+import {
+  findAllCoursesActions,
+  findAllEnrollmentsActions,
+  findAllCategoriesActions,
+} from "@/app/actions/server-actions";
 
 export default function StudentCourses() {
-  const { data: session, status } = useSession()
-  const [user, setUser] = useState(null)
-  const [pendingCourses, setPendingCourses] = useState([])
-  const [validCourses, setValidCourses] = useState([])
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedSubject, setSelectedSubject] = useState("All")
+  const { data: session, status } = useSession();
+  const [user, setUser] = useState(null);
+  const [pendingCourses, setPendingCourses] = useState([]);
+  const [validCourses, setValidCourses] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState("All");
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-   if(session){
-    setUser(session.user)
-    loadAllCourses(session.user)
-   }
-  }, [session])
+    if (session) {
+      setUser(session.user);
+      loadAllCourses(session.user);
+      loadCategories();
+    }
+  }, [session]);
+
+  const loadCategories = async () => {
+    try {
+      const cats = await findAllCategoriesActions();
+      setCategories(cats);
+    } catch (err) {
+      console.error("Failed to fetch categories:", err);
+      setCategories([]);
+    }
+  };
 
   const loadAllCourses = async (currentUser) => {
     try {
-      const coursesData = await findAllCoursesActions()
-      const enrollmentData = await findAllEnrollmentsActions()
+      const coursesData = await findAllCoursesActions();
+      const enrollmentData = await findAllEnrollmentsActions();
 
-      // Find student enrollments
       const studentCourses = enrollmentData.filter(
-        (enrollment) => enrollment.studentName.toLowerCase() === currentUser.username.toLowerCase(),
-      )
+        (enrollment) =>
+          enrollment.studentName.toLowerCase() ===
+          currentUser.username.toLowerCase()
+      );
 
       if (studentCourses.length === 0) {
-        setPendingCourses([])
-        setValidCourses([])
-        return
+        setPendingCourses([]);
+        setValidCourses([]);
+        return;
       }
 
-      // Process courses
-      const pending = []
-      const valid = []
+      const pending = [];
+      const valid = [];
 
       studentCourses.forEach((enrollment) => {
-        // Find course details
         const course = coursesData.find(
           (c) =>
-            Number.parseInt(c.crn, 10) === Number.parseInt(enrollment.crn, 10) ||
-            Number.parseInt(c.courseNum, 10) === Number.parseInt(enrollment.courseNum, 10),
-        )
+            Number.parseInt(c.crn, 10) ===
+              Number.parseInt(enrollment.crn, 10) ||
+            Number.parseInt(c.courseNum, 10) ===
+              Number.parseInt(enrollment.courseNum, 10)
+        );
 
         if (course) {
-          // Add enrollment info to course object
           const courseWithInfo = {
             ...course,
             grade: enrollment.grade,
             instructor: enrollment.instructor || course.instructor,
             crn: course.crn || enrollment.crn,
-          }
+          };
 
-          // Check course status
-          const isPending = enrollment.courseStatus === "pending" || course.status === "pending"
-          const isValid = course.status === "valid"
-          const hasGrade = enrollment.grade !== null && enrollment.grade !== undefined
+          const isPending =
+            enrollment.courseStatus === "pending" ||
+            course.status === "pending";
+          const isValid = course.status === "valid";
+          const hasGrade =
+            enrollment.grade !== null && enrollment.grade !== undefined;
 
           if (isPending) {
-            pending.push(courseWithInfo)
+            pending.push(courseWithInfo);
           } else if (isValid && !hasGrade) {
-            valid.push(courseWithInfo)
+            valid.push(courseWithInfo);
           }
         }
-      })
+      });
 
-      setPendingCourses(pending)
-      setValidCourses(valid)
+      setPendingCourses(pending);
+      setValidCourses(valid);
     } catch (error) {
-      console.error("Error loading courses:", error)
+      console.error("Error loading courses:", error);
     }
-  }
+  };
 
-  const filterCourses = () => {
-    // Filter logic will be implemented here
-  }
+  const filteredValidCourses = validCourses.filter(
+    (course) =>
+      (selectedSubject === "All" || course.category === selectedSubject) &&
+      course.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredPendingCourses = pendingCourses.filter(
+    (course) =>
+      (selectedSubject === "All" || course.category === selectedSubject) &&
+      course.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <>
@@ -97,12 +123,17 @@ export default function StudentCourses() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <select id="subjectSelect" value={selectedSubject} onChange={(e) => setSelectedSubject(e.target.value)}>
+          <select
+            id="subjectSelect"
+            value={selectedSubject}
+            onChange={(e) => setSelectedSubject(e.target.value)}
+          >
             <option value="All">All</option>
-            <option value="MATH">MATH</option>
-            <option value="CMPS">CMPS</option>
-            <option value="CMPE">CMPE</option>
-            <option value="GENG">GENG</option>
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -110,10 +141,10 @@ export default function StudentCourses() {
       <div className="course-box">
         <h2>Current Courses</h2>
         <div id="validCourses" className={styles.coursesGrid}>
-          {validCourses.length === 0 ? (
+          {filteredValidCourses.length === 0 ? (
             <p>You have no approved courses.</p>
           ) : (
-            validCourses.map((course, index) => (
+            filteredValidCourses.map((course, index) => (
               <div
                 key={index}
                 className="class-card valid-card"
@@ -127,7 +158,8 @@ export default function StudentCourses() {
                 <p>Category: {course.category}</p>
                 <p>Prerequisite: {course.prerequisite}</p>
                 <p className="status">
-                  Status: <span className="status-pill status-valid">Approved</span>
+                  Status:{" "}
+                  <span className="status-pill status-valid">Approved</span>
                 </p>
               </div>
             ))
@@ -138,10 +170,10 @@ export default function StudentCourses() {
       <div className="course-box">
         <h2>Pending Courses</h2>
         <div id="pendingCourses" className={styles.coursesGrid}>
-          {pendingCourses.length === 0 ? (
+          {filteredPendingCourses.length === 0 ? (
             <p>You have no pending courses.</p>
           ) : (
-            pendingCourses.map((course, index) => (
+            filteredPendingCourses.map((course, index) => (
               <div
                 key={index}
                 className="class-card pending-card"
@@ -155,7 +187,10 @@ export default function StudentCourses() {
                 <p>Category: {course.category}</p>
                 <p>Prerequisite: {course.prerequisite}</p>
                 <p className="pending-status">
-                  Status: <span className="status-pill status-pending">Pending Approval</span>
+                  Status:{" "}
+                  <span className="status-pill status-pending">
+                    Pending Approval
+                  </span>
                 </p>
               </div>
             ))
@@ -164,8 +199,9 @@ export default function StudentCourses() {
       </div>
 
       <footer className="banner">
-        &copy; Qatar University Group Project Collections of this magnificant Work 2025. All rights reserved
+        &copy; Qatar University Group Project Collections of this magnificent
+        Work 2025. All rights reserved.
       </footer>
     </>
-  )
+  );
 }

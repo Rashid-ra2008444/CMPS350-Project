@@ -1,47 +1,58 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { findAllCategoriesActions } from "@/app/actions/server-actions";
 
 export default function AdminLayout({ children }) {
-  const [user, setUser] = useState(null)
-  const [category, setCategory] = useState("all")
-  const router = useRouter()
+  const [user, setUser] = useState(null);
+  const [category, setCategory] = useState("all");
+  const [categories, setCategories] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
-    // Check if user is logged in and is an admin
-    const storedUser = localStorage.getItem("currentUser")
+    const storedUser = localStorage.getItem("currentUser");
     if (!storedUser) {
-      router.push("/")
-      return
+      router.push("/");
+      return;
     }
 
-    const userData = JSON.parse(storedUser)
+    const userData = JSON.parse(storedUser);
     if (userData.status !== "admin") {
-      router.push("/")
-      return
+      router.push("/");
+      return;
     }
-    
-    setUser(userData)
-  }, [router])
+
+    setUser(userData);
+
+    // Fetch categories from DB
+    findAllCategoriesActions()
+      .then((cats) => setCategories(cats))
+      .catch((err) => {
+        console.error("Failed to fetch categories:", err);
+        setCategories([]);
+      });
+  }, [router]);
 
   const handleLogout = () => {
-    localStorage.removeItem("currentUser")
-    router.push("/")
-  }
+    localStorage.removeItem("currentUser");
+    router.push("/");
+  };
+
   const handleST = () => {
-    router.push("/admin/statistics")
-  }
+    router.push("/admin/statistics");
+  };
+
   const handleHome = () => {
-    router.push("/admin/courses")
-  }
+    router.push("/admin/courses");
+  };
 
   const handleCategoryChange = (e) => {
-    setCategory(e.target.value)
-  }
+    setCategory(e.target.value);
+  };
 
   if (!user) {
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
 
   return (
@@ -56,10 +67,11 @@ export default function AdminLayout({ children }) {
             onChange={handleCategoryChange}
           >
             <option value="all">All Category</option>
-            <option value="CMPS">Computer Science</option>
-            <option value="CMPE">Computer Engineering</option>
-            <option value="MATH">Mathmatics</option>
-            <option value="GENG">General Engineering</option>
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
           </select>
           <button
             className="add-course"
@@ -73,7 +85,6 @@ export default function AdminLayout({ children }) {
           <button className="statistics-btn" onClick={handleST}>
             View Statistics
           </button>
-
           <button id="logout" onClick={handleLogout}>
             Logout
           </button>

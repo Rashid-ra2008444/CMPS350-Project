@@ -7,6 +7,7 @@ import {
   findAllCoursesActions,
   findAllEnrollmentsActions,
   createEnrollmentActions,
+  findAllCategoriesActions,
 } from "@/app/actions/server-actions";
 import { useSession } from "next-auth/react";
 
@@ -16,6 +17,7 @@ export default function Registration() {
   const [allCourses, setAllCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("All");
+  const [categories, setCategories] = useState([]);
   const [completedCourses, setCompletedCourses] = useState([]);
   const [passedCourses, setPassedCourses] = useState([]);
   const [notification, setNotification] = useState({ message: "", type: "" });
@@ -31,6 +33,8 @@ export default function Registration() {
     try {
       const coursesData = await findAllCoursesActions();
       const enrollmentData = await findAllEnrollmentsActions();
+      const categoriesData = await findAllCategoriesActions();
+      setCategories(categoriesData);
 
       // Get user's enrollments
       const userEnrollments = enrollmentData.filter(
@@ -234,10 +238,11 @@ export default function Registration() {
             onChange={(e) => setSelectedSubject(e.target.value)}
           >
             <option value="All">All</option>
-            <option value="MATH">MATH</option>
-            <option value="CMPS">CMPS</option>
-            <option value="CMPE">CMPE</option>
-            <option value="GENG">GENG</option>
+            {categories.map((category, index) => (
+              <option key={index} value={category}>
+                {category}
+              </option>
+            ))}
           </select>
         </div>
       </div>
