@@ -1,122 +1,141 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
-import { useRouter, useSearchParams } from "next/navigation"
-import styles from "./grading.module.css"
-import Notification from "@/app/components/Notification"
-import { findAllCoursesActions, findAllEnrollmentsActions, saveAllActions } from "@/app/actions/server-actions"
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import styles from "./grading.module.css";
+import Notification from "@/app/components/Notification";
+import {
+  findAllCoursesActions,
+  findAllEnrollmentsActions,
+  saveAllActions,
+} from "@/app/actions/server-actions";
 
 export default function InstructorGrading() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  
-  const [course, setCourse] = useState(null)
-  const [students, setStudents] = useState([])
-  const [grades, setGrades] = useState({})
-  const [notification, setNotification] = useState({ message: "", type: "" })
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [course, setCourse] = useState(null);
+  const [students, setStudents] = useState([]);
+  const [grades, setGrades] = useState({});
+  const [notification, setNotification] = useState({ message: "", type: "" });
 
   useEffect(() => {
-    if (status === "loading") return
-    
+    if (status === "loading") return;
+
     if (!session) {
-      router.push("/auth/signin")
-      return
-    }
-    
-    if (session.user.role !== "instructor") {
-      router.push("/auth/signin")
-      return
+      router.push("/auth/signin");
+      return;
     }
 
-    const courseNum = searchParams.get('courseNum')
-    const crn = searchParams.get('crn')
+    if (session.user.role !== "instructor") {
+      router.push("/auth/signin");
+      return;
+    }
+
+    const courseNum = searchParams.get("courseNum");
+    const crn = searchParams.get("crn");
 
     if (!courseNum && !crn) {
-      router.push("/instructor/classes")
-      return
+      router.push("/instructor/classes");
+      return;
     }
 
-    loadCourseForGrading(session.user.name, courseNum, crn)
-  }, [session, status, router, searchParams])
+    loadCourseForGrading(session.user.username, courseNum, crn);
+  }, [session, status, router, searchParams]);
 
   const loadCourseForGrading = async (instructorName, courseNum, courseCRN) => {
     try {
-      const coursesData = await findAllCoursesActions()
-      let selectedCourse = null
+      const coursesData = await findAllCoursesActions();
+      let selectedCourse = null;
 
       if (courseCRN) {
         selectedCourse = coursesData.find(
-          (c) => Number.parseInt(c.crn, 10) === Number.parseInt(courseCRN, 10) && c.instructor === instructorName,
-        )
+          (c) =>
+            Number.parseInt(c.crn, 10) === Number.parseInt(courseCRN, 10) &&
+            c.instructor === instructorName
+        );
       }
 
       if (!selectedCourse && courseNum) {
         selectedCourse = coursesData.find(
-          (c) => Number.parseInt(c.courseNum, 10) === Number.parseInt(courseNum, 10) && c.instructor === instructorName,
-        )
+          (c) =>
+            Number.parseInt(c.courseNum, 10) ===
+              Number.parseInt(courseNum, 10) && c.instructor === instructorName
+        );
       }
 
       if (!selectedCourse) {
-        showNotification("Course not found or you do not have permission to grade this course.", "error")
-        router.push("/instructor/classes")
-        return
+        showNotification(
+          "Course not found or you do not have permission to grade this course.",
+          "error"
+        );
+        router.push("/instructor/classes");
+        return;
       }
 
-      setCourse(selectedCourse)
-      const enrollmentData = await findAllEnrollmentsActions()
+      setCourse(selectedCourse);
+      const enrollmentData = await findAllEnrollmentsActions();
 
       const enrolledStudents = enrollmentData.filter((enrollment) => {
         if (enrollment.crn && courseCRN) {
-          return Number.parseInt(enrollment.crn, 10) === Number.parseInt(courseCRN, 10)
+          return (
+            Number.parseInt(enrollment.crn, 10) ===
+            Number.parseInt(courseCRN, 10)
+          );
         }
-        return Number.parseInt(enrollment.courseNum, 10) === Number.parseInt(selectedCourse.courseNum, 10)
-      })
+        return (
+          Number.parseInt(enrollment.courseNum, 10) ===
+          Number.parseInt(selectedCourse.courseNum, 10)
+        );
+      });
 
-      setStudents(enrolledStudents)
+      setStudents(enrolledStudents);
 
-      const initialGrades = {}
+      const initialGrades = {};
       enrolledStudents.forEach((student) => {
-        initialGrades[student.studentId] = student.grade ? getNumericEquivalent(student.grade) : ""
-      })
-      setGrades(initialGrades)
+        initialGrades[student.studentId] = student.grade
+          ? getNumericEquivalent(student.grade)
+          : "";
+      });
+      setGrades(initialGrades);
     } catch (error) {
-      console.error("Error loading course:", error)
+      console.error("Error loading course:", error);
     }
-  }
+  };
 
   const showNotification = (message, type = "success") => {
-    setNotification({ message, type })
-    setTimeout(() => setNotification({ message: "", type: "" }), 4000)
-  }
+    setNotification({ message, type });
+    setTimeout(() => setNotification({ message: "", type: "" }), 4000);
+  };
 
   const getNumericEquivalent = (letterGrade) => {
-    if (!letterGrade) return ""
+    if (!letterGrade) return "";
 
-    const upperGrade = letterGrade.toString().toUpperCase()
+    const upperGrade = letterGrade.toString().toUpperCase();
 
     switch (upperGrade) {
       case "A":
-        return 90
+        return 90;
       case "B+":
-        return 85
+        return 85;
       case "B":
-        return 80
+        return 80;
       case "C+":
-        return 75
+        return 75;
       case "C":
-        return 70
+        return 70;
       case "D+":
-        return 65
+        return 65;
       case "D":
-        return 60
+        return 60;
       case "F":
-        return 0
+        return 0;
       default:
-        return ""
+        return "";
     }
-  }
+  };
 
   const handleGradeChange = (studentId, value) => {
     const numericValue = parseInt(value, 10);
@@ -164,10 +183,13 @@ export default function InstructorGrading() {
         };
       });
 
-      const result = await saveAllActions(updatedEnrollments)
+      const result = await saveAllActions(updatedEnrollments);
 
       if (result) {
-        showNotification("Grades saved successfully. Students can now see their grades in Learning Path.", "success");
+        showNotification(
+          "Grades saved successfully. Students can now see their grades in Learning Path.",
+          "success"
+        );
         setTimeout(() => {
           router.push("/instructor/classes");
         }, 2000);
@@ -181,31 +203,40 @@ export default function InstructorGrading() {
   };
 
   const handleBackToClasses = () => {
-    router.push("/instructor/classes")
-  }
+    router.push("/instructor/classes");
+  };
 
   if (status === "loading" || !course) {
-    return <div>Loading course data...</div>
+    return <div>Loading course data...</div>;
   }
 
   const statusClass =
-    course.status === "valid" ? "status-valid" : course.status === "pending" ? "status-pending" : "status-invalid"
+    course.status === "valid"
+      ? "status-valid"
+      : course.status === "pending"
+      ? "status-pending"
+      : "status-invalid";
 
   return (
     <>
       <section className="banner">
         <h1 className="title">
-          Course Grading - <span id="instructor-name">{session?.user?.name}</span>
+          Course Grading -{" "}
+          <span id="instructor-name">{session?.user?.username}</span>
         </h1>
         <h2 id="course-title">
           Course: {course.name} ({course.category} {course.courseNum})
         </h2>
       </section>
-      
+
       {notification.message && (
-        <Notification message={notification.message} type={notification.type} onClose={() => setNotification({message: "", type: ""})}/> 
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification({ message: "", type: "" })}
+        />
       )}
-      
+
       <div className="course-box">
         <h2>Course Details</h2>
         <div id="course-details" className={styles.courseDetails}>
@@ -240,7 +271,9 @@ export default function InstructorGrading() {
                       required
                       placeholder="Grade (0-100)"
                       value={grades[student.studentId]}
-                      onChange={(e) => handleGradeChange(student.studentId, e.target.value)}
+                      onChange={(e) =>
+                        handleGradeChange(student.studentId, e.target.value)
+                      }
                     />
                   </div>
                 ))}
@@ -256,7 +289,8 @@ export default function InstructorGrading() {
             <div className={styles.errorMessage}>
               <p>⚠️ You can only submit grades for approved courses.</p>
               <p>
-                Current status: <span className={statusClass}>{course.status}</span>
+                Current status:{" "}
+                <span className={statusClass}>{course.status}</span>
               </p>
               <p>Please contact an administrator to approve this course.</p>
             </div>
@@ -269,8 +303,9 @@ export default function InstructorGrading() {
       </button>
 
       <footer className="banner">
-        &copy; Qatar University Group Project Collections of this magnificent Work 2025. All rights reserved
+        &copy; Qatar University Group Project Collections of this magnificent
+        Work 2025. All rights reserved
       </footer>
     </>
-  )
+  );
 }
