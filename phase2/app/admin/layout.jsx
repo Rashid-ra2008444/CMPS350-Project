@@ -3,27 +3,23 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { findAllCategoriesActions } from "@/app/actions/server-actions";
+import { useSession } from "next-auth/react";
 
 export default function AdminLayout({ children }) {
+  const { data: session, status } = useSession();
   const [user, setUser] = useState(null);
   const [category, setCategory] = useState("all");
   const [categories, setCategories] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("currentUser");
-    if (!storedUser) {
-      router.push("/");
-      return;
+    if (session) {
+      setUser(session);
     }
 
-    const userData = JSON.parse(storedUser);
-    if (userData.status !== "admin") {
+    if (user && user.status !== "admin") {
       router.push("/");
-      return;
     }
-
-    setUser(userData);
 
     // Fetch categories from DB
     findAllCategoriesActions()
@@ -32,10 +28,9 @@ export default function AdminLayout({ children }) {
         console.error("Failed to fetch categories:", err);
         setCategories([]);
       });
-  }, [router]);
+  }, [session]); // Add `user` as a dependency
 
   const handleLogout = () => {
-    localStorage.removeItem("currentUser");
     router.push("/");
   };
 
