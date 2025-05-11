@@ -1,5 +1,62 @@
+// generator client {
+//   provider = "prisma-client-js"
+// }
+
+// datasource db {
+//   provider = "sqlite"
+//   url      = "file:./dev.db"
+// }
+
+// model User {
+//   id       Int    @id @default(autoincrement())
+//   username String @unique
+//   password Int
+//   status   String // "admin", "student", or "instructor"
+
+//   student Student?
+// }
+
+// model Student {
+//   id        Int  @id @default(autoincrement())
+//   studentId Int  @unique
+//   user      User @relation(fields: [studentId], references: [id])
+
+//   enrollments Enrollment[]
+// }
+
+// model Course {
+//   id                 Int    @id @default(autoincrement())
+//   name               String
+//   courseNum          Int
+//   instructor         String
+//   prerequisite       String @default("none")
+//   enrollment_maximum Int    @default(30)
+//   enrollment_actual  Int    @default(0)
+//   category           String // "CMPS", "CMPE", "MATH", "GENG"
+//   status             String // "valid", "pending", "invalid"
+//   crn                Int    @unique
+
+//   enrollments Enrollment[]
+// }
+
+// model Enrollment {
+//   id             Int     @id @default(autoincrement())
+//   studentId      Int
+//   courseId       Int
+//   enrollmentDate String
+//   grade          String?
+//   courseStatus   String?
+
+//   student Student @relation(fields: [studentId], references: [id])
+//   course  Course  @relation(fields: [courseId], references: [id])
+// }
+
+
+
+
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 
 generator client {
   provider = "prisma-client-js"
@@ -13,15 +70,16 @@ datasource db {
 model User {
   id        Int      @id @default(autoincrement())
   username  String   @unique
-  studentId Int?     @unique
   password  Int
   status    String // "admin", "student", or "instructor"
+  studentId Int?     @unique
   student   Student?
 }
 
 model Student {
-  studentId Int   @id @default(autoincrement())
-  user      User? @relation(fields: [studentId], references: [studentId])
+  studentId   Int          @id @default(autoincrement())
+  user        User?        @relation(fields: [studentId], references: [studentId])
+  enrollments Enrollment[] // One Student can have Many Enrollments
 }
 
 model Course {
@@ -39,7 +97,7 @@ model Course {
 }
 
 model Enrollment {
-  id             Int     @id @default(autoincrement())
+  id             Int      @id @default(autoincrement())
   studentId      Int
   studentName    String
   courseNum      Int
@@ -48,5 +106,8 @@ model Enrollment {
   enrollmentDate String
   grade          String?
   courseStatus   String?
-  course         Course  @relation(fields: [crn], references: [crn])
+  
+  // Relations
+  course         Course   @relation(fields: [crn], references: [crn])
+  student        Student  @relation(fields: [studentId], references: [studentId])
 }

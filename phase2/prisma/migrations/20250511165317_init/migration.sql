@@ -38,7 +38,8 @@ CREATE TABLE "Enrollment" (
     "enrollmentDate" TEXT NOT NULL,
     "grade" TEXT,
     "courseStatus" TEXT,
-    CONSTRAINT "Enrollment_crn_fkey" FOREIGN KEY ("crn") REFERENCES "Course" ("crn") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "Enrollment_crn_fkey" FOREIGN KEY ("crn") REFERENCES "Course" ("crn") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "Enrollment_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student" ("studentId") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateIndex
