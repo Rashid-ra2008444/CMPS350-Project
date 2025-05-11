@@ -1,22 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./css/CreateEditCourse.module.css";
+import { findAllCategoriesActions } from "../actions/server-actions";
 
 export default function CreateEditCourse({
   isEditMode,
   initialCourseData,
   onSubmit,
-  onCancel
+  onCancel,
 }) {
   const [courseData, setCourseData] = useState(initialCourseData);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const categoriesData = await findAllCategoriesActions();
+        console.log("Fetched categories:", categoriesData);
+        if (categoriesData) {
+          setCategories(categoriesData);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    
+
     // For number fields, convert the value to a number
-    const processedValue = ["courseNum", "enrollment_maximum", "enrollment_actual", "crn"].includes(name) 
-      ? Number(value) 
+    const processedValue = [
+      "courseNum",
+      "enrollment_maximum",
+      "enrollment_actual",
+      "crn",
+    ].includes(name)
+      ? Number(value)
       : value;
-      
+
     setCourseData({
       ...courseData,
       [name]: processedValue,
@@ -98,14 +121,19 @@ export default function CreateEditCourse({
               Category:
               <select
                 name="category"
-                value={courseData.category || "CMPS"}
+                value={courseData.category || ""}
                 onChange={handleInputChange}
                 disabled={courseData.isValidCourse}
               >
-                <option value="CMPS">Computer Science</option>
-                <option value="CMPE">Computer Engineering</option>
-                <option value="MATH">Mathematics</option>
-                <option value="GENG">General Engineering</option>
+                {categories.length === 0 ? (
+                  <option value="">Loading categories...</option>
+                ) : (
+                  categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))
+                )}
               </select>
             </label>
           </div>
