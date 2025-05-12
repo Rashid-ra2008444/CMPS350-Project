@@ -143,15 +143,15 @@ export async function GET(request) {
       }),
       
       // 10. Grade distribution
-      prisma.enrollment.groupBy({
-        by: ['grade'],
-        _count: {
-          id: true
-        },
-        where: {
-          grade: { not: null }
-        }
-      }),
+      await prisma.enrollment.groupBy({
+      by: ['grade'],
+      _count: {
+        _all: true // count of all rows for each grade
+      },
+      where: {
+        grade: { not: null }
+      }
+    }),
       
       // 11. Instructor workload
       prisma.course.groupBy({
