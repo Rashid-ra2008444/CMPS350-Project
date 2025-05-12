@@ -232,7 +232,7 @@
     "grade": null,
     "courseStatus": "valid"
   },
-  
+
   {
     "studentId": 2000030,
     "studentName": "Reem Al-Maadeed",
@@ -292,7 +292,7 @@
     "instructor": "Saleh Al-Hazbi",
     "enrollmentDate": "2025-01-15",
     "grade": null,
-    "courseStatus": "valid" 
+    "courseStatus": "valid"
   },
 
   {
@@ -660,7 +660,7 @@
     "grade": null,
     "courseStatus": "valid"
   },
-  
+
   {
     "studentId": 2000021,
     "studentName": "Hamad Al-Marri",
@@ -816,16 +816,6 @@
   {
     "studentId": 2000023,
     "studentName": "Rashid Al-Dosari",
-    "courseNum": 101,
-    "crn": 10008,
-    "instructor": "Yousef Ali",
-    "enrollmentDate": "2024-09-15",
-    "grade": "F",
-    "courseStatus": "valid"
-  },
-  {
-    "studentId": 2000023,
-    "studentName": "Rashid Al-Dosari",
     "courseNum": 202,
     "crn": 10004,
     "instructor": "Sara Ahmed",
@@ -853,217 +843,217 @@
     "grade": null,
     "courseStatus": "valid"
   },
-  
-    {
-      "studentId": 2000031,
-      "studentName": "Jassim Al-Emadi",
-      "courseNum": 151,
-      "crn": 10002,
-      "instructor": "Mohammed Saleh",
-      "enrollmentDate": "2024-09-20",
-      "grade": "B",
-      "courseStatus": "valid"
-    },
-    {
-      "studentId": 2000031,
-      "studentName": "Jassim Al-Emadi",
-      "courseNum": 101,
-      "crn": 10008,
-      "instructor": "Yousef Ali",
-      "enrollmentDate": "2024-09-20",
-      "grade": "B+",
-      "courseStatus": "valid"
-    },
-    {
-      "studentId": 2000031,
-      "studentName": "Jassim Al-Emadi",
-      "courseNum": 202,
-      "crn": 10004,
-      "instructor": "Sara Ahmed",
-      "enrollmentDate": "2024-09-20",
-      "grade": "B",
-      "courseStatus": "valid"
-    },
-    {
-      "studentId": 2000031,
-      "studentName": "Jassim Al-Emadi",
-      "courseNum": 251,
-      "crn": 10010,
-      "instructor": "Mohammed Saleh",
-      "enrollmentDate": "2025-01-24",
-      "grade": null,
-      "courseStatus": "valid"
-    },
-    {
-      "studentId": 2000031,
-      "studentName": "Jassim Al-Emadi",
-      "courseNum": 102,
-      "crn": 10015,
-      "instructor": "Yousef Ali",
-      "enrollmentDate": "2025-01-24",
-      "grade": null,
-      "courseStatus": "valid"
-    },
-    {
-      "studentId": 2000031,
-      "studentName": "Jassim Al-Emadi",
-      "courseNum": 203,
-      "crn": 10012,
-      "instructor": "Sara Ahmed",
-      "enrollmentDate": "2025-01-24",
-      "grade": null,
-      "courseStatus": "valid"
-    },
-    {
-      "studentId": 2000031,
-      "studentName": "Jassim Al-Emadi",
-      "courseNum": 191,
-      "crn": 10013,
-      "instructor": "Mohammed Azeem",
-      "enrollmentDate": "2025-01-24",
-      "grade": null,
-      "courseStatus": "valid"
-    },
-  
-    {
-      "studentId": 2000024,
-      "studentName": "Layla Al-Mohannadi",
-      "courseNum": 151,
-      "crn": 10001,
-      "instructor": "Zeyad Ali",
-      "enrollmentDate": "2023-09-24",
-      "grade": "A",
-      "courseStatus": "valid"
-    },
-    {
-      "studentId": 2000024,
-      "studentName": "Layla Al-Mohannadi",
-      "courseNum": 101,
-      "crn": 10008,
-      "instructor": "Yousef Ali",
-      "enrollmentDate": "2023-09-24",
-      "grade": "A",
-      "courseStatus": "valid"
-    },
-    {
-      "studentId": 2000024,
-      "studentName": "Layla Al-Mohannadi",
-      "courseNum": 251,
-      "crn": 10010,
-      "instructor": "Mohammed Saleh",
-      "enrollmentDate": "2024-01-24",
-      "grade": "A",
-      "courseStatus": "valid"
-    },
-    {
-      "studentId": 2000024,
-      "studentName": "Layla Al-Mohannadi",
-      "courseNum": 102,
-      "crn": 10015,
-      "instructor": "Yousef Ali",
-      "enrollmentDate": "2024-01-24",
-      "grade": "B+",
-      "courseStatus": "valid"
-    },
-    {
-      "studentId": 2000024,
-      "studentName": "Layla Al-Mohannadi",
-      "courseNum": 303,
-      "crn": 10016,
-      "instructor": "Saleh Al-Hazbi",
-      "enrollmentDate": "2024-09-24",
-      "grade": "A",
-      "courseStatus": "valid"
-    },
-    {
-      "studentId": 2000024,
-      "studentName": "Layla Al-Mohannadi",
-      "courseNum": 231,
-      "crn": 10014,
-      "instructor": "Khalid Ibrahim",
-      "enrollmentDate": "2024-09-24",
-      "grade": "A",
-      "courseStatus": "valid"
-    },
-    {
-      "studentId": 2000024,
-      "studentName": "Layla Al-Mohannadi",
-      "courseNum": 323,
-      "crn": 10021,
-      "instructor": "Mohammed Saleh",
-      "enrollmentDate": "2025-01-24",
-      "grade": null,
-      "courseStatus": "valid"
-    },
-    {
-      "studentId": 2000024,
-      "studentName": "Layla Al-Mohannadi",
-      "courseNum": 351,
-      "crn": 10022,
-      "instructor": "Zeyad Ali",
-      "enrollmentDate": "2025-01-24",
-      "grade": null,
-      "courseStatus": "valid"
-    },
-    {
-      "studentId": 2000024,
-      "studentName": "Layla Al-Mohannadi",
-      "courseNum": 205,
-      "crn": 10018,
-      "instructor": "Ahmed Hassan",
-      "enrollmentDate": "2025-01-24",
-      "grade": null,
-      "courseStatus": "valid"
-    },
-  
-    {
-      "studentId": 2000048,
-      "studentName": "Hamza Al-Attiyah",
-      "courseNum": 151,
-      "crn": 10001,
-      "instructor": "Zeyad Ali",
-      "enrollmentDate": "2025-01-23",
-      "grade": null,
-      "courseStatus": "valid"
-    },
-    {
-      "studentId": 2000048,
-      "studentName": "Hamza Al-Attiyah",
-      "courseNum": 101,
-      "crn": 10008,
-      "instructor": "Yousef Ali",
-      "enrollmentDate": "2025-01-23",
-      "grade": null,
-      "courseStatus": "valid"
-    },
-    {
-      "studentId": 2000048,
-      "studentName": "Hamza Al-Attiyah",
-      "courseNum": 202,
-      "crn": 10004,
-      "instructor": "Sara Ahmed",
-      "enrollmentDate": "2025-01-23",
-      "grade": null,
-      "courseStatus": "valid"
-    },
-    {
-      "studentId": 2000048,
-      "studentName": "Hamza Al-Attiyah",
-      "courseNum": 100,
-      "crn": 10020,
-      "instructor": "Noura Mohammed",
-      "enrollmentDate": "2025-01-23",
-      "grade": null,
-      "courseStatus": "valid"
-    },
-    {
-      "studentId": 2000048,
-      "studentName": "Hamza Al-Attiyah",
-      "courseNum": 121,
-      "crn": 10006,
-      "instructor": "Omar Abdullah",
-      "enrollmentDate": "2025-01-23",
-      "grade": null,
-      "courseStatus": "valid"
-    }
+
+  {
+    "studentId": 2000031,
+    "studentName": "Jassim Al-Emadi",
+    "courseNum": 151,
+    "crn": 10002,
+    "instructor": "Mohammed Saleh",
+    "enrollmentDate": "2024-09-20",
+    "grade": "B",
+    "courseStatus": "valid"
+  },
+  {
+    "studentId": 2000031,
+    "studentName": "Jassim Al-Emadi",
+    "courseNum": 101,
+    "crn": 10008,
+    "instructor": "Yousef Ali",
+    "enrollmentDate": "2024-09-20",
+    "grade": "B+",
+    "courseStatus": "valid"
+  },
+  {
+    "studentId": 2000031,
+    "studentName": "Jassim Al-Emadi",
+    "courseNum": 202,
+    "crn": 10004,
+    "instructor": "Sara Ahmed",
+    "enrollmentDate": "2024-09-20",
+    "grade": "B",
+    "courseStatus": "valid"
+  },
+  {
+    "studentId": 2000031,
+    "studentName": "Jassim Al-Emadi",
+    "courseNum": 251,
+    "crn": 10010,
+    "instructor": "Mohammed Saleh",
+    "enrollmentDate": "2025-01-24",
+    "grade": null,
+    "courseStatus": "valid"
+  },
+  {
+    "studentId": 2000031,
+    "studentName": "Jassim Al-Emadi",
+    "courseNum": 102,
+    "crn": 10015,
+    "instructor": "Yousef Ali",
+    "enrollmentDate": "2025-01-24",
+    "grade": null,
+    "courseStatus": "valid"
+  },
+  {
+    "studentId": 2000031,
+    "studentName": "Jassim Al-Emadi",
+    "courseNum": 203,
+    "crn": 10012,
+    "instructor": "Sara Ahmed",
+    "enrollmentDate": "2025-01-24",
+    "grade": null,
+    "courseStatus": "valid"
+  },
+  {
+    "studentId": 2000031,
+    "studentName": "Jassim Al-Emadi",
+    "courseNum": 191,
+    "crn": 10013,
+    "instructor": "Mohammed Azeem",
+    "enrollmentDate": "2025-01-24",
+    "grade": null,
+    "courseStatus": "valid"
+  },
+
+  {
+    "studentId": 2000024,
+    "studentName": "Layla Al-Mohannadi",
+    "courseNum": 151,
+    "crn": 10001,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2023-09-24",
+    "grade": "A",
+    "courseStatus": "valid"
+  },
+  {
+    "studentId": 2000024,
+    "studentName": "Layla Al-Mohannadi",
+    "courseNum": 101,
+    "crn": 10008,
+    "instructor": "Yousef Ali",
+    "enrollmentDate": "2023-09-24",
+    "grade": "A",
+    "courseStatus": "valid"
+  },
+  {
+    "studentId": 2000024,
+    "studentName": "Layla Al-Mohannadi",
+    "courseNum": 251,
+    "crn": 10010,
+    "instructor": "Mohammed Saleh",
+    "enrollmentDate": "2024-01-24",
+    "grade": "A",
+    "courseStatus": "valid"
+  },
+  {
+    "studentId": 2000024,
+    "studentName": "Layla Al-Mohannadi",
+    "courseNum": 102,
+    "crn": 10015,
+    "instructor": "Yousef Ali",
+    "enrollmentDate": "2024-01-24",
+    "grade": "B+",
+    "courseStatus": "valid"
+  },
+  {
+    "studentId": 2000024,
+    "studentName": "Layla Al-Mohannadi",
+    "courseNum": 303,
+    "crn": 10016,
+    "instructor": "Saleh Al-Hazbi",
+    "enrollmentDate": "2024-09-24",
+    "grade": "A",
+    "courseStatus": "valid"
+  },
+  {
+    "studentId": 2000024,
+    "studentName": "Layla Al-Mohannadi",
+    "courseNum": 231,
+    "crn": 10014,
+    "instructor": "Khalid Ibrahim",
+    "enrollmentDate": "2024-09-24",
+    "grade": "A",
+    "courseStatus": "valid"
+  },
+  {
+    "studentId": 2000024,
+    "studentName": "Layla Al-Mohannadi",
+    "courseNum": 323,
+    "crn": 10021,
+    "instructor": "Mohammed Saleh",
+    "enrollmentDate": "2025-01-24",
+    "grade": null,
+    "courseStatus": "valid"
+  },
+  {
+    "studentId": 2000024,
+    "studentName": "Layla Al-Mohannadi",
+    "courseNum": 351,
+    "crn": 10022,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2025-01-24",
+    "grade": null,
+    "courseStatus": "valid"
+  },
+  {
+    "studentId": 2000024,
+    "studentName": "Layla Al-Mohannadi",
+    "courseNum": 205,
+    "crn": 10018,
+    "instructor": "Ahmed Hassan",
+    "enrollmentDate": "2025-01-24",
+    "grade": null,
+    "courseStatus": "valid"
+  },
+
+  {
+    "studentId": 2000048,
+    "studentName": "Hamza Al-Attiyah",
+    "courseNum": 151,
+    "crn": 10001,
+    "instructor": "Zeyad Ali",
+    "enrollmentDate": "2025-01-23",
+    "grade": null,
+    "courseStatus": "valid"
+  },
+  {
+    "studentId": 2000048,
+    "studentName": "Hamza Al-Attiyah",
+    "courseNum": 101,
+    "crn": 10008,
+    "instructor": "Yousef Ali",
+    "enrollmentDate": "2025-01-23",
+    "grade": null,
+    "courseStatus": "valid"
+  },
+  {
+    "studentId": 2000048,
+    "studentName": "Hamza Al-Attiyah",
+    "courseNum": 202,
+    "crn": 10004,
+    "instructor": "Sara Ahmed",
+    "enrollmentDate": "2025-01-23",
+    "grade": null,
+    "courseStatus": "valid"
+  },
+  {
+    "studentId": 2000048,
+    "studentName": "Hamza Al-Attiyah",
+    "courseNum": 100,
+    "crn": 10020,
+    "instructor": "Noura Mohammed",
+    "enrollmentDate": "2025-01-23",
+    "grade": null,
+    "courseStatus": "valid"
+  },
+  {
+    "studentId": 2000048,
+    "studentName": "Hamza Al-Attiyah",
+    "courseNum": 121,
+    "crn": 10006,
+    "instructor": "Omar Abdullah",
+    "enrollmentDate": "2025-01-23",
+    "grade": null,
+    "courseStatus": "valid"
+  }
 ]

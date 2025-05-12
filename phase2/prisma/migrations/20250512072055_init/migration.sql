@@ -29,7 +29,6 @@ CREATE TABLE "Course" (
 
 -- CreateTable
 CREATE TABLE "Enrollment" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "studentId" INTEGER NOT NULL,
     "studentName" TEXT NOT NULL,
     "courseNum" INTEGER NOT NULL,
@@ -38,6 +37,8 @@ CREATE TABLE "Enrollment" (
     "enrollmentDate" TEXT NOT NULL,
     "grade" TEXT,
     "courseStatus" TEXT,
+
+    PRIMARY KEY ("studentId", "crn"),
     CONSTRAINT "Enrollment_crn_fkey" FOREIGN KEY ("crn") REFERENCES "Course" ("crn") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "Enrollment_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student" ("studentId") ON DELETE CASCADE ON UPDATE CASCADE
 );
