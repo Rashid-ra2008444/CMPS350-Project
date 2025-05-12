@@ -35,8 +35,8 @@ export async function createCourseActions(courseData) {
 export async function updateCourseActions(crn, courseData) {
     return await courseRepository.update(crn, courseData);
 }
-
 export async function updateStatusActions(crn, status) {
+  await enrollmentRepository.updateCourseStatus(crn, status);
     return await courseRepository.updateStatus(crn, status);
 }
 

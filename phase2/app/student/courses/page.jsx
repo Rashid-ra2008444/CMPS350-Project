@@ -60,7 +60,7 @@ export default function StudentCourses() {
         const course = coursesData.find(
           (c) =>
             Number.parseInt(c.crn, 10) ===
-              Number.parseInt(enrollment.crn, 10) ||
+              Number.parseInt(enrollment.crn, 10) &&
             Number.parseInt(c.courseNum, 10) ===
               Number.parseInt(enrollment.courseNum, 10)
         );
@@ -74,8 +74,7 @@ export default function StudentCourses() {
           };
 
           const isPending =
-            enrollment.courseStatus === "pending" ||
-            course.status === "pending";
+            enrollment.status === "pending" || course.status === "pending";
           const isValid = course.status === "valid";
           const hasGrade =
             enrollment.grade !== null && enrollment.grade !== undefined;

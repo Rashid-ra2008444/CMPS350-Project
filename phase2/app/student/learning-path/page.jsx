@@ -29,7 +29,7 @@ export default function LearningPath() {
 
       // Find student enrollments
       const studentEnrollments = enrollmentData.filter(
-        (enrollment) => enrollment.studentName === user.username
+        (enrollment) => enrollment.studentId === user.studentId
       );
 
       if (studentEnrollments.length === 0) {
@@ -45,8 +45,7 @@ export default function LearningPath() {
         // Find course info
         const course = coursesData.find(
           (c) =>
-            Number.parseInt(c.courseNum, 10) ===
-            Number.parseInt(enrollment.courseNum, 10)
+            Number.parseInt(c.crn, 10) === Number.parseInt(enrollment.crn, 10)
         );
 
         if (!course) return;
@@ -74,7 +73,6 @@ export default function LearningPath() {
       console.error("Error loading learning path data:", error);
     }
   };
-
   const getGradeClass = (grade) => {
     if (!grade) return "";
 

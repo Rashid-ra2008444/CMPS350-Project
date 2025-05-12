@@ -129,6 +129,9 @@ class StudentRepository {
 }
 
 class CourseRepository {
+
+
+
   // Find all courses
   async findAll() {
     return await prisma.course.findMany({
@@ -136,6 +139,8 @@ class CourseRepository {
         enrollments: true,
       },
     });
+
+    
   }
 
   // Find course by CRN
@@ -320,7 +325,12 @@ class EnrollmentRepository {
     return await prisma.$transaction(
       enrollments.map((enrollment) =>
         prisma.enrollment.update({
-          where: { id: enrollment.id },
+          where: {
+            studentId_crn: {
+              studentId: enrollment.studentId,
+              crn: enrollment.crn
+            }
+          },
           data: {
             grade: enrollment.grade,
             courseStatus: enrollment.courseStatus,
